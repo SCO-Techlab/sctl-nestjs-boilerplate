@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CONFIGURATION_APP } from './configuration/configuration-app';
+import { APP_ENV_CONFIG } from './env-configs';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [
-        CONFIGURATION_APP
+        APP_ENV_CONFIG
       ],
       envFilePath: `./env/${process.env.NODE_ENV}.env`,
       isGlobal: true,
