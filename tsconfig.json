@@ -20,6 +20,17 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@env-configs/*": [
+        "./src/env-configs/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ]
+    }
   }
 }
