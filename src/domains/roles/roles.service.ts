@@ -1,6 +1,6 @@
 import { IPermission, PermissionsService } from "@domains/permissions";
 import { MongodbService } from "@modules/mongodb";
-import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
@@ -155,10 +155,10 @@ export class RolesService {
       return [];
     }
 
-    const names = [...new Set(role.permissions.map(p => p.name))];
-    const permissions = await this.permissionsService.find({ name: { $in: names } } as any) as IPermission[];
+    const _ids = [...new Set(role.permissions.map(_id => _id))];
+    const permissions = await this.permissionsService.find({ _id: { $in: _ids } } as any) as IPermission[];
 
-    if (permissions.length !== names.length) {
+    if (permissions.length !== _ids.length) {
       throw new BadRequestException('One or more permissions do not exist');
     }
 

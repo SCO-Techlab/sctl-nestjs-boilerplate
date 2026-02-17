@@ -1,7 +1,5 @@
 import { MongodbDocumentDto } from '@shared/dtos';
-import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsObject, IsOptional, IsString, } from 'class-validator';
-import { PermissionDto } from '../permissions';
+import { ArrayNotEmpty, IsArray, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, } from 'class-validator';
 
 export class RoleDto extends MongodbDocumentDto {
   @IsNotEmpty()
@@ -9,9 +7,10 @@ export class RoleDto extends MongodbDocumentDto {
   name: string;
 
   @IsOptional()
-  @Type(() => PermissionDto)
   @IsArray()
-  permissions?: PermissionDto[];
+  @ArrayNotEmpty()
+  @IsMongoId({ each: true })
+  permissions?: string[];
 
   @IsOptional()
   @IsObject()
