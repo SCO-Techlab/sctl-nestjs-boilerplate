@@ -30,4 +30,5 @@ export const MAGIC_STRINGS = {
   ASTERISK: '*',
   FULLCHAIN_PEM: 'fullchain.pem',
   PRIVKEY_PEM: 'privkey.pem',
+  API: 'api',
 }
