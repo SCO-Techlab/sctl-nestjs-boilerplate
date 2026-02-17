@@ -44,9 +44,7 @@ export class EmailerService {
 
     try {
       const transporter: Transporter = createTransport({
-        service: config.service
-          ? config.service
-          : 'gmail',
+        service: config.service ?? MAGIC_STRINGS.EMPTY_STRING,
         auth: {
           user: config.authUser,
           pass: config.authPassword,
