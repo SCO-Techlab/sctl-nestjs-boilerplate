@@ -3,4 +3,5 @@ export interface IAppConfig {
   port: number;
   production: boolean;
   host: string;
+  prefix: string;
 }

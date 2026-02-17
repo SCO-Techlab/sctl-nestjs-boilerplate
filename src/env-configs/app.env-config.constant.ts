@@ -6,4 +6,5 @@ export const APP_ENV_CONFIG = registerAs('app', () => ({
   port: Number.parseInt(process.env.PORT ?? `${MAGIC_NUMBERS.N_3005}`, MAGIC_NUMBERS.N_10) ?? MAGIC_NUMBERS.N_3005,
   production: process.env.PRODUCTION === MAGIC_STRINGS.TRUE ? true : false,
   host: process.env.HOST ?? MAGIC_STRINGS.LOCAL_HOST,
+  prefix: process.env.PREFIX ?? MAGIC_STRINGS.EMPTY_STRING,
 }));
