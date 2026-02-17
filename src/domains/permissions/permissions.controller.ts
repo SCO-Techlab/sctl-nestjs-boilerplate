@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
-import { MongodbBulkUpdateDto } from '@shared/dtos';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { PermissionDto } from './permissions.dto';
@@ -42,7 +42,7 @@ export class PermissionsController {
 
   @Put(MAGIC_STRINGS.BULK)
   @UseGuards(AuthGuard())
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<IPermission>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.permissionsService.updateMany(filter, bulkUpdate.data);
   }
@@ -55,9 +55,8 @@ export class PermissionsController {
 
   @Delete(MAGIC_STRINGS.BULK)
   @UseGuards(AuthGuard())
-  async deleteMany(@Body() body: { ids: string[] }): Promise<number> {
-    const { ids } = body;
-    const filter = { _id: { $in: ids } };
+  async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
+    const filter = { _id: { $in: bulkDelete._ids } };
     return await this.permissionsService.deleteMany(filter);
   }
 }
