@@ -1,11 +1,12 @@
-import { IPermission, PermissionDto, PermissionsService } from "@domains/permissions";
+import { IPermission, PermissionsService } from "@domains/permissions";
 import { MongodbService } from "@modules/mongodb";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
+import { formatMongodbError } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
-import { Model } from "mongoose";
+import { Model, QueryFilter } from "mongoose";
 import { RoleDto } from "./roles.dto";
 import { IRole } from "./roles.interface";
 import { ROLES_SCHEMA } from "./roles.schema";
@@ -41,11 +42,12 @@ export class RolesService {
 
     try {
       if (page === undefined || limit === undefined) {
-        return await this.RoleModel.find(query);
+        const result: IRole[] = await this.RoleModel.find(query);
+        return result ?? [];
       }
 
-      delete query.page;
-      delete query.limit;
+      delete query?.page;
+      delete query?.limit;
 
       const totalRecords = await this.RoleModel.countDocuments(query).exec();
       const { totalPages, finalPage, skip, sanitizedLimit } = this.paginationService.paginationParams(page, limit, totalRecords);
@@ -56,117 +58,114 @@ export class RolesService {
         .limit(sanitizedLimit);
 
       return {
-        data: data,
-        totalRecords: totalRecords,
+        data: data ?? [],
+        totalRecords,
         currentPage: finalPage,
-        totalPages: totalPages,
+        totalPages,
         limit: sanitizedLimit,
       };
     } catch (error) {
-      console.error(`[RolesService] find -> Error: ${error}`);
-      return [];
+      throw formatMongodbError(error, 'RolesService', 'find', true);
     }
   }
 
   async findOne(value: any, property: string = MAGIC_STRINGS.UNDERSCORE_ID): Promise<IRole | undefined> {
     try {
       const result = await this.RoleModel.findOne({ [property]: value });
-      return result ? result : undefined;
+      return result ?? undefined;
     } catch (error) {
-      console.error(`[RolesService] findOne -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'RolesService', 'findOne', true);
     }
   }
 
-  async save(role: RoleDto): Promise<IRole | undefined> {
-    let permissions: IPermission[] = [];
-    if (role?.permissions && role?.permissions?.length > MAGIC_NUMBERS.N_0) {
-      const names = [...new Set(role.permissions.map(p => p.name))];
-      permissions = await this.permissionsService.find({ name: { $in: names } } as any) as IPermission[];
-      if (permissions.length !== names.length) {
-        throw new BadRequestException('One or more permissions do not exist');
-      }
-    }
+  async save(role: RoleDto): Promise<IRole> {
+    const permissions: IPermission[] = await this.resolvePermissions(role);
 
     const RoleModel = new this.RoleModel({
       name: role.name,
-      permissions: permissions,
-      extension: role.extension ? role.extension : {},
+      permissions,
+      extension: role.extension ?? {},
     });
 
     try {
-      const saveResult: IRole = await RoleModel.save();
-      if (!saveResult) {
-        console.log(`[RolesService] add -> Unnable to create role: ${role.name}`);
-        return undefined;
-      }
-
-      return saveResult;
+      return await RoleModel.save();
     } catch (error) {
-      console.log(`[RolesService] add -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'RolesService', 'save', true);
     }
   }
 
-  async updateOne(_id: string, role: RoleDto): Promise<IRole | undefined> {
-    let permissions: IPermission[] = [];
-    if (role?.permissions && role?.permissions?.length > MAGIC_NUMBERS.N_0) {
-      const names = [...new Set(role.permissions.map(p => p.name))];
-      permissions = await this.permissionsService.find({ name: { $in: names } } as any) as IPermission[];
-      if (permissions.length !== names.length) {
-        throw new BadRequestException('One or more permissions do not exist');
-      }
-    }
+  async updateOne(_id: string, role: RoleDto): Promise<IRole> {
+    const permissions: IPermission[] = await this.resolvePermissions(role);
 
     try {
-      const result = await this.RoleModel.updateOne({ _id }, {
-        $set: {
-          name: role.name,
-          permissions: permissions,
-          extension: role.extension ? role.extension : {},
-        }
-      });
+      const updatedRole = await this.RoleModel.findOneAndUpdate(
+        { _id },
+        { $set: { name: role.name, permissions, extension: role.extension ?? {} } },
+        { runValidators: true, returnDocument: 'after' }
+      );
 
-      if (result?.modifiedCount !== MAGIC_NUMBERS.N_1) {
-        console.log(`[RolesService] updateRole -> Unnable to update role: ${role.name}`);
-        return undefined;
+      if (!updatedRole) {
+        throw this.roleNotFound(_id);
       }
 
-      return await this.findOne(_id);
+      return updatedRole;
     } catch (error) {
-      console.log(`[RolesService] updateRole -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'RolesService', 'updateOne', true);
     }
   }
 
-  async deleteRole(_id: string): Promise<boolean> {
+  async updateMany(filter: QueryFilter<IRole>, update: Partial<RoleDto>): Promise<number> {
+    try {
+      const result = await this.RoleModel.updateMany(
+        filter,
+        { $set: update },
+        { runValidators: true }
+      );
+
+      return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
+    } catch (error) {
+      throw formatMongodbError(error, 'RolesService', 'updateMany', true);
+    }
+  }
+
+  async deleteOne(_id: string): Promise<boolean> {
     try {
       const result = await this.RoleModel.deleteOne({ _id });
-
       if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
-        console.log(`[RolesService] deleteRole -> Unnable to delete role: ${_id}`);
-        return false;
+        throw this.roleNotFound(_id);
       }
 
       return true;
     } catch (error) {
-      console.log(`[RolesService] deleteRole -> Error: ${error}`);
-      return false;
+      throw formatMongodbError(error, 'RolesService', 'deleteOne', true);
     }
   }
 
-  async modelToDto(role: IRole): Promise<RoleDto> {
-    let permissionsDtos: PermissionDto[] = [];
-    if (role?.permissions && role?.permissions?.length > MAGIC_NUMBERS.N_0) {
-      permissionsDtos = await Promise.all(role.permissions.map(async p => await this.permissionsService.modelToDto(p)));
+  async deleteMany(filter: QueryFilter<IRole>): Promise<number> {
+    try {
+      const result = await this.RoleModel.deleteMany(filter);
+      return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
+    } catch (error) {
+      throw formatMongodbError(error, 'RolesService', 'deleteMany', true);
+    }
+  }
+  
+  private async resolvePermissions(role: RoleDto): Promise<IPermission[]> {
+    if (!role?.permissions || role.permissions.length === MAGIC_NUMBERS.N_0) {
+      return [];
     }
 
-    return {
-      _id: role._id,
-      name: role.name,
-      permissions: permissionsDtos,
-      createdAt: role.createdAt,
-      updatedAt: role.updatedAt,
-    };
+    const names = [...new Set(role.permissions.map(p => p.name))];
+    const permissions = await this.permissionsService.find({ name: { $in: names } } as any) as IPermission[];
+
+    if (permissions.length !== names.length) {
+      throw new BadRequestException('One or more permissions do not exist');
+    }
+
+    return permissions;
+  }
+
+  private roleNotFound(_id: string): NotFoundException {
+    return new NotFoundException(`Role with id '${_id}' does not exist`);
   }
 }

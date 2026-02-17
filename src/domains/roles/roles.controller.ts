@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { RoleDto } from './roles.dto';
@@ -26,13 +27,7 @@ export class RolesController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async save(@Body() role: RoleDto): Promise<IRole | undefined> {
-    const existRoleName: IRole = await this.rolesService.findOne(role.name, MAGIC_STRINGS.NAME) as IRole;
-    if (existRoleName) {
-      console.error(`[RolesController] save -> Role with name '${role.name}' already exists`);
-      throw new BadRequestException(`Role with name '${role.name}' already exists`);
-    }
-
+  async save(@Body() role: RoleDto): Promise<IRole> {
     return await this.rolesService.save(role);
   }
 
@@ -41,33 +36,27 @@ export class RolesController {
   async updateOne(
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
     @Body() role: RoleDto
-  ): Promise<IRole | undefined> {
-    const existRole: IRole = await this.rolesService.findOne(_id) as IRole;
-    if (!existRole) {
-      console.error(`[RolesController] updateOne -> Role with id '${_id}' does not exist`);
-      throw new BadRequestException(`Role with id '${_id}' does not exist`);
-    }
-
-    if (existRole.name !== role.name) {
-      const updateRoleName: IRole = await this.rolesService.findOne(role.name, MAGIC_STRINGS.NAME) as IRole;
-      if (updateRoleName) {
-        console.error(`[RolesController] updateOne -> Role with name '${role.name}' already exists`);
-        throw new BadRequestException(`Role with name '${role.name}' already exists`);
-      }
-    }
-
+  ): Promise<IRole> {
     return await this.rolesService.updateOne(_id, role);
+  }
+
+  @Put(`update/${MAGIC_STRINGS.BULK}`)
+  @UseGuards(AuthGuard())
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<RoleDto>): Promise<number> {
+    const filter = { _id: { $in: bulkUpdate._ids } };
+    return await this.rolesService.updateMany(filter, bulkUpdate.data);
   }
 
   @Delete(MAGIC_STRINGS.UNDERSCORE_ID_PARAM)
   @UseGuards(AuthGuard())
-  async deleteRole(@Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string): Promise<boolean> {
-    const existRole: IRole = await this.rolesService.findOne(_id) as IRole;
-    if (!existRole) {
-      console.error(`[RolesController] deleteRole -> Role with id '${_id}' does not exist`);
-      throw new BadRequestException(`Role with id '${_id}' does not exist`);
-    }
+  async deleteOne(@Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string): Promise<boolean> {
+    return await this.rolesService.deleteOne(_id);
+  }
 
-    return await this.rolesService.deleteRole(_id);
+  @Delete(`delete/${MAGIC_STRINGS.BULK}`)
+  @UseGuards(AuthGuard())
+  async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
+    const filter = { _id: { $in: bulkDelete._ids } };
+    return await this.rolesService.deleteMany(filter);
   }
 }

@@ -40,9 +40,9 @@ export class PermissionsController {
     return await this.permissionsService.updateOne(_id, permission);
   }
 
-  @Put(MAGIC_STRINGS.BULK)
+  @Put(`update/${MAGIC_STRINGS.BULK}`)
   @UseGuards(AuthGuard())
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<IPermission>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.permissionsService.updateMany(filter, bulkUpdate.data);
   }
@@ -53,7 +53,7 @@ export class PermissionsController {
     return await this.permissionsService.deleteOne(_id);
   }
 
-  @Delete(MAGIC_STRINGS.BULK)
+  @Delete(`delete/${MAGIC_STRINGS.BULK}`)
   @UseGuards(AuthGuard())
   async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
     const filter = { _id: { $in: bulkDelete._ids } };
