@@ -1,8 +1,8 @@
-import { IMongodbEnvConfig } from '@env-configs/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { Connection, createConnection, Model, Schema } from 'mongoose';
+import { IMongodbConfig } from './mongodb.config';
 
 @Injectable()
 export class MongodbService {
@@ -11,7 +11,7 @@ export class MongodbService {
   private _hasSkippedInitialConnection: Map<string, boolean> = new Map<string, boolean>();
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private options: IMongodbEnvConfig[]
+    @Inject(PROVIDER_CONFIG) private options: IMongodbConfig[]
   ) {
     if (!this.validateOptions(this.options)) {
       return;
@@ -37,7 +37,7 @@ export class MongodbService {
     }
   }
 
-  public async createConnectionDB(config: IMongodbEnvConfig): Promise<void> {
+  public async createConnectionDB(config: IMongodbConfig): Promise<void> {
     if (config.avoidConnection && !this._hasSkippedInitialConnection.has(config.name)) {
       console.log(`[MongoDbService] createConnectionDB (${config.name}) -> Skipped initial connection to '${config.database}' (avoidConnection)`);
       this._hasSkippedInitialConnection.set(config.name, true);
@@ -87,7 +87,7 @@ export class MongodbService {
     return this._dbConnections.get(name)?.model<T>(model, schema, collection);
   }
 
-  private validateOptions(options: IMongodbEnvConfig[]): boolean {
+  private validateOptions(options: IMongodbConfig[]): boolean {
     if (!options || options.length === MAGIC_NUMBERS.N_0) {
       console.error("[MongoDbService] Invalid configuration: no configuration parameters provided");
       return false;
@@ -125,7 +125,7 @@ export class MongodbService {
     return true;
   }
 
-  private createConnectionUrl(config: IMongodbEnvConfig): string {
+  private createConnectionUrl(config: IMongodbConfig): string {
     const { user, pass, host, port, database, authSource } = config;
 
     const credentials = user && pass

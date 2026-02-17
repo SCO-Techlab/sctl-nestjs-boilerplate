@@ -1,4 +1,4 @@
-export interface IMongodbEnvConfig {
+export interface IMongodbConfig {
   name: string;
   host: string;
   port: number;
