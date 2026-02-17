@@ -1,4 +1,4 @@
-import { IRole, RoleDto, RolesService } from "@domains/roles";
+import { IRole, RolesService } from "@domains/roles";
 import { MongodbService } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
@@ -7,7 +7,7 @@ import { IPaginationResponse } from "@shared/interfaces";
 import { BcryptService, PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
-import { UserDto } from "./users.dto";
+import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
 import { IUser } from "./users.interface";
 import { USERS_SCHEMA } from "./users.schema";
 
@@ -79,7 +79,7 @@ export class UsersService {
     }
   }
 
-  async save(user: UserDto): Promise<IUser> {
+  async save(user: UserCreateDto): Promise<IUser> {
     try {
       const role = await this.resolveRole(user.role);
       const UserModel = new this.UserModel({
@@ -94,9 +94,9 @@ export class UsersService {
     }
   }
 
-  async updateOne(_id: string, user: UserDto): Promise<IUser> {
+  async updateOne(_id: string, user: UserUpdateDto): Promise<IUser> {
     try {
-      const set: Partial<IUser> = { ...user } as IUser;
+      const set = { ...user } as unknown as Partial<IUser>;
       if (user.role) {
         set.role = await this.resolveRole(user.role);
       }
@@ -117,7 +117,7 @@ export class UsersService {
     }
   }
 
-  async updatePassword(_id: string, dto: UserDto): Promise<boolean> {
+  async updatePassword(_id: string, dto: UserPasswordUpdateDto): Promise<boolean> {
     try {
       const user = await this.findOne(_id);
       if (!user) {
@@ -141,7 +141,7 @@ export class UsersService {
     }
   }
 
-  async updateMany(filter: QueryFilter<IUser>, update: Partial<UserDto>): Promise<number> {
+  async updateMany(filter: QueryFilter<IUser>, update: Partial<UserUpdateDto>): Promise<number> {
     try {
       const result = await this.UserModel.updateMany(
         filter,
@@ -178,14 +178,14 @@ export class UsersService {
     }
   }
 
-  private async resolveRole(role: RoleDto): Promise<IRole | undefined> {
-    if (!role?.name) {
+  private async resolveRole(roleId: string): Promise<IRole | undefined> {
+    if (!roleId) {
       return undefined;
     }
 
-    const dbRole = await this.rolesService.findOne(role.name, MAGIC_STRINGS.NAME);
+    const dbRole = await this.rolesService.findOne(roleId, MAGIC_STRINGS.UNDERSCORE_ID);
     if (!dbRole) {
-      throw new BadRequestException(`Role '${role.name}' does not exist`);
+      throw new BadRequestException(`Role '${roleId}' does not exist`);
     }
 
     return dbRole;

@@ -1,30 +1,21 @@
 
-import { RoleDto } from '@domains/roles';
 import { MAGIC_NUMBERS, REGEX_PATTERNS } from '@shared/constants';
 import { MongodbDocumentDto } from '@shared/dtos';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsDate, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
-export class UserDto extends MongodbDocumentDto {
+export class UserCreateDto extends MongodbDocumentDto {
   @IsNotEmpty()
-  @IsString()
-  @Matches(REGEX_PATTERNS.EMAIL)
+  @IsEmail()
   @MaxLength(MAGIC_NUMBERS.N_255)
   email: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @Matches(REGEX_PATTERNS.PASSWORD)
   @MinLength(MAGIC_NUMBERS.N_8)
   @MaxLength(MAGIC_NUMBERS.N_64)
-  @Matches(REGEX_PATTERNS.PASSWORD)
-  password?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(MAGIC_NUMBERS.N_8)
-  @MaxLength(MAGIC_NUMBERS.N_64)
-  @Matches(REGEX_PATTERNS.PASSWORD)
-  newPassword?: string;
+  password: string;
 
   @IsOptional()
   @IsString()
@@ -45,10 +36,66 @@ export class UserDto extends MongodbDocumentDto {
   emailConfirmed?: boolean;
 
   @IsNotEmpty()
-  @Type(() => RoleDto)
-  @IsObject()
-  role: RoleDto;
+  @IsString()
+  @IsMongoId()
+  role: string;
 
+  @IsOptional()
+  @IsObject()
+  extension?: any;
+}
+
+export class UserUpdateDto extends MongodbDocumentDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAGIC_NUMBERS.N_255)
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAGIC_NUMBERS.N_32)
+  userName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAGIC_NUMBERS.N_255)
+  personalName?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  emailConfirmed?: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  role: string;
+
+  @IsOptional()
+  @IsObject()
+  extension?: any;
+}
+
+export class UserPasswordUpdateDto {
+  @IsNotEmpty()
+  @IsString()
+  @Matches(REGEX_PATTERNS.PASSWORD)
+  @MinLength(MAGIC_NUMBERS.N_8)
+  @MaxLength(MAGIC_NUMBERS.N_64)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(REGEX_PATTERNS.PASSWORD)
+  @MinLength(MAGIC_NUMBERS.N_8)
+  @MaxLength(MAGIC_NUMBERS.N_64)
+  newPassword: string;
+}
+
+export class UserPwdRecoveryDto {
   @IsOptional()
   @IsString()
   pwdRecoveryToken?: string;
@@ -57,9 +104,4 @@ export class UserDto extends MongodbDocumentDto {
   @Type(() => Date)
   @IsDate()
   pwdRecoveryDate?: Date;
-
-  @IsOptional()
-  @IsObject()
-  extension?: any;
 }
-

@@ -4,7 +4,7 @@ import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
 import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
-import { UserDto } from './users.dto';
+import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from './users.dto';
 import { IUser } from './users.interface';
 import { UsersService } from './users.service';
 
@@ -27,7 +27,7 @@ export class UsersController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async save(@Body() user: UserDto): Promise<IUser> {
+  async save(@Body() user: UserCreateDto): Promise<IUser> {
     return await this.usersService.save(user);
   }
 
@@ -35,7 +35,7 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async updateOne(
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
-    @Body() user: UserDto
+    @Body() user: UserUpdateDto
   ): Promise<IUser> {
     return await this.usersService.updateOne(_id, user);
   }
@@ -44,14 +44,14 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async updatePassword(
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
-    @Body() user: UserDto
+    @Body() user: UserPasswordUpdateDto
   ): Promise<boolean> {
     return await this.usersService.updatePassword(_id, user);
   }
 
   @Put(`update/${MAGIC_STRINGS.BULK}`)
   @UseGuards(AuthGuard())
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<UserDto>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<UserUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.usersService.updateMany(filter, bulkUpdate.data);
   }
