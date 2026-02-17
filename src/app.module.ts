@@ -1,4 +1,5 @@
 import { PermissionsModule } from '@domains/permissions';
+import { RolesModule } from '@domains/roles';
 import { PublicMiddleware } from '@middlewares/public.middleware';
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
 import { IJwtConfig, JwtModule } from '@modules/jwt';
@@ -47,7 +48,8 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       inject: [ConfigService],
     }),
 
-    PermissionsModule
+    PermissionsModule,
+    RolesModule,
   ],
   providers: [
     AppLogger
