@@ -21,9 +21,6 @@ export class PublicMiddleware implements NestMiddleware {
   use(req: any, res: any, next: () => void) {
     const url = req.originalUrl || req.url;
 
-    console.log(`[PublicMiddleware] use -> url: ${url}`);
-    console.log(`[PublicMiddleware] use -> apiPrefix: ${this.apiPrefix}`);
-
     if (url.startsWith(this.apiPrefix)) {
       return next(); // API routes continue
     }
