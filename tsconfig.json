@@ -30,6 +30,12 @@
       ],
       "@modules/*": [
         "./src/modules/*"
+      ],
+      "@domains/*": [
+        "./src/domains/*"
+      ],
+      "@middlewares/*": [
+        "./src/middlewares/*"
       ]
     }
   }
