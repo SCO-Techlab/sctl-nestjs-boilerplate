@@ -4,7 +4,7 @@ import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
 import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
-import { PermissionDto } from './permissions.dto';
+import { PermissionCreateDto, PermissionUpdateDto } from './permissions.dto';
 import { IPermission } from './permissions.interface';
 import { PermissionsService } from './permissions.service';
 
@@ -27,7 +27,7 @@ export class PermissionsController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async save(@Body() permission: PermissionDto): Promise<IPermission> {
+  async save(@Body() permission: PermissionCreateDto): Promise<IPermission> {
     return await this.permissionsService.save(permission);
   }
 
@@ -35,14 +35,14 @@ export class PermissionsController {
   @UseGuards(AuthGuard())
   async updateOne(
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
-    @Body() permission: PermissionDto
+    @Body() permission: PermissionUpdateDto
   ): Promise<IPermission | undefined> {
     return await this.permissionsService.updateOne(_id, permission);
   }
 
   @Put(`update/${MAGIC_STRINGS.BULK}`)
   @UseGuards(AuthGuard())
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionDto>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.permissionsService.updateMany(filter, bulkUpdate.data);
   }

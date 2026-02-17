@@ -7,7 +7,7 @@ import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
-import { RoleDto } from "./roles.dto";
+import { RoleCreateDto, RoleUpdateDto } from "./roles.dto";
 import { IRole } from "./roles.interface";
 import { ROLES_SCHEMA } from "./roles.schema";
 
@@ -78,8 +78,10 @@ export class RolesService {
     }
   }
 
-  async save(role: RoleDto): Promise<IRole> {
-    const permissions: IPermission[] = await this.resolvePermissions(role);
+  async save(role: RoleCreateDto): Promise<IRole> {
+    const permissions: IPermission[] = role.permissions && role.permissions.length > MAGIC_NUMBERS.N_0
+      ? await this.resolvePermissions(role.permissions.map(_id => _id))
+      : [];
 
     const RoleModel = new this.RoleModel({
       name: role.name,
@@ -94,8 +96,10 @@ export class RolesService {
     }
   }
 
-  async updateOne(_id: string, role: RoleDto): Promise<IRole> {
-    const permissions: IPermission[] = await this.resolvePermissions(role);
+  async updateOne(_id: string, role: RoleUpdateDto): Promise<IRole> {
+    const permissions: IPermission[] = role.permissions && role.permissions.length > MAGIC_NUMBERS.N_0
+      ? await this.resolvePermissions(role.permissions.map(_id => _id))
+      : [];
 
     try {
       const updatedRole = await this.RoleModel.findOneAndUpdate(
@@ -114,7 +118,7 @@ export class RolesService {
     }
   }
 
-  async updateMany(filter: QueryFilter<IRole>, update: Partial<RoleDto>): Promise<number> {
+  async updateMany(filter: QueryFilter<IRole>, update: Partial<RoleUpdateDto>): Promise<number> {
     try {
       const result = await this.RoleModel.updateMany(
         filter,
@@ -149,13 +153,9 @@ export class RolesService {
       throw formatMongodbError(error, 'RolesService', 'deleteMany', true);
     }
   }
-  
-  private async resolvePermissions(role: RoleDto): Promise<IPermission[]> {
-    if (!role?.permissions || role.permissions.length === MAGIC_NUMBERS.N_0) {
-      return [];
-    }
 
-    const _ids = [...new Set(role.permissions.map(_id => _id))];
+  private async resolvePermissions(permissionsIds: string[]): Promise<IPermission[]> {
+    const _ids = [...new Set(permissionsIds.map(_id => _id))];
     const permissions = await this.permissionsService.find({ _id: { $in: _ids } } as any) as IPermission[];
 
     if (permissions.length !== _ids.length) {

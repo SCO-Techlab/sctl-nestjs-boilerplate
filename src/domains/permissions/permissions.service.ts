@@ -6,7 +6,7 @@ import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
-import { PermissionDto } from "./permissions.dto";
+import { PermissionCreateDto, PermissionUpdateDto } from "./permissions.dto";
 import { IPermission } from "./permissions.interface";
 import { PERMISSIONS_SCHEMA } from "./permissions.schema";
 
@@ -76,7 +76,7 @@ export class PermissionsService {
     }
   }
 
-  async save(permission: PermissionDto): Promise<IPermission> {
+  async save(permission: PermissionCreateDto): Promise<IPermission> {
     const PermissionModel = new this.PermissionModel({
       name: permission.name,
       extension: permission.extension ?? {}
@@ -89,7 +89,7 @@ export class PermissionsService {
     }
   }
 
-  async updateOne(_id: string, permission: PermissionDto): Promise<IPermission> {
+  async updateOne(_id: string, permission: PermissionUpdateDto): Promise<IPermission> {
     try {
       const updatedPermission = await this.PermissionModel.findOneAndUpdate(
         { _id },
@@ -115,7 +115,7 @@ export class PermissionsService {
     }
   }
 
-  async updateMany(filter: QueryFilter<IPermission>, update: Partial<PermissionDto>): Promise<number> {
+  async updateMany(filter: QueryFilter<IPermission>, update: Partial<PermissionUpdateDto>): Promise<number> {
     try {
       const result = await this.PermissionModel.updateMany(
         filter,

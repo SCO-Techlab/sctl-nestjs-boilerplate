@@ -4,7 +4,7 @@ import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
 import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
-import { RoleDto } from './roles.dto';
+import { RoleCreateDto, RoleUpdateDto } from './roles.dto';
 import { IRole } from './roles.interface';
 import { RolesService } from './roles.service';
 
@@ -27,7 +27,7 @@ export class RolesController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async save(@Body() role: RoleDto): Promise<IRole> {
+  async save(@Body() role: RoleCreateDto): Promise<IRole> {
     return await this.rolesService.save(role);
   }
 
@@ -35,14 +35,14 @@ export class RolesController {
   @UseGuards(AuthGuard())
   async updateOne(
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
-    @Body() role: RoleDto
+    @Body() role: RoleUpdateDto
   ): Promise<IRole> {
     return await this.rolesService.updateOne(_id, role);
   }
 
   @Put(`update/${MAGIC_STRINGS.BULK}`)
   @UseGuards(AuthGuard())
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<RoleDto>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<RoleUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.rolesService.updateMany(filter, bulkUpdate.data);
   }
