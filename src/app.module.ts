@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MAGIC_STRINGS } from '@shared/constants';
 import { AppLogger } from './app.logger';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
+import { UsersModule } from '@domains/users';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
 
     PermissionsModule,
     RolesModule,
+    UsersModule,
   ],
   providers: [
     AppLogger
