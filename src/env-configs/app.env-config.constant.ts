@@ -7,4 +7,5 @@ export const APP_ENV_CONFIG = registerAs('app', () => ({
   production: process.env.PRODUCTION === MAGIC_STRINGS.TRUE ? true : false,
   host: process.env.HOST ?? MAGIC_STRINGS.LOCAL_HOST,
   prefix: process.env.PREFIX ?? MAGIC_STRINGS.EMPTY_STRING,
+  origin: process.env.ORIGIN ?? MAGIC_STRINGS.EMPTY_STRING,
 }));

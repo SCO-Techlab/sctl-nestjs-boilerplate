@@ -4,4 +4,5 @@ export interface IAppConfig {
   production: boolean;
   host: string;
   prefix: string;
+  origin: string;
 }
