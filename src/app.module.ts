@@ -1,11 +1,12 @@
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
 import { IJwtConfig, JwtModule } from '@modules/jwt';
 import { IMongodbConfig, MongodbModule } from '@modules/mongodb';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MAGIC_STRINGS } from '@shared/constants';
 import { AppLogger } from './app.logger';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
+import { PublicMiddleware } from './middlewares';
 
 @Module({
   imports: [
@@ -45,9 +46,12 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       inject: [ConfigService],
     }),
   ],
-  controllers: [],
   providers: [
     AppLogger
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(PublicMiddleware).forRoutes(MAGIC_STRINGS.ASTERISK);
+  }
+}
