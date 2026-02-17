@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class MongodbDocumentDto {
   @IsOptional()
@@ -19,4 +19,22 @@ export class MongodbDocumentDto {
   @IsOptional()
   @IsNumber()
   __v?: number;
+}
+
+export class MongodbBulkUpdateDto {
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayNotEmpty()
+  _ids: string[];
+
+  @IsObject()
+  @IsNotEmpty()
+  data: Partial<any>;
+}
+
+export class MongodbBulkDeleteDto {
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayNotEmpty()
+  _ids: string[];
 }

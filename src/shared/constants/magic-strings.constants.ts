@@ -31,4 +31,5 @@ export const MAGIC_STRINGS = {
   FULLCHAIN_PEM: 'fullchain.pem',
   PRIVKEY_PEM: 'privkey.pem',
   API: 'api',
+  BULK: 'bulk',
 }

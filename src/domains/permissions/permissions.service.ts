@@ -1,10 +1,11 @@
 import { MongodbService } from "@modules/mongodb";
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
+import { formatMongodbError } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
-import { Model } from "mongoose";
+import { Model, QueryFilter } from "mongoose";
 import { PermissionDto } from "./permissions.dto";
 import { IPermission } from "./permissions.interface";
 import { PERMISSIONS_SCHEMA } from "./permissions.schema";
@@ -39,7 +40,8 @@ export class PermissionsService {
 
     try {
       if (page === undefined || limit === undefined) {
-        return await this.PermissionModel.find(query);
+        const result: IPermission[] = await this.PermissionModel.find(query);
+        return result ?? [];
       }
 
       delete query?.page;
@@ -54,66 +56,76 @@ export class PermissionsService {
         .limit(sanitizedLimit);
 
       return {
-        data: data,
+        data: data ?? [],
         totalRecords: totalRecords,
         currentPage: finalPage,
         totalPages: totalPages,
         limit: sanitizedLimit,
       };
     } catch (error) {
-      console.error(`[PermissionsService] find -> Error: ${error}`);
-      return [];
+      throw formatMongodbError(error, 'PermissionsService', 'find', true);
     }
   }
 
   async findOne(value: any, property: string = MAGIC_STRINGS.UNDERSCORE_ID): Promise<IPermission | undefined> {
     try {
       const result = await this.PermissionModel.findOne({ [property]: value });
-      return result ? result : undefined;
+      return result ?? undefined;
     } catch (error) {
-      console.error(`[PermissionsService] findOne -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'PermissionsService', 'findOne', true);
     }
   }
 
-  async save(permission: PermissionDto): Promise<IPermission | undefined> {
+  async save(permission: PermissionDto): Promise<IPermission> {
     const PermissionModel = new this.PermissionModel({
       name: permission.name,
       extension: permission.extension ?? {}
     });
 
     try {
-      const saveResult: IPermission = await PermissionModel.save();
-      if (!saveResult) {
-        console.error(`[PermissionsService] add -> Unnable to create permission: ${permission.name}`);
-        return undefined;
-      }
-
-      return saveResult;
+      return await PermissionModel.save();
     } catch (error) {
-      console.error(`[PermissionsService] add -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'PermissionsService', 'save', true);
     }
   }
 
-  async updateOne(_id: string, permission: PermissionDto): Promise<IPermission | undefined> {
+  async updateOne(_id: string, permission: PermissionDto): Promise<IPermission> {
     try {
-      const result = await this.PermissionModel.updateOne({ _id }, {
-        $set: {
-          name: permission.name,
-          extension: permission.extension ? permission.extension : {},
+      const updatedPermission = await this.PermissionModel.findOneAndUpdate(
+        { _id },
+        {
+          $set: {
+            name: permission.name,
+            extension: permission.extension ?? {},
+          },
+        },
+        {
+          returnDocument: 'after',
+          runValidators: true
         }
-      });
+      );
 
-      if (result?.modifiedCount !== MAGIC_NUMBERS.N_1) {
-        console.error(`[PermissionsService] updatePermission -> Unnable to update permission: ${permission.name}`);
-        return undefined;
+      if (!updatedPermission) {
+        throw this.permissionNotFound(_id);
       }
 
-      return await this.findOne(_id);
+      return updatedPermission;
     } catch (error) {
-      console.error(`[PermissionsService] updatePermission -> Error: ${error}`);
-      return undefined;
+      throw formatMongodbError(error, 'PermissionsService', 'updateOne', true);
+    }
+  }
+
+  async updateMany(filter: QueryFilter<IPermission>, update: Partial<PermissionDto>): Promise<number> {
+    try {
+      const result = await this.PermissionModel.updateMany(
+        filter,
+        { $set: update },
+        { runValidators: true }
+      );
+
+      return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
+    } catch (error) {
+      throw formatMongodbError(error, 'PermissionsService', 'updateMany', true);
     }
   }
 
@@ -121,24 +133,25 @@ export class PermissionsService {
     try {
       const result = await this.PermissionModel.deleteOne({ _id });
       if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
-        console.error(`[PermissionsService] deletePermission -> Unnable to delete permission: ${_id}`);
-        return false;
+        throw this.permissionNotFound(_id);
       }
 
       return true;
     } catch (error) {
-      console.error(`[PermissionsService] deletePermission -> Error: ${error}`);
-      return false;
+      throw formatMongodbError(error, 'PermissionsService', 'deleteOne', true);
     }
   }
 
-  async modelToDto(permission: IPermission): Promise<PermissionDto> {
-    return {
-      _id: permission._id,
-      name: permission.name,
-      createdAt: permission.createdAt,
-      updatedAt: permission.updatedAt,
-      __v: permission.__v
-    } as PermissionDto;
+  async deleteMany(filter: QueryFilter<IPermission>): Promise<number> {
+    try {
+      const result = await this.PermissionModel.deleteMany(filter);
+      return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
+    } catch (error) {
+      throw formatMongodbError(error, 'PermissionsService', 'deleteMany', true);
+    }
+  }
+
+  private permissionNotFound(_id: string): NotFoundException {
+    return new NotFoundException(`Permission with id '${_id}' does not exist`);
   }
 }

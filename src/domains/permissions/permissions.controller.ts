@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
+import { MongodbBulkUpdateDto } from '@shared/dtos';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { PermissionDto } from './permissions.dto';
@@ -26,13 +27,7 @@ export class PermissionsController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async save(@Body() permission: PermissionDto): Promise<IPermission | undefined> {
-    const existPermissionName: IPermission = await this.permissionsService.findOne(permission.name, MAGIC_STRINGS.NAME) as IPermission;
-    if (existPermissionName) {
-      console.error(`[PermissionsController] save -> Permission with name '${permission.name}' already exists`);
-      throw new BadRequestException(`Permission with name '${permission.name}' already exists`);
-    }
-
+  async save(@Body() permission: PermissionDto): Promise<IPermission> {
     return await this.permissionsService.save(permission);
   }
 
@@ -42,32 +37,27 @@ export class PermissionsController {
     @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
     @Body() permission: PermissionDto
   ): Promise<IPermission | undefined> {
-    const existPermission: IPermission = await this.permissionsService.findOne(_id) as IPermission;
-    if (!existPermission) {
-      console.error(`[PermissionsController] updateOne -> Permission with id '${_id}' does not exist`);
-      throw new BadRequestException(`Permission with id '${_id}' does not exist`);
-    }
-
-    if (existPermission.name !== permission.name) {
-      const updatePermissionName: IPermission = await this.permissionsService.findOne(permission.name, MAGIC_STRINGS.NAME) as IPermission;
-      if (updatePermissionName) {
-        console.error(`[PermissionsController] updateOne -> Permission with name '${permission.name}' already exists`);
-        throw new BadRequestException(`Permission with name '${permission.name}' already exists`);
-      }
-    }
-
     return await this.permissionsService.updateOne(_id, permission);
+  }
+
+  @Put(MAGIC_STRINGS.BULK)
+  @UseGuards(AuthGuard())
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto): Promise<number> {
+    const filter = { _id: { $in: bulkUpdate._ids } };
+    return await this.permissionsService.updateMany(filter, bulkUpdate.data);
   }
 
   @Delete(MAGIC_STRINGS.UNDERSCORE_ID_PARAM)
   @UseGuards(AuthGuard())
   async deleteOne(@Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string): Promise<boolean> {
-    const existPermission: IPermission = await this.permissionsService.findOne(_id) as IPermission;
-    if (!existPermission) {
-      console.error(`[PermissionsController] deleteOne -> Permission with id '${_id}' does not exist`);
-      throw new BadRequestException(`Permission with id '${_id}' does not exist`);
-    }
-
     return await this.permissionsService.deleteOne(_id);
+  }
+
+  @Delete(MAGIC_STRINGS.BULK)
+  @UseGuards(AuthGuard())
+  async deleteMany(@Body() body: { ids: string[] }): Promise<number> {
+    const { ids } = body;
+    const filter = { _id: { $in: ids } };
+    return await this.permissionsService.deleteMany(filter);
   }
 }
