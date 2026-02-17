@@ -1,6 +1,7 @@
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
 import { IJwtConfig, JwtModule } from '@modules/jwt';
 import { IMongodbConfig, MongodbModule } from '@modules/mongodb';
+import { PermissionsModule } from '@modules/permissions';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MAGIC_STRINGS } from '@shared/constants';
@@ -45,6 +46,8 @@ import { PublicMiddleware } from './middlewares';
       },
       inject: [ConfigService],
     }),
+
+    PermissionsModule
   ],
   providers: [
     AppLogger
