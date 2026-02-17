@@ -13,11 +13,16 @@ export class PublicMiddleware implements NestMiddleware {
   private apiPrefix: string;
 
   constructor(private configService: ConfigService) {
-    this.apiPrefix = configService.get('app')?.prefix ?? MAGIC_STRINGS.API;
+    this.apiPrefix = configService.get('app')?.prefix 
+      ? `/${configService.get('app')?.prefix}`
+      : `/${MAGIC_STRINGS.API}`;
   }
 
   use(req: any, res: any, next: () => void) {
     const url = req.originalUrl || req.url;
+
+    console.log(`[PublicMiddleware] use -> url: ${url}`);
+    console.log(`[PublicMiddleware] use -> apiPrefix: ${this.apiPrefix}`);
 
     if (url.startsWith(this.apiPrefix)) {
       return next(); // API routes continue
