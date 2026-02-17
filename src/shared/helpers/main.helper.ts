@@ -1,21 +1,24 @@
 import * as fs from 'fs';
-import { MAGIC_NUMBERS } from "../constants";
+import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
 
 export const formatOrigin = (origin: string): string[] => {
-  if (!origin || (origin && origin.length === MAGIC_NUMBERS.N_0)) {
-    return ["*"];
+  if (!origin || origin.length === MAGIC_NUMBERS.N_0) {
+    return [MAGIC_STRINGS.ASTERISK];
   }
 
-  return origin.includes(',') 
-    ? origin.split(',') 
+  return origin.includes(MAGIC_STRINGS.COMMA)
+    ? origin.split(MAGIC_STRINGS.COMMA)
     : [origin];
 }
 
 export const getCertificates = (certsPath: string, opts?: { certName?: string, keyName?: string }): { cert: any, key: any } => {
   opts = opts || {};
-  opts.certName = opts.certName || "fullchain.pem";
-  opts.keyName = opts.keyName || "privkey.pem";
-  const basepath = certsPath.endsWith('/') ? certsPath : `${certsPath}/`;
+  opts.certName = opts.certName || MAGIC_STRINGS.FULLCHAIN_PEM;
+  opts.keyName = opts.keyName || MAGIC_STRINGS.PRIVKEY_PEM;
+
+  const basepath = certsPath.endsWith(MAGIC_STRINGS.SLASH)
+    ? certsPath
+    : `${certsPath}${MAGIC_STRINGS.SLASH}`;
 
   if (!fs.existsSync(basepath)) {
     return { cert: undefined, key: undefined };

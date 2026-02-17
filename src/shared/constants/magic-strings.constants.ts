@@ -2,6 +2,8 @@ export const MAGIC_STRINGS = {
   EMPTY_STRING: '',
   PUBLIC: 'public',
   DEFAULT: 'default',
+  DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
   ZERO_HOST: '0.0.0.0',
   LOCAL_HOST: 'localhost',
   LOCAL_HOST_IP: '127.0.0.1',
@@ -22,5 +24,10 @@ export const MAGIC_STRINGS = {
   UNDERSCORE_ID_PARAM: '/:_id',
   NAME: 'name',
   EMAIL: 'email',
-  UNAUTHORIZED: 'Unauthorized'
+  UNAUTHORIZED: 'Unauthorized',
+  TRUE: 'true',
+  FALSE: 'false',
+  ASTERISK: '*',
+  FULLCHAIN_PEM: 'fullchain.pem',
+  PRIVKEY_PEM: 'privkey.pem',
 }

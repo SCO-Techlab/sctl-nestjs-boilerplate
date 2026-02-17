@@ -37,5 +37,7 @@ export const createAsyncConfigProvider = (
 };
 
 export const createConfigProvider = (options: any): any[] => {
-  return !options ? [] : [{ provide: PROVIDER_CONFIG, useValue: options }];
+  return !options 
+    ? [] 
+    : [{ provide: PROVIDER_CONFIG, useValue: options }];
 }
