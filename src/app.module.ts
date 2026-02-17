@@ -3,6 +3,7 @@ import { IMongodbEnvConfig, MONGODB_ENV_CONFIG } from '@env-configs/mongodb';
 import { MongodbModule } from '@modules/mongodb';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppLogger } from './app.logger';
 
 @Module({
   imports: [
@@ -25,6 +26,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    AppLogger
+  ],
 })
 export class AppModule { }
