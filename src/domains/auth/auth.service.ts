@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
+import { IAuthPayload } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,24 @@ export class AuthService {
       throw this.getUnauthorizedError();
     }
 
-    const token: IJwtToken = await this.jwtService.createToken(exist_user) as IJwtToken;
+    const payload: IAuthPayload = {
+      _id: exist_user._id as string,
+      user: {
+        _id: exist_user._id as string,
+        email: exist_user.email,
+        password: '',
+        userName: exist_user.userName,
+        personalName: exist_user.personalName,
+        active: exist_user.active,
+        emailConfirmed: exist_user.emailConfirmed,
+        role: exist_user.role,
+        pwdRecoveryToken: exist_user.pwdRecoveryToken,
+        pwdRecoveryDate: exist_user.pwdRecoveryDate,
+        extension: exist_user.extension,
+      }
+    };
+
+    const token: IJwtToken = await this.jwtService.createToken(payload) as IJwtToken;
     if (!token) {
       throw this.getUnauthorizedError();
     }
