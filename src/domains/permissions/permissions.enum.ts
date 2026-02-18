@@ -1,0 +1,6 @@
+export enum PERMISSION_TYPE {
+  CREATE = 'CREATE',
+  READ = 'READ',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+}

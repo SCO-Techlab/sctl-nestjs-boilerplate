@@ -1,10 +1,15 @@
 import { MongodbDocumentDto } from '@shared/dtos';
-import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { PERMISSION_TYPE } from './permissions.enum';
 
 export class PermissionCreateDto extends MongodbDocumentDto {
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @IsEnum(PERMISSION_TYPE)
+  type: PERMISSION_TYPE;
 
   @IsOptional()
   @IsObject()
@@ -12,9 +17,13 @@ export class PermissionCreateDto extends MongodbDocumentDto {
 }
 
 export class PermissionUpdateDto extends MongodbDocumentDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
+
+  @IsOptional()
+  @IsEnum(PERMISSION_TYPE)
+  type?: PERMISSION_TYPE;
 
   @IsOptional()
   @IsObject()

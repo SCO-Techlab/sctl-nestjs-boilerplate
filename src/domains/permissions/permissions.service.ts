@@ -79,6 +79,7 @@ export class PermissionsService {
   async save(permission: PermissionCreateDto): Promise<IPermission> {
     const PermissionModel = new this.PermissionModel({
       name: permission.name,
+      type: permission.type,
       extension: permission.extension ?? {}
     });
 
@@ -96,6 +97,7 @@ export class PermissionsService {
         {
           $set: {
             name: permission.name,
+            type: permission.type,
             extension: permission.extension ?? {},
           },
         },
