@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { MAGIC_NUMBERS } from "../constants";
 
 @Injectable()
 export class BcryptService {

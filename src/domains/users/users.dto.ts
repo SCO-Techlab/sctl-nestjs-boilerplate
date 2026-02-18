@@ -30,10 +30,6 @@ export class UserCreateDto extends MongodbDocumentDto {
   @IsBoolean()
   active: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  emailConfirmed?: boolean;
-
   @IsNotEmpty()
   @IsString()
   @IsMongoId()
