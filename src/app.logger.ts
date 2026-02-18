@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DATE_PATTERNS, MAGIC_NUMBERS } from '@shared/constants';
-import { LOGGER_TYPE } from '@shared/enums';
 import { createLogger, format, Logger, transports } from 'winston';
 import 'winston-daily-rotate-file';
 
 @Injectable()
 export class AppLogger {
+
+  private readonly LOGGER_TYPE = {
+    INFO: 'info',
+    ERROR: 'error',
+    ALL: 'all'
+  };
 
   private loggerInfo: Logger;
   private loggerError: Logger;
@@ -22,9 +27,9 @@ export class AppLogger {
   }
 
   createLoggers() {
-    this.loggerInfo = this.createLoggerObject(LOGGER_TYPE.INFO);
-    this.loggerError = this.createLoggerObject(LOGGER_TYPE.ERROR);
-    this.loggerAll = this.createLoggerObject(LOGGER_TYPE.ALL);
+    this.loggerInfo = this.createLoggerObject(this.LOGGER_TYPE.INFO);
+    this.loggerError = this.createLoggerObject(this.LOGGER_TYPE.ERROR);
+    this.loggerAll = this.createLoggerObject(this.LOGGER_TYPE.ALL);
   }
 
   replaceConsole() {
@@ -76,12 +81,12 @@ export class AppLogger {
         new transports.DailyRotateFile({
           filename: `log/${name}/${name}-%DATE%.log`,
           datePattern: DATE_PATTERNS.DATE,
-          maxFiles: `${MAGIC_NUMBERS.N_7}` // or 7d
+          maxFiles: `${MAGIC_NUMBERS.N_7}d` // or 7d
         })
       ]
     };
 
-    if (name === LOGGER_TYPE.ALL) {
+    if (name === this.LOGGER_TYPE.ALL) {
       logger.transports.push(new transports.Console());
     } else {
       logger.name = name;
