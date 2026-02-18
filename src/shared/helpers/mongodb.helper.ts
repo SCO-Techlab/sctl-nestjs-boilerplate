@@ -1,5 +1,22 @@
 import { BadRequestException, ConflictException, HttpException, InternalServerErrorException } from "@nestjs/common";
+import { Schema } from "mongoose";
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
+
+export const setIncrementalVersion = (schema: Schema) => {
+  schema.pre(['updateOne', 'updateMany', 'findOneAndUpdate'], function () {
+    const update = this.getUpdate() || {};
+
+    if (!update['$inc']) {
+      update['$inc'] = {};
+    }
+
+    if (update['$inc'].__v === null || update['$inc'].__v === undefined) {
+      update['$inc'].__v = MAGIC_NUMBERS.N_1;
+    }
+
+    this.setUpdate(update);
+  });
+};
 
 export const formatMongodbError = (error: any, service: string, method: string, verbose: boolean = false): any => {
   if (error instanceof HttpException) {

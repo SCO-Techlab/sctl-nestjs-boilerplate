@@ -1,5 +1,6 @@
-import { MONGODB_CONSTANTS } from '@shared/constants';
-import { Schema, Types } from 'mongoose';
+import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
+import { setIncrementalVersion } from '@shared/helpers';
+import { IndexDirection, Schema, Types } from 'mongoose';
 import { IRole } from './roles.interface';
 
 export const ROLES_SCHEMA = new Schema<IRole>(
@@ -27,5 +28,6 @@ export const ROLES_SCHEMA = new Schema<IRole>(
   },
 );
 
-ROLES_SCHEMA.index({ name: 1 }, { unique: true });
+ROLES_SCHEMA.index({ name: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
 ROLES_SCHEMA.plugin(require('mongoose-autopopulate'));
+ROLES_SCHEMA.plugin(setIncrementalVersion);

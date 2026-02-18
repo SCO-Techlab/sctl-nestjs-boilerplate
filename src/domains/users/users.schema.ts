@@ -1,6 +1,7 @@
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
+import { setIncrementalVersion } from '@shared/helpers';
 import * as bcrypt from 'bcrypt';
-import { Schema, Types } from 'mongoose';
+import { IndexDirection, Schema, Types } from 'mongoose';
 import { IUser } from './users.interface';
 
 export const USERS_SCHEMA = new Schema<IUser>(
@@ -62,9 +63,10 @@ export const USERS_SCHEMA = new Schema<IUser>(
   },
 );
 
-USERS_SCHEMA.index({ email: 1 }, { unique: true });
-USERS_SCHEMA.index({ userName: 1 }, { unique: true });
+USERS_SCHEMA.index({ email: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
+USERS_SCHEMA.index({ userName: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
 USERS_SCHEMA.plugin(require('mongoose-autopopulate'));
+USERS_SCHEMA.plugin(setIncrementalVersion);
 
 USERS_SCHEMA.pre<IUser>('save', async function () {
   const salt = await bcrypt.genSalt(MAGIC_NUMBERS.N_10);
