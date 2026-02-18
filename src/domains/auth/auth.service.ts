@@ -159,11 +159,11 @@ export class AuthService {
       throw this.getUnauthorizedError();
     }
 
-    const hashedPassword = await this.bcryptService.hash(newPassword);
     const userUpdatePasswordDto: UserPasswordUpdateDto = {
-      password: hashedPassword as string,
-      newPassword: hashedPassword as string,
+      password: newPassword,
+      newPassword: newPassword,
     };
+    
     const updatedPassword = await this.usersService.updatePassword(existUser._id as string, userUpdatePasswordDto, false);
     if (!updatedPassword) {
       throw new ConflictException('Error updating user password');
