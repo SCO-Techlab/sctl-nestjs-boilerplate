@@ -18,9 +18,9 @@ export class RoleCreateDto extends MongodbDocumentDto {
 }
 
 export class RoleUpdateDto extends MongodbDocumentDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsArray()

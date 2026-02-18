@@ -7,9 +7,9 @@ export class SingleErrorValidationPipe extends ValidationPipe {
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         const errors: string = Object
           .values(validationErrors[MAGIC_NUMBERS.N_0]?.constraints || {})
-          .join(MAGIC_STRINGS.COMMA);
+          .join(MAGIC_STRINGS.SEMICOLON);
 
-        const splitErrors: string[] = errors?.split(MAGIC_STRINGS.COMMA);
+        const splitErrors: string[] = errors?.split(MAGIC_STRINGS.SEMICOLON);
 
         throw new HttpException(
           splitErrors[splitErrors.length - MAGIC_NUMBERS.N_1],

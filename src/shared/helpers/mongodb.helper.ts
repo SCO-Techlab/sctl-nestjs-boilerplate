@@ -36,7 +36,7 @@ const formatDuplicatedKeyError = (error: any): string => {
 
   const keyValues: string[] = Object.keys(error.errorResponse.keyValue) || [];
   if (keyValues?.length > MAGIC_NUMBERS.N_0) {
-    message += ` (${keyValues[MAGIC_NUMBERS.N_0]} -> ${error.errorResponse.keyValue[keyValues[MAGIC_NUMBERS.N_0]]})`;
+    message += fillKeyValues(keyValues, error);
   }
 
   return message;
@@ -47,7 +47,7 @@ const formatDuplicatedKeyErrorWithCodeName = (error: any): string => {
 
   const keyValues: string[] = Object.keys(error.errorResponse.keyValue) || [];
   if (keyValues?.length > MAGIC_NUMBERS.N_0) {
-    message += ` (${keyValues[MAGIC_NUMBERS.N_0]} -> ${error.errorResponse.keyValue[keyValues[MAGIC_NUMBERS.N_0]]})`;
+    message += fillKeyValues(keyValues, error);
   }
 
   return message;
@@ -56,5 +56,17 @@ const formatDuplicatedKeyErrorWithCodeName = (error: any): string => {
 const formatCastError = (error: any): string => {
   let message: string = error.message.split(MAGIC_STRINGS.QUOTE)[MAGIC_NUMBERS.N_0];
   message = message + `${error.value} (${error.path})`;
+  return message;
+}
+
+const fillKeyValues = (keyValues: string[], error: any): string => {
+  if (keyValues?.length <= MAGIC_NUMBERS.N_0) {
+    return '';
+  }
+
+  let message: string = ` (`;
+  keyValues.forEach((key: string) => message += `${key} -> ${error.errorResponse.keyValue[key]}, `);
+  message = message.substring(MAGIC_NUMBERS.N_0, message.length - MAGIC_NUMBERS.N_2);
+  message += `)`;
   return message;
 }
