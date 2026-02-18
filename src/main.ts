@@ -1,16 +1,16 @@
+import { LoggerService } from '@modules/logger';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { MAGIC_STRINGS } from '@shared/constants';
 import { formatOrigin } from '@shared/helpers';
 import { SingleErrorValidationPipe } from '@shared/pipes';
 import { IAppConfig } from './app.config';
-import { AppLogger } from './app.logger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,
     {
-      logger: new AppLogger()
+      logger: new LoggerService()
     }
   );
 
