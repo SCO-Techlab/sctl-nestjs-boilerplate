@@ -117,16 +117,18 @@ export class UsersService {
     }
   }
 
-  async updatePassword(_id: string, dto: UserPasswordUpdateDto): Promise<boolean> {
+  async updatePassword(_id: string, dto: UserPasswordUpdateDto, validateCurrentPassword: boolean = true): Promise<boolean> {
     try {
       const user = await this.findOne(_id);
       if (!user) {
         throw this.userNotFound(_id);
       }
 
-      const isValid = await this.bcryptService.compare(dto.password ?? '', user.password);
-      if (!isValid) {
-        throw new BadRequestException('Invalid current password');
+      if (validateCurrentPassword) {
+        const isValid = await this.bcryptService.compare(dto.password ?? '', user.password);
+        if (!isValid) {
+          throw new BadRequestException('Invalid current password');
+        }
       }
 
       const newPassword = await this.bcryptService.hash(dto.newPassword ?? '');

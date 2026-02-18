@@ -5,4 +5,5 @@ export interface IAppConfig {
   host: string;
   prefix: string;
   origin: string;
+  pwdRecoveryExpiration: number;
 }

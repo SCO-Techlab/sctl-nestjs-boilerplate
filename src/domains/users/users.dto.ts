@@ -1,7 +1,6 @@
 
 import { MAGIC_NUMBERS, REGEX_PATTERNS } from '@shared/constants';
 import { MongodbDocumentDto } from '@shared/dtos';
-import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class UserCreateDto extends MongodbDocumentDto {
@@ -72,11 +71,19 @@ export class UserUpdateDto extends MongodbDocumentDto {
   @IsNotEmpty()
   @IsString()
   @IsMongoId()
-  role: string;
+  role?: string;
 
   @IsOptional()
   @IsObject()
   extension?: any;
+
+  @IsOptional()
+  @IsDate()
+  pwdRecoveryDate?: Date | null;
+
+  @IsOptional()
+  @IsString()
+  pwdRecoveryToken?: string | null;
 }
 
 export class UserPasswordUpdateDto {
@@ -93,15 +100,4 @@ export class UserPasswordUpdateDto {
   @MinLength(MAGIC_NUMBERS.N_8)
   @MaxLength(MAGIC_NUMBERS.N_64)
   newPassword: string;
-}
-
-export class UserPwdRecoveryDto {
-  @IsOptional()
-  @IsString()
-  pwdRecoveryToken?: string;
-
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  pwdRecoveryDate?: Date;
 }

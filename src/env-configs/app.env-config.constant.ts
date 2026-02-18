@@ -8,4 +8,5 @@ export const APP_ENV_CONFIG = registerAs('app', () => ({
   host: process.env.HOST ?? MAGIC_STRINGS.LOCAL_HOST,
   prefix: process.env.PREFIX ?? MAGIC_STRINGS.EMPTY_STRING,
   origin: process.env.ORIGIN ?? MAGIC_STRINGS.EMPTY_STRING,
+  pwdRecoveryExpiration: Number.parseInt(process.env.PWD_RECOVERY_EXPIRATION ?? '30', MAGIC_NUMBERS.N_10) ?? MAGIC_NUMBERS.N_30,
 }));
