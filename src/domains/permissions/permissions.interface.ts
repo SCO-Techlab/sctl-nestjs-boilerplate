@@ -6,3 +6,8 @@ export interface IPermission extends IMongodbDocument {
   type: PERMISSION_TYPE;
   extension?: any;
 }
+
+export interface IRequiredPermission {
+  name: string;
+  type: PERMISSION_TYPE;
+}
