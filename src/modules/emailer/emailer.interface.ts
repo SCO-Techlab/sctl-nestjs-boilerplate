@@ -3,5 +3,11 @@ export interface IEmailerMessage {
   html?: string;
   receivers: string[];
   subject: string;
-  attachments?: { filename: string; path?: string; content?: string | Buffer }[]
+  attachments?: IEmailerAttachment[];
+}
+
+export interface IEmailerAttachment {
+  filename: string;
+  path?: string;
+  content?: string | Buffer;
 }
