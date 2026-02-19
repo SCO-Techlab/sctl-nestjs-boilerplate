@@ -1,8 +1,9 @@
 import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
+import { EmailerService } from '@modules/emailer';
 import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
+import { MAGIC_NUMBERS, MAGIC_STRINGS, TEMPLATES } from '@shared/constants';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
@@ -14,7 +15,8 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private bcryptService: BcryptService,
-    private configSerive: ConfigService
+    private configSerive: ConfigService,
+    private emailerService: EmailerService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
@@ -71,8 +73,15 @@ export class AuthService {
     }
 
     if (user.active !== true) {
-      // TODO: Send User Creation Email
-      const emailSend: boolean = true;
+      const emailSend: boolean = await this.emailerService.sendTemplate({
+        template: TEMPLATES.WELCOME.NAME,
+        context: {
+          name: user.userName,
+          link: MAGIC_STRINGS.LOCAL_HOST
+        },
+        receivers: [user.email],
+        subject: TEMPLATES.WELCOME.SUBJECT
+      });
       if (!emailSend) {
         throw new ConflictException('Error sending registration email');
       }
@@ -163,7 +172,7 @@ export class AuthService {
       password: newPassword,
       newPassword: newPassword,
     };
-    
+
     const updatedPassword = await this.usersService.updatePassword(existUser._id as string, userUpdatePasswordDto, false);
     if (!updatedPassword) {
       throw new ConflictException('Error updating user password');

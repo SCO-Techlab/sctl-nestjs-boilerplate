@@ -53,4 +53,9 @@ export const MAGIC_STRINGS = {
   PWD_RECOVERY_TOKEN: 'pwdRecoveryToken',
   PWD_RECOVERY_TOKEN_PARAM: ':pwdRecoveryToken',
   AUTH: 'auth',
+  TEMPLATES: 'templates',
+  LAYOUTS: 'layouts',
+  PARTIALS: 'partials',
+  MAIN: 'main',
+  WELCOME: 'welcome',
 }

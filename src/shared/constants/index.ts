@@ -4,4 +4,5 @@ export * from './magic-numbers.constants';
 export * from './magic-strings.constants';
 export * from './pagination.constants';
 export * from './reggex-patterns.constants';
+export * from './templates.constants';
 export * from './mongodb.constants';

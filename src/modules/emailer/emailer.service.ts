@@ -2,8 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
+import hbs from 'nodemailer-express-handlebars';
+import { join } from 'path';
 import { IEmailerConfig } from './emailer.config';
-import { IEmailerMessage } from './emailer.interface';
+import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
 
 @Injectable()
 export class EmailerService {
@@ -59,6 +61,17 @@ export class EmailerService {
           : false
       });
 
+      transporter.use('compile', hbs({
+        viewEngine: {
+          extname: '.hbs',
+          layoutsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.LAYOUTS),
+          partialsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.PARTIALS),
+          defaultLayout: MAGIC_STRINGS.MAIN,
+        },
+        viewPath: join(process.cwd(), MAGIC_STRINGS.TEMPLATES),
+        extName: '.hbs',
+      }));
+
       this.transporters.set(config.name, transporter);
       console.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
       return true;
@@ -93,6 +106,34 @@ export class EmailerService {
       return true;
     } catch (err) {
       console.error(`[EmailerService] sendMail (${name}) -> Error: ${err}`);
+      return false;
+    }
+  }
+
+  async sendTemplate(template: IEmailerTemplate, name: string = MAGIC_STRINGS.DEFAULT): Promise<boolean> {
+    if (!this.transporters.has(name)) {
+      return false;
+    }
+
+    const options: IEmailerConfig = this.options?.find(config => config.name === name) as IEmailerConfig;
+    if (!options) {
+      return false;
+    }
+
+    try {
+      const mailOptions = {
+        from: options.sender,
+        to: template?.receivers,
+        subject: template?.subject,
+        template: template?.template,
+        context: template?.context
+      };
+
+      const transporter = this.transporters.get(name);
+      await transporter.sendMail(mailOptions);
+      return true;
+    } catch (err) {
+      console.error(`[EmailerService] sendTemplate (${name}) -> Error: ${err}`);
       return false;
     }
   }
