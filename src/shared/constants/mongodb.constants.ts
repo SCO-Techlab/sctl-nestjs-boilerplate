@@ -1,14 +1,17 @@
+import { titleCase } from "../helpers";
+import { MAGIC_STRINGS } from "./magic-strings.constants";
+
 export const MONGODB_CONSTANTS = {
   PERMISSIONS: {
-    MODEL: 'Permission',
-    COLLECTION: 'permissions'
+    MODEL: titleCase(MAGIC_STRINGS.PERMISSIONS),
+    COLLECTION: MAGIC_STRINGS.PERMISSIONS
   },
   ROLES: {
-    MODEL: 'Role',
-    COLLECTION: 'roles'
+    MODEL: titleCase(MAGIC_STRINGS.ROLES),
+    COLLECTION: MAGIC_STRINGS.ROLES
   },
   USERS: {
-    MODEL: 'User',
-    COLLECTION: 'users'
+    MODEL: titleCase(MAGIC_STRINGS.USERS),
+    COLLECTION: MAGIC_STRINGS.USERS
   }
 }
