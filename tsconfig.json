@@ -28,9 +28,6 @@
       "@env-configs/*": [
         "./src/env-configs/*"
       ],
-      "@interceptors/*": [
-        "./src/interceptors/*"
-      ],
       "@middlewares/*": [
         "./src/middlewares/*"
       ],
