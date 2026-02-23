@@ -18,9 +18,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule,
     {
       logger: new LoggerService(),
-      httpsOptions: {
-        key: certificates?.key,
-        cert: certificates?.cert,
+      httpsOptions: !certificates ? undefined : {
+        key: certificates.key,
+        cert: certificates.cert
       }
     }
   );
