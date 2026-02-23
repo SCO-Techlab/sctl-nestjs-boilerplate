@@ -58,7 +58,7 @@ export class EmailerTemplateService {
         continue;
       }
 
-      const partialName = file.replace(`${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`, '');
+      const partialName = file.replace(`${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`, MAGIC_STRINGS.EMPTY_STRING);
       const content = readFileSync(join(this.partialsPath, file), MAGIC_STRINGS.UTF8 as BufferEncoding);
 
       Handlebars.registerPartial(partialName, content);
