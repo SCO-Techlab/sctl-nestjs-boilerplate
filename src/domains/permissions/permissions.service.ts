@@ -63,7 +63,7 @@ export class PermissionsService {
         limit: sanitizedLimit,
       };
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'find', true);
+      throw formatMongodbError(error, 'PermissionsService', 'find');
     }
   }
 
@@ -72,7 +72,7 @@ export class PermissionsService {
       const result = await this.PermissionModel.findOne({ [property]: value });
       return result ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'findOne', true);
+      throw formatMongodbError(error, 'PermissionsService', 'findOne');
     }
   }
 
@@ -86,7 +86,7 @@ export class PermissionsService {
     try {
       return await PermissionModel.save();
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'save', true);
+      throw formatMongodbError(error, 'PermissionsService', 'save');
     }
   }
 
@@ -113,7 +113,7 @@ export class PermissionsService {
 
       return updatedPermission;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'updateOne', true);
+      throw formatMongodbError(error, 'PermissionsService', 'updateOne');
     }
   }
 
@@ -127,7 +127,7 @@ export class PermissionsService {
 
       return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'updateMany', true);
+      throw formatMongodbError(error, 'PermissionsService', 'updateMany');
     }
   }
 
@@ -140,7 +140,7 @@ export class PermissionsService {
 
       return true;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'deleteOne', true);
+      throw formatMongodbError(error, 'PermissionsService', 'deleteOne');
     }
   }
 
@@ -149,7 +149,7 @@ export class PermissionsService {
       const result = await this.PermissionModel.deleteMany(filter);
       return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'deleteMany', true);
+      throw formatMongodbError(error, 'PermissionsService', 'deleteMany');
     }
   }
 

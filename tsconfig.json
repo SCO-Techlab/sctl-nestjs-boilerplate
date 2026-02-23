@@ -22,23 +22,23 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@shared/*": [
-        "./src/shared/*"
+      "@domains/*": [
+        "./src/domains/*"
       ],
       "@env-configs/*": [
         "./src/env-configs/*"
       ],
-      "@modules/*": [
-        "./src/modules/*"
-      ],
-      "@domains/*": [
-        "./src/domains/*"
+      "@interceptors/*": [
+        "./src/interceptors/*"
       ],
       "@middlewares/*": [
         "./src/middlewares/*"
       ],
-      "@interceptors/*": [
-        "./src/interceptors/*"
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
       ],
     }
   }

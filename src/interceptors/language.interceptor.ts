@@ -9,7 +9,9 @@ export class LanguageInterceptor implements NestInterceptor {
   private configLangHeader: string = MAGIC_STRINGS.EMPTY_STRING;
 
   constructor(langHeader: string = MAGIC_STRINGS.EMPTY_STRING) {
-    this.configLangHeader = langHeader ? langHeader.toLowerCase() : this.configLangHeader;
+    this.configLangHeader = langHeader 
+      ? langHeader.toLowerCase() 
+      : this.configLangHeader;
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { MAGIC_STRINGS } from '@shared/constants';
 
-export const EMAILER_ENV_CONFIG = registerAs('emailer', () => ({
+export const EMAILER_ENV_CONFIG = registerAs(MAGIC_STRINGS.EMAILER, () => ({
   name: process.env.EMAILER_NAME || MAGIC_STRINGS.DEFAULT,
   sender: process.env.EMAILER_SENDER || MAGIC_STRINGS.EMPTY_STRING,
   authUser: process.env.EMAILER_AUTH_USER || MAGIC_STRINGS.EMPTY_STRING,

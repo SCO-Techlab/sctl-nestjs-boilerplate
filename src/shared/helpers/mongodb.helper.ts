@@ -1,31 +1,30 @@
 import { BadRequestException, ConflictException, HttpException, InternalServerErrorException } from "@nestjs/common";
 import { Schema } from "mongoose";
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
+import { titleCase } from "./utils.helper";
 
 export const setIncrementalVersion = (schema: Schema) => {
   schema.pre(['updateOne', 'updateMany', 'findOneAndUpdate'], function () {
     const update = this.getUpdate() || {};
 
-    if (!update['$inc']) {
-      update['$inc'] = {};
+    if (!update[MAGIC_STRINGS.$INC]) {
+      update[MAGIC_STRINGS.$INC] = {};
     }
 
-    if (update['$inc'].__v === null || update['$inc'].__v === undefined) {
-      update['$inc'].__v = MAGIC_NUMBERS.N_1;
+    if (update[MAGIC_STRINGS.$INC].__v === null || update[MAGIC_STRINGS.$INC].__v === undefined) {
+      update[MAGIC_STRINGS.$INC].__v = MAGIC_NUMBERS.N_1;
     }
 
     this.setUpdate(update);
   });
 };
 
-export const formatMongodbError = (error: any, service: string, method: string, verbose: boolean = false): any => {
+export const formatMongodbError = (error: any, service: string, method: string): any => {
   if (error instanceof HttpException) {
     return error;
   }
 
-  if (verbose) {
-    console.error(`[${service}] ${method} -> Error: ${error}`);
-  }
+  console.error(`${MAGIC_STRINGS.SQUARE_BRACKET_OPEN}${service}${MAGIC_STRINGS.SQUARE_BRACKET_CLOSE} ${method} ${MAGIC_STRINGS.ARROW_RIGHT} ${titleCase(MAGIC_STRINGS.ERROR)}${MAGIC_STRINGS.COLON} ${error}`);
 
   if (error?.code === MAGIC_NUMBERS.N_11000 && !error?.codeName) {
     return new ConflictException(formatDuplicatedKeyError(error));
@@ -44,7 +43,7 @@ export const formatMongodbError = (error: any, service: string, method: string, 
 
 const formatDuplicatedKeyError = (error: any): string => {
   let message: string = error.errorResponse.errmsg;
-  message = message.replace(`E${MAGIC_NUMBERS.N_11000}`, MAGIC_STRINGS.EMPTY_STRING);
+  message = message.replace(`${MAGIC_STRINGS.E.toUpperCase()}${MAGIC_NUMBERS.N_11000}`, MAGIC_STRINGS.EMPTY_STRING);
   message = message.substring(MAGIC_NUMBERS.N_1);
   message = `${message.charAt(MAGIC_NUMBERS.N_0).toUpperCase()}${message.substring(MAGIC_NUMBERS.N_1)}`;
 
@@ -60,7 +59,7 @@ const formatDuplicatedKeyError = (error: any): string => {
 }
 
 const formatDuplicatedKeyErrorWithCodeName = (error: any): string => {
-  let message: string = `Duplicate key error collection`;
+  let message: string = MAGIC_STRINGS.DUPLICATE_KEY_ERROR_COLLECTION;
 
   const keyValues: string[] = Object.keys(error.errorResponse.keyValue) || [];
   if (keyValues?.length > MAGIC_NUMBERS.N_0) {
@@ -72,18 +71,18 @@ const formatDuplicatedKeyErrorWithCodeName = (error: any): string => {
 
 const formatCastError = (error: any): string => {
   let message: string = error.message.split(MAGIC_STRINGS.QUOTE)[MAGIC_NUMBERS.N_0];
-  message = message + `${error.value} (${error.path})`;
+  message = message + `${error.value} ${MAGIC_STRINGS.ROUND_BRACKET_OPEN}${error.path}${MAGIC_STRINGS.ROUND_BRACKET_CLOSE}`;
   return message;
 }
 
 const fillKeyValues = (keyValues: string[], error: any): string => {
   if (keyValues?.length <= MAGIC_NUMBERS.N_0) {
-    return '';
+    return MAGIC_STRINGS.EMPTY_STRING;
   }
 
-  let message: string = ` (`;
-  keyValues.forEach((key: string) => message += `${key} -> ${error.errorResponse.keyValue[key]}, `);
+  let message: string = `${MAGIC_STRINGS.SPACE}${MAGIC_STRINGS.ROUND_BRACKET_OPEN}`;
+  keyValues.forEach((key: string) => message += `${key} ${MAGIC_STRINGS.ARROW_RIGHT} ${error.errorResponse.keyValue[key]}${MAGIC_STRINGS.COMMA} `);
   message = message.substring(MAGIC_NUMBERS.N_0, message.length - MAGIC_NUMBERS.N_2);
-  message += `)`;
+  message += `${MAGIC_STRINGS.ROUND_BRACKET_CLOSE}`;
   return message;
 }

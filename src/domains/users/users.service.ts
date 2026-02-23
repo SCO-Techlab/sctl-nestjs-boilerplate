@@ -66,7 +66,7 @@ export class UsersService {
         limit: sanitizedLimit,
       };
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'find', true);
+      throw formatMongodbError(error, 'UsersService', 'find');
     }
   }
 
@@ -75,7 +75,7 @@ export class UsersService {
       const result = await this.UserModel.findOne({ [property]: value });
       return result ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'findOne', true);
+      throw formatMongodbError(error, 'UsersService', 'findOne');
     }
   }
 
@@ -90,7 +90,7 @@ export class UsersService {
 
       return await UserModel.save();
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'save', true);
+      throw formatMongodbError(error, 'UsersService', 'save');
     }
   }
 
@@ -113,7 +113,7 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateOne', true);
+      throw formatMongodbError(error, 'UsersService', 'updateOne');
     }
   }
 
@@ -139,7 +139,7 @@ export class UsersService {
 
       return true;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updatePassword', true);
+      throw formatMongodbError(error, 'UsersService', 'updatePassword');
     }
   }
 
@@ -153,7 +153,7 @@ export class UsersService {
 
       return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateMany', true);
+      throw formatMongodbError(error, 'UsersService', 'updateMany');
     }
   }
 
@@ -167,7 +167,7 @@ export class UsersService {
 
       return true;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteOne', true);
+      throw formatMongodbError(error, 'UsersService', 'deleteOne');
     }
   }
 
@@ -176,7 +176,7 @@ export class UsersService {
       const result = await this.UserModel.deleteMany(filter);
       return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteMany', true);
+      throw formatMongodbError(error, 'UsersService', 'deleteMany');
     }
   }
 

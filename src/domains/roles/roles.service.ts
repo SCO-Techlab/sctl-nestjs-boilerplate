@@ -65,7 +65,7 @@ export class RolesService {
         limit: sanitizedLimit,
       };
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'find', true);
+      throw formatMongodbError(error, 'RolesService', 'find');
     }
   }
 
@@ -74,7 +74,7 @@ export class RolesService {
       const result = await this.RoleModel.findOne({ [property]: value });
       return result ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'findOne', true);
+      throw formatMongodbError(error, 'RolesService', 'findOne');
     }
   }
 
@@ -92,7 +92,7 @@ export class RolesService {
     try {
       return await RoleModel.save();
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'save', true);
+      throw formatMongodbError(error, 'RolesService', 'save');
     }
   }
 
@@ -114,7 +114,7 @@ export class RolesService {
 
       return updatedRole;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'updateOne', true);
+      throw formatMongodbError(error, 'RolesService', 'updateOne');
     }
   }
 
@@ -128,7 +128,7 @@ export class RolesService {
 
       return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'updateMany', true);
+      throw formatMongodbError(error, 'RolesService', 'updateMany');
     }
   }
 
@@ -141,7 +141,7 @@ export class RolesService {
 
       return true;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'deleteOne', true);
+      throw formatMongodbError(error, 'RolesService', 'deleteOne');
     }
   }
 
@@ -150,7 +150,7 @@ export class RolesService {
       const result = await this.RoleModel.deleteMany(filter);
       return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'deleteMany', true);
+      throw formatMongodbError(error, 'RolesService', 'deleteMany');
     }
   }
 

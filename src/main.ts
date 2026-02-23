@@ -16,7 +16,7 @@ async function bootstrap() {
   );
 
   const configService: ConfigService = app.get(ConfigService);
-  const appConfig: IAppConfig = configService.get('app') as IAppConfig;
+  const appConfig: IAppConfig = configService.get(MAGIC_STRINGS.APP) as IAppConfig;
 
   app.setGlobalPrefix(appConfig.prefix ? appConfig.prefix : MAGIC_STRINGS.API);
 
@@ -31,7 +31,7 @@ async function bootstrap() {
   });
 
   await app.listen(appConfig.port)
-    .then(() => console.log(`Server is running on ${appConfig.host}:${appConfig.port}`))
+    .then(() => console.log(`Server is running on ${appConfig.host}${MAGIC_STRINGS.COLON}${appConfig.port}`))
     .catch((err) => console.error(err));
 }
 bootstrap();

@@ -8,24 +8,24 @@ import * as path from 'path';
 @Injectable()
 export class PublicMiddleware implements NestMiddleware {
 
-  private readonly PUBLIC_DIR = path.resolve(`./${MAGIC_STRINGS.PUBLIC}`);
-  private readonly allowedExt = Object.values(FILE_EXTENSION).map(ext => `.${ext}`);
+  private readonly PUBLIC_DIR = path.resolve(`${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PUBLIC}`);
+  private readonly allowedExt = Object.values(FILE_EXTENSION).map(ext => `${MAGIC_STRINGS.DOT}${ext}`);
   private apiPrefix: string;
 
   constructor(private configService: ConfigService) {
-    this.apiPrefix = configService.get('app')?.prefix 
-      ? `/${configService.get('app')?.prefix}`
-      : `/${MAGIC_STRINGS.API}`;
+    this.apiPrefix = configService.get(MAGIC_STRINGS.APP)?.prefix
+      ? `${MAGIC_STRINGS.SLASH}${configService.get(MAGIC_STRINGS.APP)?.prefix}`
+      : `${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.API}`;
   }
 
   use(req: any, res: any, next: () => void) {
     const url = req.originalUrl || req.url;
 
     if (url.startsWith(this.apiPrefix)) {
-      return next(); // API routes continue
+      return next();
     }
 
-    if (url.startsWith(`/${MAGIC_STRINGS.PUBLIC}/`)) {
+    if (url.startsWith(`${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PUBLIC}${MAGIC_STRINGS.SLASH}`)) {
       return res.sendFile(path.join(this.PUBLIC_DIR, decodeURI(url)));
     }
 
@@ -33,7 +33,6 @@ export class PublicMiddleware implements NestMiddleware {
       return res.sendFile(path.join(this.PUBLIC_DIR, decodeURI(url)));
     }
 
-    // Fallback: serve index.html for SPA routes
-    return res.sendFile(path.join(this.PUBLIC_DIR, `index.${FILE_EXTENSION.HTML}`));
+    return res.sendFile(path.join(this.PUBLIC_DIR, `${MAGIC_STRINGS.INDEX}${MAGIC_STRINGS.DOT}${FILE_EXTENSION.HTML}`));
   }
 }

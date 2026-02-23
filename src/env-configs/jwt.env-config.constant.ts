@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { MAGIC_STRINGS } from '@shared/constants';
 
-export const JWT_ENV_CONFIG = registerAs('jwt', () => ({
+export const JWT_ENV_CONFIG = registerAs(MAGIC_STRINGS.JWT, () => ({
   secret: process.env.JWT_SECRET || MAGIC_STRINGS.EMPTY_STRING,
   algorithm: process.env.JWT_ALGORITHM || MAGIC_STRINGS.EMPTY_STRING,
   signOptions: {

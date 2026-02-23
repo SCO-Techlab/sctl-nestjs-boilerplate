@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 
-export const MONGODB_ENV_CONFIG = registerAs('mongodb', () => ({
+export const MONGODB_ENV_CONFIG = registerAs(MAGIC_STRINGS.MONGODB, () => ({
   name: process.env.MONGODB_NAME || MAGIC_STRINGS.DEFAULT,
   host: process.env.MONGODB_HOST || MAGIC_STRINGS.LOCAL_HOST,
   port: Number.parseInt(process.env.MONGODB_PORT || `${MAGIC_NUMBERS.N_27017}`, MAGIC_NUMBERS.N_10) || MAGIC_NUMBERS.N_27017,
