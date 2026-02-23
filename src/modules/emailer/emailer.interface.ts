@@ -17,6 +17,11 @@ export interface IEmailerTemplate {
   context: Record<string, any>;
   receivers: string[];
   subject: string;
-  styles?: string;
+  options?: IEmailerRenderOptions;
   attachments?: IEmailerAttachment[];
+}
+
+export interface IEmailerRenderOptions {
+  layout?: string;
+  css?: string;
 }

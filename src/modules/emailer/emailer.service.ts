@@ -2,8 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
-import hbs from 'nodemailer-express-handlebars';
-import { join } from 'path';
 import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
@@ -63,17 +61,6 @@ export class EmailerService {
           : false
       });
 
-      transporter.use(MAGIC_STRINGS.COMPILE, hbs({
-        viewEngine: {
-          extname: `${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`,
-          layoutsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.LAYOUTS),
-          partialsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.PARTIALS),
-          defaultLayout: MAGIC_STRINGS.MAIN,
-        },
-        viewPath: join(process.cwd(), MAGIC_STRINGS.TEMPLATES),
-        extName: `${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`,
-      }));
-
       this.transporters.set(config.name, transporter);
       console.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
       return true;
@@ -123,7 +110,7 @@ export class EmailerService {
     }
 
     try {
-      const html = this.emailerTemplateService.render(template.template, template.context, template.styles);
+      const html = this.emailerTemplateService.render(template.template, template.context, template.options);
       const mailOptions: IEmailerMessage = {
         text: html,
         html: html,
