@@ -3,7 +3,7 @@ import { EmailerService } from '@modules/emailer';
 import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MAGIC_NUMBERS, MAGIC_STRINGS, TEMPLATES } from '@shared/constants';
+import { MAGIC_NUMBERS, MAGIC_STRINGS, TEMPLATES, TRANSLATES } from '@shared/constants';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
@@ -59,7 +59,7 @@ export class AuthService {
     return token;
   }
 
-  public async register(register: AuthRegisterDto): Promise<boolean> {
+  public async register(register: AuthRegisterDto, lang: string): Promise<boolean> {
     const { user } = register;
 
     const existUser: IUser = await this.usersService.findOne(user.email, MAGIC_STRINGS.EMAIL) as IUser;
@@ -74,19 +74,28 @@ export class AuthService {
 
     if (user.active !== true) {
       const emailSend: boolean = await this.emailerService.sendTemplate({
-        template: TEMPLATES.WELCOME.NAME,
+        template: TEMPLATES.WELCOME,
         context: {
           welcome: {
-            name: user.userName,
-            link: MAGIC_STRINGS.LOCAL_HOST
+            params: {
+              name: user.userName,
+              link: MAGIC_STRINGS.LOCAL_HOST
+            },
+            literals: {
+              welcomeText: TRANSLATES[lang].welcome.welcomeText,
+              message: TRANSLATES[lang].welcome.message,
+              linkText: TRANSLATES[lang].welcome.linkText
+            }
           },
           footer: {
-            year: new Date().getFullYear(),
-            appName: this.configSerive.get('app').appName
+            params: {
+              year: new Date().getFullYear(),
+              appName: this.configSerive.get('app').appName
+            }
           }
         },
         receivers: [user.email],
-        subject: TEMPLATES.WELCOME.SUBJECT
+        subject: TRANSLATES[lang].welcome.subject
       });
       if (!emailSend) {
         throw new ConflictException('Error sending registration email');

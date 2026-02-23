@@ -1,3 +1,4 @@
+import { LanguageInterceptor } from '@interceptors/language.interceptor';
 import { LoggerService } from '@modules/logger';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -20,6 +21,8 @@ async function bootstrap() {
   app.setGlobalPrefix(appConfig.prefix ? appConfig.prefix : MAGIC_STRINGS.API);
 
   app.useGlobalPipes(new SingleErrorValidationPipe());
+
+  app.useGlobalInterceptors(new LanguageInterceptor(appConfig.langHeader));
 
   app.enableCors({
     origin: formatOrigin(appConfig.origin),

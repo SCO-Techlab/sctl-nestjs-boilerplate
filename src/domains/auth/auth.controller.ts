@@ -2,6 +2,7 @@ import { IUser } from '@domains/users';
 import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
+import { Lang } from '@shared/decorators';
 import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -18,8 +19,11 @@ export class AuthController {
   }
 
   @Post(MAGIC_STRINGS.REGISTER)
-  async register(@Body() registerDto: AuthRegisterDto): Promise<boolean> {
-    return await this.authService.register(registerDto);
+  async register(
+    @Lang() lang: string,
+    @Body() registerDto: AuthRegisterDto
+  ): Promise<boolean> {
+    return await this.authService.register(registerDto, lang);
   }
 
   @Get(`${MAGIC_STRINGS.CONFIRM}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL_PARAM}`)

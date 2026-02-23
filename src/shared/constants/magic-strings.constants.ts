@@ -62,4 +62,9 @@ export const MAGIC_STRINGS = {
   CSS: 'css',
   UTF8: 'utf8',
   HBS: 'hbs',
+  EN: 'en',
+  ES: 'es',
+  ACCEPT: 'accept',
+  LANGUAGE: 'language',
+  APP: 'app',
 }

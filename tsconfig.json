@@ -36,7 +36,10 @@
       ],
       "@middlewares/*": [
         "./src/middlewares/*"
-      ]
+      ],
+      "@interceptors/*": [
+        "./src/interceptors/*"
+      ],
     }
   }
 }

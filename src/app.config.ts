@@ -7,4 +7,5 @@ export interface IAppConfig {
   origin: string;
   pwdRecoveryExpiration: number;
   appName: string;
+  langHeader: string;
 }
