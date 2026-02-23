@@ -41,6 +41,7 @@
     "class-validator": "^0.14.3",
     "cross-env": "^10.1.0",
     "handlebars": "^4.7.8",
+    "juice": "^11.1.1",
     "migrate-mongo": "^14.0.7",
     "mongodb": "^7.1.0",
     "mongoose": "^9.2.1",

@@ -1,6 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { createAsyncConfigProvider, createConfigProvider } from '@shared/helpers';
 import { IModuleAsyncConfig } from '@shared/interfaces';
+import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { EmailerService } from './emailer.service';
 
@@ -11,9 +12,12 @@ export class EmailerModule {
       module: EmailerModule,
       providers: [
         ...createConfigProvider(options),
+        EmailerService,
+        EmailerTemplateService
+      ],
+      exports: [
         EmailerService
       ],
-      exports: [EmailerService],
       global: true
     };
   }
@@ -23,9 +27,12 @@ export class EmailerModule {
       module: EmailerModule,
       providers: [
         ...createAsyncConfigProvider(options),
+        EmailerService,
+        EmailerTemplateService
+      ],
+      exports: [
         EmailerService
       ],
-      exports: [EmailerService],
       global: true
     };
   }

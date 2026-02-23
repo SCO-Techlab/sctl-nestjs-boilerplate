@@ -58,4 +58,9 @@ export const MAGIC_STRINGS = {
   PARTIALS: 'partials',
   MAIN: 'main',
   WELCOME: 'welcome',
+  STYLES: 'styles',
+  CSS: 'css',
+  UTF8: 'utf8',
+  HBS: 'hbs',
+  COMPILE: 'compile',
 }

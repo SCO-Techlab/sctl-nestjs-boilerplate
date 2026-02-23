@@ -4,6 +4,7 @@ import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
 import hbs from 'nodemailer-express-handlebars';
 import { join } from 'path';
+import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
 
@@ -13,7 +14,8 @@ export class EmailerService {
   private transporters: Map<string, Transporter> = new Map<string, Transporter>();
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private options: IEmailerConfig[]
+    @Inject(PROVIDER_CONFIG) private options: IEmailerConfig[],
+    private emailerTemplateService: EmailerTemplateService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -61,15 +63,15 @@ export class EmailerService {
           : false
       });
 
-      transporter.use('compile', hbs({
+      transporter.use(MAGIC_STRINGS.COMPILE, hbs({
         viewEngine: {
-          extname: '.hbs',
+          extname: `${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`,
           layoutsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.LAYOUTS),
           partialsDir: join(process.cwd(), MAGIC_STRINGS.TEMPLATES, MAGIC_STRINGS.PARTIALS),
           defaultLayout: MAGIC_STRINGS.MAIN,
         },
         viewPath: join(process.cwd(), MAGIC_STRINGS.TEMPLATES),
-        extName: '.hbs',
+        extName: `${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`,
       }));
 
       this.transporters.set(config.name, transporter);
@@ -121,17 +123,15 @@ export class EmailerService {
     }
 
     try {
-      const mailOptions = {
-        from: options.sender,
-        to: template?.receivers,
+      const html = this.emailerTemplateService.render(template.template, template.context, template.styles);
+      const mailOptions: IEmailerMessage = {
+        text: html,
+        html: html,
+        receivers: template?.receivers,
         subject: template?.subject,
-        template: template?.template,
-        context: template?.context
+        attachments: template?.attachments ?? [],
       };
-
-      const transporter = this.transporters.get(name);
-      await transporter.sendMail(mailOptions);
-      return true;
+      return await this.send(mailOptions, name);
     } catch (err) {
       console.error(`[EmailerService] sendTemplate (${name}) -> Error: ${err}`);
       return false;
