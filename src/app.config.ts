@@ -9,4 +9,5 @@ export interface IAppConfig {
   pwdRecoveryExpiration: number;
   appName: string;
   langHeader: string;
+  certificatesPath: string;
 }

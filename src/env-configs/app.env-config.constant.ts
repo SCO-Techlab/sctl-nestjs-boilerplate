@@ -12,4 +12,5 @@ export const APP_ENV_CONFIG = registerAs(MAGIC_STRINGS.APP, () => ({
   pwdRecoveryExpiration: Number.parseInt(process.env.PWD_RECOVERY_EXPIRATION ?? `${MAGIC_NUMBERS.N_30}`, MAGIC_NUMBERS.N_10) ?? MAGIC_NUMBERS.N_30,
   appName: process.env.APP_NAME ?? 'Sctl Nestjs Boilerplate',
   langHeader: process.env.LANG_HEADER ?? MAGIC_STRINGS.EMPTY_STRING,
+  certificatesPath: process.env.CERTIFICATES_PATH ?? MAGIC_STRINGS.EMPTY_STRING,
 }));
