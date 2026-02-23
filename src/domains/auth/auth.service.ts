@@ -4,6 +4,7 @@ import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, MAGIC_STRINGS, TEMPLATES, TRANSLATES } from '@shared/constants';
+import { getFrontendUrl } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
@@ -79,7 +80,12 @@ export class AuthService {
           welcome: {
             params: {
               name: user.userName,
-              link: MAGIC_STRINGS.LOCAL_HOST
+              link: getFrontendUrl(
+                this.configSerive.get(MAGIC_STRINGS.APP).httpsEnabled,
+                this.configSerive.get(MAGIC_STRINGS.APP).host,
+                this.configSerive.get(MAGIC_STRINGS.APP).port,
+                `${MAGIC_STRINGS.CONFIRM}${MAGIC_STRINGS.DASH}${MAGIC_STRINGS.EMAIL}${MAGIC_STRINGS.SLASH}${user.email}`
+              )
             },
             literals: {
               welcomeText: TRANSLATES[lang].welcome.welcomeText,
@@ -90,7 +96,7 @@ export class AuthService {
           footer: {
             params: {
               year: new Date().getFullYear(),
-              appName: this.configSerive.get('app').appName
+              appName: this.configSerive.get(MAGIC_STRINGS.APP).appName
             }
           }
         },

@@ -1,4 +1,4 @@
-import { MAGIC_NUMBERS, REGEX_PATTERNS } from "../constants";
+import { MAGIC_NUMBERS, MAGIC_STRINGS, REGEX_PATTERNS } from "../constants";
 
 export const attempt = async <T>(fn: () => Promise<T>) => {
   try {
@@ -27,3 +27,9 @@ export const titleCase = (str: string, maxWords?: number): string => {
     return txt.charAt(MAGIC_NUMBERS.N_0).toUpperCase() + txt.substring(MAGIC_NUMBERS.N_1).toLowerCase();
   });
 };
+
+export const getFrontendUrl = (httpsEnabled: boolean, host: string, port: number, extraPath?: string): string => {
+  const protocol = httpsEnabled ? MAGIC_STRINGS.HTTPS : MAGIC_STRINGS.HTTP;
+  const url: string = `${protocol}${MAGIC_STRINGS.COLON}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.SLASH}${host}${MAGIC_STRINGS.COLON}${port}`;
+  return extraPath ? `${url}${MAGIC_STRINGS.SLASH}${extraPath}` : url;
+}
