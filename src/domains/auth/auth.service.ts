@@ -76,8 +76,14 @@ export class AuthService {
       const emailSend: boolean = await this.emailerService.sendTemplate({
         template: TEMPLATES.WELCOME.NAME,
         context: {
-          name: user.userName,
-          link: MAGIC_STRINGS.LOCAL_HOST
+          welcome: {
+            name: user.userName,
+            link: MAGIC_STRINGS.LOCAL_HOST
+          },
+          footer: {
+            year: new Date().getFullYear(),
+            appName: this.configSerive.get('app').appName
+          }
         },
         receivers: [user.email],
         subject: TEMPLATES.WELCOME.SUBJECT

@@ -1,3 +1,6 @@
 <footer>
-  <p>© 2026 Mi Aplicación</p>
+  <p>©
+    {{#if footer.year}}{{footer.year}}{{else}}2026{{/if}}
+    {{#if footer.appName}}{{footer.appName}}{{else}}Sctl Nestjs Boilerplate{{/if}}
+  </p>
 </footer>

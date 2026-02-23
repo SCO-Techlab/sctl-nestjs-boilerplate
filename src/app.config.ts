@@ -6,4 +6,5 @@ export interface IAppConfig {
   prefix: string;
   origin: string;
   pwdRecoveryExpiration: number;
+  appName: string;
 }
