@@ -26,12 +26,12 @@ export class AuthController {
     return await this.authService.register(registerDto, lang);
   }
 
-  @Get(`${MAGIC_STRINGS.CONFIRM}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL_PARAM}`)
+  @Get(`${MAGIC_STRINGS.CONFIRM}/${MAGIC_STRINGS.EMAIL}/${MAGIC_STRINGS.EMAIL_PARAM}`)
   async confirmEmail(@Param(MAGIC_STRINGS.EMAIL) email: string): Promise<boolean> {
     return await this.authService.confirmUserEmaiil(email);
   }
 
-  @Get(`${MAGIC_STRINGS.FORGOT}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL_PARAM}`)
+  @Get(`${MAGIC_STRINGS.FORGOT}/${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.EMAIL_PARAM}`)
   async forgotPassword(
     @Lang() lang: string,
     @Param(MAGIC_STRINGS.EMAIL) email: string
@@ -39,12 +39,12 @@ export class AuthController {
     return await this.authService.forgotPassword(email, lang);
   }
 
-  @Get(`${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.RECOVERY}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.FIND}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
+  @Get(`${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.RECOVERY}/${MAGIC_STRINGS.FIND}/${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
   async passwordRecoveryFind(@Param(MAGIC_STRINGS.PWD_RECOVERY_TOKEN) pwdRecoveryToken: string): Promise<IUser> {
     return await this.authService.passwordRecoveryFind(pwdRecoveryToken);
   }
 
-  @Put(`${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.RECOVERY}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.RESET}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
+  @Put(`${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.RECOVERY}/${MAGIC_STRINGS.RESET}/${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
   async resetPassword(
     @Param(MAGIC_STRINGS.PWD_RECOVERY_TOKEN) pwdRecoveryToken: string,
     @Body() passwordResetDto: AuthResetPasswordDto
