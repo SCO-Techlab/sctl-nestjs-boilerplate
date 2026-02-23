@@ -32,8 +32,11 @@ export class AuthController {
   }
 
   @Get(`${MAGIC_STRINGS.FORGOT}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.EMAIL_PARAM}`)
-  async forgotPassword(@Param(MAGIC_STRINGS.EMAIL) email: string): Promise<boolean> {
-    return await this.authService.forgotPassword(email);
+  async forgotPassword(
+    @Lang() lang: string,
+    @Param(MAGIC_STRINGS.EMAIL) email: string
+  ): Promise<boolean> {
+    return await this.authService.forgotPassword(email, lang);
   }
 
   @Get(`${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.RECOVERY}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.FIND}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)

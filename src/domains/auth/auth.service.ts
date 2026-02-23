@@ -131,16 +131,10 @@ export class AuthService {
       throw new ConflictException('Error confirming user email');
     }
 
-    // TODO: Send Email Confirmation Email
-    const emailSend: boolean = true;
-    if (!emailSend) {
-      throw new ConflictException('Error sending successfully confirmation email');
-    }
-
     return true;
   }
 
-  public async forgotPassword(email: string): Promise<boolean> {
+  public async forgotPassword(email: string, lang: string): Promise<boolean> {
     const existUser: IUser = await this.usersService.findOne(email, MAGIC_STRINGS.EMAIL) as IUser;
     if (!existUser) {
       throw new NotFoundException(`User with email '${email}' does not exist`);
@@ -159,8 +153,38 @@ export class AuthService {
       throw new ConflictException('Error updating user');
     }
 
-    // TODO: Send Password Recovery Email
-    const emailSend: boolean = true;
+    const emailSend: boolean = await this.emailerService.sendTemplate({
+      template: TEMPLATES.FORGOT_PASSWORD,
+      context: {
+        forgotPassword: {
+          params: {
+            name: existUser.userName,
+            link: getFrontendUrl(
+              this.configSerive.get(MAGIC_STRINGS.APP).httpsEnabled,
+              this.configSerive.get(MAGIC_STRINGS.APP).host,
+              this.configSerive.get(MAGIC_STRINGS.APP).port,
+              `${MAGIC_STRINGS.FORGOT}${MAGIC_STRINGS.DASH}${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${existUser.pwdRecoveryToken}`
+            ),
+            expiration: this.configSerive.get(MAGIC_STRINGS.APP).pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30
+          },
+          literals: {
+            welcomeText: TRANSLATES[lang].forgotPassword.welcomeText,
+            message: TRANSLATES[lang].forgotPassword.message,
+            message2: TRANSLATES[lang].forgotPassword.message2,
+            message3: TRANSLATES[lang].forgotPassword.message3,
+            linkText: TRANSLATES[lang].forgotPassword.linkText
+          }
+        },
+        footer: {
+          params: {
+            year: new Date().getFullYear(),
+            appName: this.configSerive.get(MAGIC_STRINGS.APP).appName
+          }
+        }
+      },
+      receivers: [existUser.email],
+      subject: TRANSLATES[lang].welcome.subject
+    });
     if (!emailSend) {
       throw new ConflictException('Error sending password recovery email');
     }
