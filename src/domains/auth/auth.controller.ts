@@ -1,7 +1,7 @@
 import { IUser } from '@domains/users';
 import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
+import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang } from '@shared/decorators';
 import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -13,12 +13,12 @@ export class AuthController {
     private readonly authService: AuthService
   ) { }
 
-  @Post(MAGIC_STRINGS.LOGIN)
+  @Post('login')
   async login(@Body() login: AuthLoginDto): Promise<IJwtToken> {
     return await this.authService.login(login);
   }
 
-  @Post(MAGIC_STRINGS.REGISTER)
+  @Post('register')
   async register(
     @Lang() lang: string,
     @Body() registerDto: AuthRegisterDto
@@ -26,27 +26,27 @@ export class AuthController {
     return await this.authService.register(registerDto, lang);
   }
 
-  @Get(`${MAGIC_STRINGS.CONFIRM}/${MAGIC_STRINGS.EMAIL}/${MAGIC_STRINGS.EMAIL_PARAM}`)
-  async confirmEmail(@Param(MAGIC_STRINGS.EMAIL) email: string): Promise<boolean> {
+  @Get('confirm/email/:email')
+  async confirmEmail(@Param('email') email: string): Promise<boolean> {
     return await this.authService.confirmUserEmaiil(email);
   }
 
-  @Get(`${MAGIC_STRINGS.FORGOT}/${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.EMAIL_PARAM}`)
+  @Get('forgot/password/:email')
   async forgotPassword(
     @Lang() lang: string,
-    @Param(MAGIC_STRINGS.EMAIL) email: string
+    @Param('email') email: string
   ): Promise<boolean> {
     return await this.authService.forgotPassword(email, lang);
   }
 
-  @Get(`${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.RECOVERY}/${MAGIC_STRINGS.FIND}/${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
-  async passwordRecoveryFind(@Param(MAGIC_STRINGS.PWD_RECOVERY_TOKEN) pwdRecoveryToken: string): Promise<IUser> {
+  @Get('password/recovery/find/:pwdRecoveryToken')
+  async passwordRecoveryFind(@Param('pwdRecoveryToken') pwdRecoveryToken: string): Promise<IUser> {
     return await this.authService.passwordRecoveryFind(pwdRecoveryToken);
   }
 
-  @Put(`${MAGIC_STRINGS.PASSWORD}/${MAGIC_STRINGS.RECOVERY}/${MAGIC_STRINGS.RESET}/${MAGIC_STRINGS.PWD_RECOVERY_TOKEN_PARAM}`)
+  @Put('password/recovery/reset/:pwdRecoveryToken')
   async resetPassword(
-    @Param(MAGIC_STRINGS.PWD_RECOVERY_TOKEN) pwdRecoveryToken: string,
+    @Param('pwdRecoveryToken') pwdRecoveryToken: string,
     @Body() passwordResetDto: AuthResetPasswordDto
   ): Promise<boolean> {
     return await this.authService.passwordRecoveryReset(pwdRecoveryToken, passwordResetDto.password);

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
+import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
 import { EmailerTemplateService } from './emailer-templates.service';
@@ -26,7 +26,7 @@ export class EmailerService {
     }
   }
 
-  public closeTransporter(name: string = MAGIC_STRINGS.DEFAULT): boolean {
+  public closeTransporter(name: string = 'default'): boolean {
     if (!this.transporters.has(name)) {
       return false;
     }
@@ -46,7 +46,7 @@ export class EmailerService {
 
     try {
       const transporter: Transporter = createTransport({
-        service: config.service ?? MAGIC_STRINGS.EMPTY_STRING,
+        service: config.service ?? '',
         auth: {
           user: config.authUser,
           pass: config.authPassword,
@@ -70,7 +70,7 @@ export class EmailerService {
     }
   }
 
-  public async send(message: IEmailerMessage, name: string = MAGIC_STRINGS.DEFAULT): Promise<boolean> {
+  public async send(message: IEmailerMessage, name: string = 'default'): Promise<boolean> {
     if (!this.transporters.has(name)) {
       return false;
     }
@@ -99,7 +99,7 @@ export class EmailerService {
     }
   }
 
-  async sendTemplate(template: IEmailerTemplate, name: string = MAGIC_STRINGS.DEFAULT): Promise<boolean> {
+  async sendTemplate(template: IEmailerTemplate, name: string = 'default'): Promise<boolean> {
     if (!this.transporters.has(name)) {
       return false;
     }

@@ -2,7 +2,6 @@ import { IUser, UsersService } from "@domains/users";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { MAGIC_STRINGS } from "@shared/constants";
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IAuthPayload } from "./auth.interface";
 
@@ -20,9 +19,9 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: IAuthPayload): Promise<IUser> {
-    const user: IUser = await this.usersService.findOne(payload.user.email, MAGIC_STRINGS.EMAIL) as IUser;
+    const user: IUser = await this.usersService.findOne(payload.user.email, 'email') as IUser;
     if (!user || !user.active) {
-      throw new UnauthorizedException(MAGIC_STRINGS.UNAUTHORIZED);
+      throw new UnauthorizedException('User not authenticated');
     }
     return user;
   }

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { APP_CONTROLLERS, MAGIC_STRINGS } from '@shared/constants';
+import { APP_CONTROLLERS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
 import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { PermissionsGuard } from '@shared/guards';
@@ -24,10 +24,10 @@ export class PermissionsController {
     return await this.permissionsService.find(query);
   }
 
-  @Get(MAGIC_STRINGS.UNDERSCORE_ID_PARAM)
+  @Get(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.READ })
-  async findOne(@Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string): Promise<IPermission | undefined> {
+  async findOne(@Param('_id') _id: string): Promise<IPermission | undefined> {
     return await this.permissionsService.findOne(_id);
   }
 
@@ -38,17 +38,17 @@ export class PermissionsController {
     return await this.permissionsService.save(permission);
   }
 
-  @Put(MAGIC_STRINGS.UNDERSCORE_ID_PARAM)
+  @Put(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.UPDATE })
   async updateOne(
-    @Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string,
+    @Param('_id') _id: string,
     @Body() permission: PermissionUpdateDto
   ): Promise<IPermission | undefined> {
     return await this.permissionsService.updateOne(_id, permission);
   }
 
-  @Put(`${MAGIC_STRINGS.UPDATE}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.BULK}`)
+  @Put('update/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.UPDATE })
   async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionUpdateDto>): Promise<number> {
@@ -56,14 +56,14 @@ export class PermissionsController {
     return await this.permissionsService.updateMany(filter, bulkUpdate.data);
   }
 
-  @Delete(MAGIC_STRINGS.UNDERSCORE_ID_PARAM)
+  @Delete(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.DELETE })
-  async deleteOne(@Param(MAGIC_STRINGS.UNDERSCORE_ID) _id: string): Promise<boolean> {
+  async deleteOne(@Param('_id') _id: string): Promise<boolean> {
     return await this.permissionsService.deleteOne(_id);
   }
 
-  @Delete(`${MAGIC_STRINGS.DELETE}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.BULK}`)
+  @Delete('delete/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.DELETE })
   async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {

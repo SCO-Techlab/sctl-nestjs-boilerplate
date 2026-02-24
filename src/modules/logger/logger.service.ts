@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DATE_PATTERNS, MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
+import { DATE_PATTERNS, MAGIC_NUMBERS } from '@shared/constants';
 import { createLogger, format, Logger, transports } from 'winston';
 import 'winston-daily-rotate-file';
 
@@ -32,27 +32,27 @@ export class LoggerService {
     this.replaceConsole();
   }
 
-  log(message: string, prefix: string = MAGIC_STRINGS.EMPTY_STRING) {
+  log(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('info', message);
   }
 
-  warn(message: string, prefix: string = MAGIC_STRINGS.EMPTY_STRING) {
+  warn(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('warn', message);
   }
 
-  error(message: string, prefix: string = MAGIC_STRINGS.EMPTY_STRING) {
+  error(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('error', message);
   }
 
-  debug(message: string, prefix: string = MAGIC_STRINGS.EMPTY_STRING) {
+  debug(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('debug', message);
   }
 
-  verbose(message: string, prefix: string = MAGIC_STRINGS.EMPTY_STRING) {
+  verbose(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('verbose', message);
   }
@@ -122,8 +122,6 @@ export class LoggerService {
     if (!prefix) {
       return message;
     }
-
-    const squaredPrefix: string = `${MAGIC_STRINGS.SQUARE_BRACKET_OPEN}${prefix}${MAGIC_STRINGS.SQUARE_BRACKET_CLOSE}`;
-    return `${squaredPrefix}${MAGIC_STRINGS.SPACE}${message}`;
+    return `[${prefix}] ${message}`;
   }
 }

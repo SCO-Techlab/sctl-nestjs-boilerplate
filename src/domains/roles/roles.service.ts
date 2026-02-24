@@ -1,7 +1,7 @@
 import { IPermission, PermissionsService } from "@domains/permissions";
 import { MongodbService } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
+import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
@@ -69,7 +69,7 @@ export class RolesService {
     }
   }
 
-  async findOne(value: any, property: string = MAGIC_STRINGS.UNDERSCORE_ID): Promise<IRole | undefined> {
+  async findOne(value: any, property: string = '_id'): Promise<IRole | undefined> {
     try {
       const result = await this.RoleModel.findOne({ [property]: value });
       return result ?? undefined;

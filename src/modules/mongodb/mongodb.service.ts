@@ -1,6 +1,6 @@
 import { LoggerService } from '@modules/logger';
 import { Inject, Injectable } from '@nestjs/common';
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
+import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { Connection, createConnection, Model, Schema } from 'mongoose';
 import { IMongodbConfig } from './mongodb.config';
@@ -24,7 +24,7 @@ export class MongodbService {
     }
   }
 
-  public clearConnection(name: string = MAGIC_STRINGS.DEFAULT): boolean {
+  public clearConnection(name: string = 'default'): boolean {
     if (!this._dbConnections.has(name)) {
       return false;
     }
@@ -73,7 +73,7 @@ export class MongodbService {
     });
   }
 
-  public getConnection(name: string = MAGIC_STRINGS.DEFAULT): Connection | undefined {
+  public getConnection(name: string = 'default'): Connection | undefined {
     if (!this._dbConnections.has(name)) {
       return undefined;
     }
@@ -81,7 +81,7 @@ export class MongodbService {
     return this._dbConnections.get(name);
   }
 
-  public getModel<T>(model: string, schema: Schema<T>, collection: string, name: string = MAGIC_STRINGS.DEFAULT): Model<T> | undefined {
+  public getModel<T>(model: string, schema: Schema<T>, collection: string, name: string = 'default'): Model<T> | undefined {
     if (!this._dbConnections.has(name)) {
       return undefined;
     }

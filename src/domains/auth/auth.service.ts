@@ -3,7 +3,7 @@ import { EmailerService } from '@modules/emailer';
 import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MAGIC_NUMBERS, MAGIC_STRINGS, TEMPLATES, TRANSLATES } from '@shared/constants';
+import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
 import { getFrontendUrl } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
@@ -21,7 +21,7 @@ export class AuthService {
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
-    const exist_user: IUser = await this.usersService.findOne(login.email, MAGIC_STRINGS.EMAIL) as IUser;
+    const exist_user: IUser = await this.usersService.findOne(login.email, 'email') as IUser;
     if (!exist_user) {
       throw this.getUnauthorizedError();
     }
@@ -63,7 +63,7 @@ export class AuthService {
   public async register(register: AuthRegisterDto, lang: string): Promise<boolean> {
     const { user } = register;
 
-    const existUser: IUser = await this.usersService.findOne(user.email, MAGIC_STRINGS.EMAIL) as IUser;
+    const existUser: IUser = await this.usersService.findOne(user.email, 'email') as IUser;
     if (existUser) {
       throw new ConflictException('User with email already exists');
     }
@@ -81,10 +81,10 @@ export class AuthService {
             params: {
               name: user.userName,
               link: getFrontendUrl(
-                this.configSerive.get(MAGIC_STRINGS.APP).httpsEnabled,
-                this.configSerive.get(MAGIC_STRINGS.APP).host,
-                this.configSerive.get(MAGIC_STRINGS.APP).port,
-                `${MAGIC_STRINGS.CONFIRM}${MAGIC_STRINGS.DASH}${MAGIC_STRINGS.EMAIL}${MAGIC_STRINGS.SLASH}${user.email}`
+                this.configSerive.get('app').httpsEnabled,
+                this.configSerive.get('app').host,
+                this.configSerive.get('app').port,
+                `confirm/email/${user.email}`
               )
             },
             literals: {
@@ -96,7 +96,7 @@ export class AuthService {
           footer: {
             params: {
               year: new Date().getFullYear(),
-              appName: this.configSerive.get(MAGIC_STRINGS.APP).appName
+              appName: this.configSerive.get('app').appName
             }
           }
         },
@@ -112,7 +112,7 @@ export class AuthService {
   }
 
   public async confirmUserEmaiil(email: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(email, MAGIC_STRINGS.EMAIL) as IUser;
+    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
     if (!existUser) {
       throw new NotFoundException(`User with email '${email}' does not exist`);
     }
@@ -135,7 +135,7 @@ export class AuthService {
   }
 
   public async forgotPassword(email: string, lang: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(email, MAGIC_STRINGS.EMAIL) as IUser;
+    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
     if (!existUser) {
       throw new NotFoundException(`User with email '${email}' does not exist`);
     }
@@ -160,12 +160,12 @@ export class AuthService {
           params: {
             name: existUser.userName,
             link: getFrontendUrl(
-              this.configSerive.get(MAGIC_STRINGS.APP).httpsEnabled,
-              this.configSerive.get(MAGIC_STRINGS.APP).host,
-              this.configSerive.get(MAGIC_STRINGS.APP).port,
-              `${MAGIC_STRINGS.FORGOT}${MAGIC_STRINGS.DASH}${MAGIC_STRINGS.PASSWORD}${MAGIC_STRINGS.SLASH}${existUser.pwdRecoveryToken}`
+              this.configSerive.get('app').httpsEnabled,
+              this.configSerive.get('app').host,
+              this.configSerive.get('app').port,
+              `forgot/password/${existUser.pwdRecoveryToken}`
             ),
-            expiration: this.configSerive.get(MAGIC_STRINGS.APP).pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30
+            expiration: this.configSerive.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30
           },
           literals: {
             welcomeText: TRANSLATES[lang].forgotPassword.welcomeText,
@@ -178,7 +178,7 @@ export class AuthService {
         footer: {
           params: {
             year: new Date().getFullYear(),
-            appName: this.configSerive.get(MAGIC_STRINGS.APP).appName
+            appName: this.configSerive.get('app').appName
           }
         }
       },
@@ -235,7 +235,7 @@ export class AuthService {
     return true;
   }
 
-  private getUnauthorizedError(message: string = MAGIC_STRINGS.UNAUTHORIZED): UnauthorizedException {
+  private getUnauthorizedError(message: string = 'Unauthorized'): UnauthorizedException {
     return new UnauthorizedException(message);
   }
 }

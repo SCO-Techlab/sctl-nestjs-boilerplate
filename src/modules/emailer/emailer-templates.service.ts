@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { MAGIC_STRINGS } from '@shared/constants';
 import { readFileSync, readdirSync } from 'fs';
 import * as Handlebars from 'handlebars';
 import * as juice from 'juice';
@@ -9,13 +8,13 @@ import { IEmailerRenderOptions } from './emailer.interface';
 @Injectable()
 export class EmailerTemplateService {
 
-  private readonly basePath = join(process.cwd(), MAGIC_STRINGS.TEMPLATES);
-  private readonly layoutsPath = join(this.basePath, MAGIC_STRINGS.LAYOUTS);
-  private readonly partialsPath = join(this.basePath, MAGIC_STRINGS.PARTIALS);
-  private readonly stylesPath = join(this.basePath, MAGIC_STRINGS.STYLES);
+  private readonly basePath = join(process.cwd(), 'templates');
+  private readonly layoutsPath = join(this.basePath, 'layouts');
+  private readonly partialsPath = join(this.basePath, 'partials');
+  private readonly stylesPath = join(this.basePath, 'styles');
 
-  private readonly defaultLayout = MAGIC_STRINGS.MAIN;
-  private readonly defaultCss = `${MAGIC_STRINGS.MAIN}${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.CSS}`;
+  private readonly defaultLayout = 'main';
+  private readonly defaultCss = 'main.css';
 
   constructor() {
     this.registerPartials();
@@ -34,32 +33,32 @@ export class EmailerTemplateService {
   }
 
   private compileTemplate(template: string, data: any): string {
-    const templatePath = join(this.basePath, `${template}${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`);
-    const source = readFileSync(templatePath, MAGIC_STRINGS.UTF8 as BufferEncoding);
+    const templatePath = join(this.basePath, `${template}.hbs`);
+    const source = readFileSync(templatePath, 'utf8');
     return Handlebars.compile(source)(data);
   }
 
   private applyLayout(layout: string, data: any): string {
-    const layoutPath = join(this.layoutsPath, `${layout}${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`);
-    const source = readFileSync(layoutPath, MAGIC_STRINGS.UTF8 as BufferEncoding);
+    const layoutPath = join(this.layoutsPath, `${layout}.hbs`);
+    const source = readFileSync(layoutPath, 'utf8');
     return Handlebars.compile(source)(data);
   }
 
   private loadCss(filename: string): string {
     const cssPath = join(this.stylesPath, filename);
-    return readFileSync(cssPath, MAGIC_STRINGS.UTF8 as BufferEncoding);
+    return readFileSync(cssPath, 'utf8');
   }
 
   private registerPartials(): void {
     const files = readdirSync(this.partialsPath);
 
     for (const file of files) {
-      if (!file.endsWith(MAGIC_STRINGS.DOT + MAGIC_STRINGS.HBS)) {
+      if (!file.endsWith('.hbs')) {
         continue;
       }
 
-      const partialName = file.replace(`${MAGIC_STRINGS.DOT}${MAGIC_STRINGS.HBS}`, MAGIC_STRINGS.EMPTY_STRING);
-      const content = readFileSync(join(this.partialsPath, file), MAGIC_STRINGS.UTF8 as BufferEncoding);
+      const partialName = file.replace(`.hbs`, '');
+      const content = readFileSync(join(this.partialsPath, file), 'utf8');
 
       Handlebars.registerPartial(partialName, content);
     }

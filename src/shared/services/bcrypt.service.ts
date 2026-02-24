@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
+import { MAGIC_NUMBERS } from "../constants";
 
 @Injectable()
 export class BcryptService {
@@ -29,7 +29,7 @@ export class BcryptService {
 
     return crypto
       .randomBytes(Math.ceil(safeLength / MAGIC_NUMBERS.N_2))
-      .toString(MAGIC_STRINGS.HEX as BufferEncoding)
+      .toString('hex')
       .slice(MAGIC_NUMBERS.N_0, safeLength);
   }
 

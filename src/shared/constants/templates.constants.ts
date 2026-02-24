@@ -1,6 +1,4 @@
-import { MAGIC_STRINGS } from "./magic-strings.constants";
-
 export const TEMPLATES = {
-  WELCOME: MAGIC_STRINGS.WELCOME,
-  FORGOT_PASSWORD: `${MAGIC_STRINGS.FORGOT}${MAGIC_STRINGS.DASH}${MAGIC_STRINGS.PASSWORD}`
+  WELCOME: 'welcome',
+  FORGOT_PASSWORD: 'forgot-password'
 }

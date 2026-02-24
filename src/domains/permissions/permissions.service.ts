@@ -1,6 +1,6 @@
 import { MongodbService } from "@modules/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS, MAGIC_STRINGS, MONGODB_CONSTANTS } from "@shared/constants";
+import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
@@ -67,7 +67,7 @@ export class PermissionsService {
     }
   }
 
-  async findOne(value: any, property: string = MAGIC_STRINGS.UNDERSCORE_ID): Promise<IPermission | undefined> {
+  async findOne(value: any, property: string = '_id'): Promise<IPermission | undefined> {
     try {
       const result = await this.PermissionModel.findOne({ [property]: value });
       return result ?? undefined;

@@ -1,8 +1,6 @@
-import { MAGIC_STRINGS } from "./magic-strings.constants";
-
 export const APP_CONTROLLERS = {
-  PERMISSIONS: MAGIC_STRINGS.PERMISSIONS,
-  ROLES: MAGIC_STRINGS.ROLES,
-  USERS: MAGIC_STRINGS.USERS,
-  AUTH: MAGIC_STRINGS.AUTH
+  PERMISSIONS: 'permissions',
+  ROLES: 'roles',
+  USERS: 'users',
+  AUTH: 'auth'
 }

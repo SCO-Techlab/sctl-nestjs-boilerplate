@@ -9,7 +9,6 @@ import { LoggerModule } from '@modules/logger';
 import { IMongodbConfig, MongodbModule } from '@modules/mongodb';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MAGIC_STRINGS } from '@shared/constants';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
 
 @Module({
@@ -21,7 +20,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
         JWT_ENV_CONFIG,
         EMAILER_ENV_CONFIG,
       ],
-      envFilePath: `./${MAGIC_STRINGS.ENV}/${process.env.NODE_ENV}.${MAGIC_STRINGS.ENV}`,
+      envFilePath: `./env/${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
     LoggerModule.register(),
@@ -29,7 +28,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         return [
-          configService.get(MAGIC_STRINGS.MONGODB) as IMongodbConfig
+          configService.get('mongodb') as IMongodbConfig
         ];
       },
       inject: [ConfigService],
@@ -37,7 +36,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        return configService.get(MAGIC_STRINGS.JWT) as IJwtConfig;
+        return configService.get('jwt') as IJwtConfig;
       },
       inject: [ConfigService],
     }),
@@ -45,7 +44,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         return [
-          configService.get(MAGIC_STRINGS.EMAILER) as IEmailerConfig
+          configService.get('emailer') as IEmailerConfig
         ]
       },
       inject: [ConfigService],
@@ -59,6 +58,6 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(PublicMiddleware).forRoutes(MAGIC_STRINGS.ASTERISK);
+    consumer.apply(PublicMiddleware).forRoutes('*');
   }
 }
