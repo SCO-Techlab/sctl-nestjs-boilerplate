@@ -3,10 +3,7 @@ import { IModuleAsyncConfig, IModuleConfigFactory } from "../interfaces";
 
 export const PROVIDER_CONFIG: string = 'CONFIG_OPTIONS';
 
-export const createAsyncConfigProvider = (
-  options: IModuleAsyncConfig,
-): Provider[] => {
-
+export const createAsyncConfigProvider = (options: IModuleAsyncConfig): Provider[] => {
   if (options.useFactory) {
     return [{
       provide: PROVIDER_CONFIG,
