@@ -29,7 +29,13 @@ export const titleCase = (str: string, maxWords?: number): string => {
 };
 
 export const getFrontendUrl = (httpsEnabled: boolean, host: string, port: number, extraPath?: string): string => {
-  const protocol = httpsEnabled ? MAGIC_STRINGS.HTTPS : MAGIC_STRINGS.HTTP;
+  const protocol = httpsEnabled 
+    ? MAGIC_STRINGS.HTTPS 
+    : MAGIC_STRINGS.HTTP;
+    
   const url: string = `${protocol}${MAGIC_STRINGS.COLON}${MAGIC_STRINGS.SLASH}${MAGIC_STRINGS.SLASH}${host}${MAGIC_STRINGS.COLON}${port}`;
-  return extraPath ? `${url}${MAGIC_STRINGS.SLASH}${extraPath}` : url;
+  
+  return extraPath 
+    ? `${url}${MAGIC_STRINGS.SLASH}${extraPath}` 
+    : url;
 }

@@ -86,4 +86,5 @@ export const MAGIC_STRINGS = {
   ERROR: 'error',
   HTTP: 'http',
   HTTPS: 'https',
+  ENV: 'env',
 }

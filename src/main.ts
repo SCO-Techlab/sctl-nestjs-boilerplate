@@ -43,7 +43,7 @@ async function bootstrap() {
 
   await app.listen(appConfig.port)
     .then(() => loggerService.log(
-      `Server is running on ${appConfig.host}${MAGIC_STRINGS.COLON}${appConfig.port}`,
+      `Server is running on ${httpsEnabled ? 'https' : 'http'}://${appConfig.host}:${appConfig.port}`,
       titleCase(MAGIC_STRINGS.APP)
     ))
     .catch((err) => loggerService.error(err, titleCase(MAGIC_STRINGS.APP)));

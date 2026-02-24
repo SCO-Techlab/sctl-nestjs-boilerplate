@@ -29,7 +29,9 @@ export class PaginationService {
   }
 
   capPageNumber(page: number, totalPages: number): number {
-    return page > totalPages ? totalPages : page;
+    return page > totalPages 
+      ? totalPages 
+      : page;
   }
 
   paginationParams(page: number, limit: number, totalRecords: number): { totalPages: number, finalPage: number, skip: number, sanitizedLimit: number } {

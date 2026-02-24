@@ -21,7 +21,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
         JWT_ENV_CONFIG,
         EMAILER_ENV_CONFIG,
       ],
-      envFilePath: `./env/${process.env.NODE_ENV}.env`,
+      envFilePath: `./${MAGIC_STRINGS.ENV}/${process.env.NODE_ENV}.${MAGIC_STRINGS.ENV}`,
       isGlobal: true,
     }),
     LoggerModule.register(),
@@ -29,7 +29,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         return [
-          configService.get('mongodb') as IMongodbConfig
+          configService.get(MAGIC_STRINGS.MONGODB) as IMongodbConfig
         ];
       },
       inject: [ConfigService],
@@ -37,7 +37,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        return configService.get('jwt') as IJwtConfig;
+        return configService.get(MAGIC_STRINGS.JWT) as IJwtConfig;
       },
       inject: [ConfigService],
     }),
@@ -45,7 +45,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         return [
-          configService.get('emailer') as IEmailerConfig
+          configService.get(MAGIC_STRINGS.EMAILER) as IEmailerConfig
         ]
       },
       inject: [ConfigService],
@@ -55,8 +55,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
     PermissionsModule,
     RolesModule,
     UsersModule,
-  ],
-  providers: [],
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {

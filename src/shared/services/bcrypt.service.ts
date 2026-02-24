@@ -6,15 +6,12 @@ import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
 @Injectable()
 export class BcryptService {
 
-  constructor() { }
-
   public async hash(password: string, saltRounds: number = MAGIC_NUMBERS.N_10): Promise<string | undefined> {
     try {
       const salt = await bcrypt.genSalt(saltRounds);
       const hash = await bcrypt.hash(password, salt);
       return hash;
-    } catch (error) {
-      console.error(`[BcryptService] encrypt -> Error: ${JSON.stringify(error)}`);
+    } catch {
       return undefined;
     }
   }
@@ -22,8 +19,7 @@ export class BcryptService {
   public async compare(value: string, hash: string): Promise<boolean> {
     try {
       return await bcrypt.compare(value, hash);
-    } catch (error) {
-      console.error(`[BcryptService] compare -> Error: ${JSON.stringify(error)}`);
+    } catch {
       return false;
     }
   }

@@ -1,30 +1,13 @@
 import { BadRequestException, ConflictException, HttpException, InternalServerErrorException } from "@nestjs/common";
-import { Schema } from "mongoose";
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from "../constants";
-import { titleCase } from "./utils.helper";
-
-export const setIncrementalVersion = (schema: Schema) => {
-  schema.pre(['updateOne', 'updateMany', 'findOneAndUpdate'], function () {
-    const update = this.getUpdate() || {};
-
-    if (!update[MAGIC_STRINGS.$INC]) {
-      update[MAGIC_STRINGS.$INC] = {};
-    }
-
-    if (update[MAGIC_STRINGS.$INC].__v === null || update[MAGIC_STRINGS.$INC].__v === undefined) {
-      update[MAGIC_STRINGS.$INC].__v = MAGIC_NUMBERS.N_1;
-    }
-
-    this.setUpdate(update);
-  });
-};
+import { MAGIC_NUMBERS, MAGIC_STRINGS } from "@shared/constants";
 
 export const formatMongodbError = (error: any, service: string, method: string): any => {
   if (error instanceof HttpException) {
     return error;
   }
 
-  console.error(`${MAGIC_STRINGS.SQUARE_BRACKET_OPEN}${service}${MAGIC_STRINGS.SQUARE_BRACKET_CLOSE} ${method} ${MAGIC_STRINGS.ARROW_RIGHT} ${titleCase(MAGIC_STRINGS.ERROR)}${MAGIC_STRINGS.COLON} ${error}`);
+  const formatedService: string = `${MAGIC_STRINGS.SQUARE_BRACKET_OPEN}${service}${MAGIC_STRINGS.SQUARE_BRACKET_CLOSE}`;
+  console.error(`${formatedService} ${method} ${MAGIC_STRINGS.ARROW_RIGHT} ${MAGIC_STRINGS.ERROR}${MAGIC_STRINGS.COLON} ${error}`);
 
   if (error?.code === MAGIC_NUMBERS.N_11000 && !error?.codeName) {
     return new ConflictException(formatDuplicatedKeyError(error));
