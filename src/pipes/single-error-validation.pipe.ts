@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, ValidationError, ValidationPipe } from '@nestjs/common';
-import { MAGIC_NUMBERS, MAGIC_STRINGS } from '../constants';
+import { MAGIC_NUMBERS, MAGIC_STRINGS } from '@shared/constants';
 
 export class SingleErrorValidationPipe extends ValidationPipe {
   constructor() {
@@ -10,11 +10,8 @@ export class SingleErrorValidationPipe extends ValidationPipe {
           .join(MAGIC_STRINGS.SEMICOLON);
 
         const splitErrors: string[] = errors?.split(MAGIC_STRINGS.SEMICOLON);
-
-        throw new HttpException(
-          splitErrors[splitErrors.length - MAGIC_NUMBERS.N_1],
-          HttpStatus.BAD_REQUEST
-        );
+        const error: string = splitErrors[splitErrors.length - MAGIC_NUMBERS.N_1];
+        throw new HttpException(error, HttpStatus.BAD_REQUEST);
       },
     });
   }

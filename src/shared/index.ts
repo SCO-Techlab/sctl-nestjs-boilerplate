@@ -4,8 +4,6 @@ export * from './dtos';
 export * from './enums';
 export * from './guards';
 export * from './helpers';
-export * from './interceptors';
 export * from './interfaces';
-export * from './pipes';
 export * from './services';
 export * from './types';

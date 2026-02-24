@@ -9,14 +9,14 @@ export class LanguageInterceptor implements NestInterceptor {
   private configLangHeader: string = MAGIC_STRINGS.EMPTY_STRING;
 
   constructor(langHeader: string = MAGIC_STRINGS.EMPTY_STRING) {
-    this.configLangHeader = langHeader 
-      ? langHeader.toLowerCase() 
+    this.configLangHeader = langHeader
+      ? langHeader.toLowerCase()
       : this.configLangHeader;
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<any>();
-    
+
     const langRaw =
       (request.headers[this.configLangHeader] as string) ||
       (request.query.lang as string) ||
@@ -32,7 +32,9 @@ export class LanguageInterceptor implements NestInterceptor {
   }
 
   private parseAcceptLanguage(header?: string): string | undefined {
-    if (!header) return;
+    if (!header) {
+      return MAGIC_STRINGS.EMPTY_STRING;
+    }
 
     return header
       .split(MAGIC_STRINGS.COMMA)

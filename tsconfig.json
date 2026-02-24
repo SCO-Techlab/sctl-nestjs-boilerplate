@@ -28,11 +28,17 @@
       "@env-configs/*": [
         "./src/env-configs/*"
       ],
+      "@interceptors/*": [
+        "./src/interceptors/*"
+      ],
       "@middlewares/*": [
         "./src/middlewares/*"
       ],
       "@modules/*": [
         "./src/modules/*"
+      ],
+      "@pipes/*": [
+        "./src/pipes/*"
       ],
       "@shared/*": [
         "./src/shared/*"

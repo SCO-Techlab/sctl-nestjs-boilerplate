@@ -1,10 +1,10 @@
+import { LanguageInterceptor } from '@interceptors/language.interceptor';
 import { LoggerService } from '@modules/logger';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { SingleErrorValidationPipe } from '@pipes/single-error-validation.pipe';
 import { MAGIC_STRINGS } from '@shared/constants';
 import { formatOrigin, getCertificates, titleCase } from '@shared/helpers';
-import { LanguageInterceptor } from '@shared/interceptors';
-import { SingleErrorValidationPipe } from '@shared/pipes';
 import { IAppConfig } from './app.config';
 import { AppModule } from './app.module';
 
