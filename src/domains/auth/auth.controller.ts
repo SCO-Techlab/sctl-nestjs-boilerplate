@@ -3,7 +3,7 @@ import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang } from '@shared/decorators';
-import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
+import { AuthLoginDto, AuthRefreshDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @Controller(APP_CONTROLLERS.AUTH)
@@ -18,12 +18,25 @@ export class AuthController {
     return await this.authService.login(login);
   }
 
+  @Post('refresh/:email')
+  async refresh(
+    @Param('email') email: string,
+    @Body() authRefreshDto: AuthRefreshDto
+  ): Promise<IJwtToken> {
+    return await this.authService.refresh(email, authRefreshDto);
+  }
+
   @Post('register')
   async register(
     @Lang() lang: string,
     @Body() registerDto: AuthRegisterDto
   ): Promise<boolean> {
     return await this.authService.register(registerDto, lang);
+  }
+
+  @Get('find/user/:email')
+  async findUser(@Param('email') email: string): Promise<IUser> {
+    return await this.authService.findUser(email);
   }
 
   @Get('confirm/email/:email')
@@ -39,16 +52,13 @@ export class AuthController {
     return await this.authService.forgotPassword(email, lang);
   }
 
-  @Get('password/recovery/find/:pwdRecoveryToken')
-  async passwordRecoveryFind(@Param('pwdRecoveryToken') pwdRecoveryToken: string): Promise<IUser> {
-    return await this.authService.passwordRecoveryFind(pwdRecoveryToken);
+  @Get('recover/password/find/:pwdRecoveryToken')
+  async recoverPasswordFind(@Param('pwdRecoveryToken') pwdRecoveryToken: string): Promise<IUser> {
+    return await this.authService.recoverPasswordFind(pwdRecoveryToken);
   }
 
-  @Put('password/recovery/reset/:pwdRecoveryToken')
-  async resetPassword(
-    @Param('pwdRecoveryToken') pwdRecoveryToken: string,
-    @Body() passwordResetDto: AuthResetPasswordDto
-  ): Promise<boolean> {
-    return await this.authService.passwordRecoveryReset(pwdRecoveryToken, passwordResetDto.password);
+  @Put('recover/password/reset')
+  async recoverPasswordReset(@Body() passwordResetDto: AuthResetPasswordDto): Promise<boolean> {
+    return await this.authService.recoverPasswordReset(passwordResetDto);
   }
 }

@@ -55,8 +55,21 @@ export class JwtService {
     }
   }
 
+  public verifyRefreshToken<T = any>(refreshToken: string): T | undefined {
+    try {
+      return this.nestjsJwtService.verify<any>(refreshToken, {
+        secret: this.options.refresh?.secret,
+        issuer: this.options.refresh?.issuer ?? this.options.signOptions.issuer,
+        audience: this.options.refresh?.audience ?? this.options.signOptions.audience as any,
+      });
+    } catch (error) {
+      console.error(`[JwtService] verifyRefreshToken -> Error: ${error}`);
+      return undefined;
+    }
+  }
+
   private createRefreshToken<T extends object>(payload: T): string | undefined {
-    if (!this.options.refresh) {
+    if (!this.options.refresh || !this.options.refresh.secret) {
       return undefined;
     }
 

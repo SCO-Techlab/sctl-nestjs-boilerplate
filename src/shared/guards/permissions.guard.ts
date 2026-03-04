@@ -1,7 +1,7 @@
 import { IPermission, IRequiredPermission } from '@domains/permissions';
 import { IRole } from '@domains/roles';
 import { IUser } from '@domains/users';
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { MAGIC_NUMBERS } from '@shared/constants';
 
@@ -17,9 +17,6 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user: IUser = request.user;
-    if (!user || !user.role) {
-      throw new UnauthorizedException('User not authenticated');
-    }
 
     const userPermissions: IPermission[] = ((user.role as IRole).permissions || []) as IPermission[];
     if (!userPermissions || userPermissions.length === MAGIC_NUMBERS.N_0) {

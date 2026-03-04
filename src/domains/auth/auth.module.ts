@@ -6,11 +6,13 @@ import { BcryptService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
+import { RolesModule } from '@domains/roles';
 
 const MODULE = {
   imports: [
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
-    UsersModule
+    UsersModule,
+    RolesModule,
   ],
   controllers: [
     AuthController

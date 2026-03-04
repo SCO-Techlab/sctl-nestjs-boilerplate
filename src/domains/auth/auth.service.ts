@@ -1,12 +1,13 @@
+import { IRole, RolesService } from '@domains/roles';
 import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
 import { EmailerService } from '@modules/emailer';
 import { IJwtToken, JwtService } from '@modules/jwt';
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
 import { getFrontendUrl } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
-import { AuthLoginDto, AuthRegisterDto } from './auth.dto';
+import { AuthLoginDto, AuthRefreshDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
 
 @Injectable()
@@ -17,22 +18,23 @@ export class AuthService {
     private usersService: UsersService,
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
-    private emailerService: EmailerService
+    private emailerService: EmailerService,
+    private rolesService: RolesService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
     const exist_user: IUser = await this.usersService.findOne(login.email, 'email') as IUser;
     if (!exist_user) {
-      throw this.getUnauthorizedError();
-    }
-
-    if (!exist_user.active) {
-      throw this.getUnauthorizedError();
+      throw new UnauthorizedException();
     }
 
     const passwordsMatch: boolean = await this.bcryptService.compare(login.password, exist_user.password);
     if (!passwordsMatch) {
-      throw this.getUnauthorizedError();
+      throw new UnauthorizedException();
+    }
+
+    if (!exist_user.active) {
+      throw new ForbiddenException('User is not active');
     }
 
     const payload: IAuthPayload = {
@@ -52,39 +54,81 @@ export class AuthService {
       }
     };
 
-    const token: IJwtToken = await this.jwtService.createToken(payload) as IJwtToken;
+    const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
     if (!token) {
-      throw this.getUnauthorizedError();
+      throw new UnauthorizedException();
+    }
+
+    return token;
+  }
+
+  public async refresh(email: string, authRefreshDto: AuthRefreshDto): Promise<IJwtToken> {
+    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+    if (!existUser) {
+      throw new UnauthorizedException();
+    }
+
+    const verifyToken: IAuthPayload = !authRefreshDto.isAccessToken
+      ? await this.jwtService.verifyRefreshToken(authRefreshDto.token) as IAuthPayload
+      : await this.jwtService.verifyToken(authRefreshDto.token) as IAuthPayload;
+
+    if (verifyToken?.user?.email !== existUser.email) {
+      throw new UnauthorizedException();
+    }
+
+    const payload: IAuthPayload = {
+      _id: existUser._id as string,
+      user: {
+        _id: existUser._id as string,
+        email: existUser.email,
+        password: '',
+        userName: existUser.userName,
+        personalName: existUser.personalName,
+        active: existUser.active,
+        emailConfirmed: existUser.emailConfirmed,
+        role: existUser.role,
+        pwdRecoveryToken: existUser.pwdRecoveryToken,
+        pwdRecoveryDate: existUser.pwdRecoveryDate,
+        extension: existUser.extension,
+      }
+    };
+
+    const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
+    if (!token) {
+      throw new UnauthorizedException();
     }
 
     return token;
   }
 
   public async register(register: AuthRegisterDto, lang: string): Promise<boolean> {
-    const { user } = register;
-
-    const existUser: IUser = await this.usersService.findOne(user.email, 'email') as IUser;
+    const existUser: IUser = await this.usersService.findOne(register.email, 'email') as IUser;
     if (existUser) {
       throw new ConflictException('User with email already exists');
     }
 
-    const createdUser: IUser = await this.usersService.save(user);
+    const existRole: IRole = await this.rolesService.findOne(register.role, 'name') as IRole;
+    if (!existRole) {
+      throw new ConflictException('Role not found');
+    }
+
+    const createdUser: IUser = await this.usersService.save({ ...register, role: existRole._id as string });
     if (!createdUser) {
       throw new ConflictException('Error creating user');
     }
 
-    if (user.active !== true) {
+    if (register.active !== true) {
       const emailSend: boolean = await this.emailerService.sendTemplate({
         template: TEMPLATES.WELCOME,
         context: {
           welcome: {
             params: {
-              name: user.userName,
+              name: register.userName,
               link: getFrontendUrl(
                 this.configSerive.get('app').httpsEnabled,
                 this.configSerive.get('app').host,
-                this.configSerive.get('app').port,
-                `confirm/email/${user.email}`
+                this.configSerive.get('app').production ? this.configSerive.get('app').port : MAGIC_NUMBERS.N_4200,
+                `auth/confirm-email/${register.email}`
               )
             },
             literals: {
@@ -100,7 +144,7 @@ export class AuthService {
             }
           }
         },
-        receivers: [user.email],
+        receivers: [register.email],
         subject: TRANSLATES[lang].welcome.subject
       });
       if (!emailSend) {
@@ -109,6 +153,15 @@ export class AuthService {
     }
 
     return createdUser !== undefined;
+  }
+
+  public async findUser(email: string): Promise<IUser> {
+    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+    if (!existUser) {
+      throw new NotFoundException(`User with email '${email}' does not exist`);
+    }
+
+    return existUser;
   }
 
   public async confirmUserEmaiil(email: string): Promise<boolean> {
@@ -123,6 +176,7 @@ export class AuthService {
 
     const userUpdateDto: UserUpdateDto = {
       emailConfirmed: true,
+      emailConfirmedAt: new Date(),
       active: true
     };
 
@@ -137,7 +191,7 @@ export class AuthService {
   public async forgotPassword(email: string, lang: string): Promise<boolean> {
     const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
     if (!existUser) {
-      throw new NotFoundException(`User with email '${email}' does not exist`);
+      throw new NotFoundException('User not found');
     }
 
     existUser.pwdRecoveryToken = this.bcryptService.randomToken();
@@ -162,8 +216,8 @@ export class AuthService {
             link: getFrontendUrl(
               this.configSerive.get('app').httpsEnabled,
               this.configSerive.get('app').host,
-              this.configSerive.get('app').port,
-              `forgot/password/${existUser.pwdRecoveryToken}`
+              this.configSerive.get('app').production ? this.configSerive.get('app').port : MAGIC_NUMBERS.N_4200,
+              `auth/reset-password/${existUser.pwdRecoveryToken}`
             ),
             expiration: this.configSerive.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30
           },
@@ -183,7 +237,7 @@ export class AuthService {
         }
       },
       receivers: [existUser.email],
-      subject: TRANSLATES[lang].welcome.subject
+      subject: TRANSLATES[lang].forgotPassword.subject
     });
     if (!emailSend) {
       throw new ConflictException('Error sending password recovery email');
@@ -192,30 +246,30 @@ export class AuthService {
     return true;
   }
 
-  public async passwordRecoveryFind(pwdRecoveryToken: string): Promise<IUser> {
+  public async recoverPasswordFind(pwdRecoveryToken: string): Promise<IUser> {
     const existUser: IUser = await this.usersService.findOne(pwdRecoveryToken, 'pwdRecoveryToken') as IUser;
     if (!existUser) {
-      throw this.getUnauthorizedError();
+      throw new UnauthorizedException();
     }
 
     const minutes: number = this.configSerive.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30;
     const expirationTime = minutes * MAGIC_NUMBERS.N_60 * MAGIC_NUMBERS.N_1000;
     if (existUser.pwdRecoveryDate && (Date.now() - existUser.pwdRecoveryDate.getTime()) > expirationTime) {
-      throw this.getUnauthorizedError('Password recovery token is expired');
+      throw new UnauthorizedException('Password recovery token is expired');
     }
 
     return existUser;
   }
 
-  public async passwordRecoveryReset(pwdRecoveryToken: string, newPassword: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(pwdRecoveryToken, 'pwdRecoveryToken') as IUser;
+  public async recoverPasswordReset(passwordResetDto: AuthResetPasswordDto): Promise<boolean> {
+    const existUser: IUser = await this.usersService.findOne(passwordResetDto.userId, '_id') as IUser;
     if (!existUser) {
-      throw this.getUnauthorizedError();
+      throw new UnauthorizedException();
     }
 
     const userUpdatePasswordDto: UserPasswordUpdateDto = {
-      password: newPassword,
-      newPassword: newPassword,
+      password: passwordResetDto.password,
+      newPassword: passwordResetDto.password,
     };
 
     const updatedPassword = await this.usersService.updatePassword(existUser._id as string, userUpdatePasswordDto, false);
@@ -233,9 +287,5 @@ export class AuthService {
     }
 
     return true;
-  }
-
-  private getUnauthorizedError(message: string = 'Unauthorized'): UnauthorizedException {
-    return new UnauthorizedException(message);
   }
 }

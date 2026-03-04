@@ -36,6 +36,11 @@ export const USERS_SCHEMA = new Schema<IUser>(
       required: false,
       default: false,
     },
+    emailConfirmedAt: {
+      type: Date,
+      required: false,
+      default: null,
+    },
     role: {
       type: Types.ObjectId,
       ref: MONGODB_CONSTANTS.ROLES.MODEL,

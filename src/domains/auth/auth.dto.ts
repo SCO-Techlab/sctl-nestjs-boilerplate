@@ -1,7 +1,6 @@
-import { UserCreateDto } from '@domains/users';
 import { MAGIC_NUMBERS, REGEX_PATTERNS } from '@shared/constants';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class AuthLoginDto {
   @IsNotEmpty()
@@ -18,11 +17,45 @@ export class AuthLoginDto {
   password: string;
 }
 
+export class AuthRefreshDto {
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+
+  @IsOptional()
+  isAccessToken?: boolean;
+}
+
 export class AuthRegisterDto {
   @IsNotEmpty()
-  @Type(() => UserCreateDto)
-  @IsObject()
-  user: UserCreateDto;
+  @IsEmail()
+  @MaxLength(MAGIC_NUMBERS.N_255)
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(REGEX_PATTERNS.PASSWORD)
+  @MinLength(MAGIC_NUMBERS.N_8)
+  @MaxLength(MAGIC_NUMBERS.N_64)
+  password: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAGIC_NUMBERS.N_32)
+  userName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAGIC_NUMBERS.N_255)
+  personalName?: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  active: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
 }
 
 export class AuthPwdRecoveryDto {
@@ -37,6 +70,11 @@ export class AuthPwdRecoveryDto {
 }
 
 export class AuthResetPasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  userId: string;
+
   @IsNotEmpty()
   @IsString()
   @MinLength(MAGIC_NUMBERS.N_8)

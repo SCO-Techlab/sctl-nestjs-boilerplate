@@ -1,11 +1,13 @@
 const ROLES_MIGRATION = require('./default-roles.mock');
 
+const dateNow = new Date();
+
 const DEFAULT_USER = {
   pwdRecoveryToken: null,
   pwdRecoveryDate: null,
   extension: {},
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: dateNow,
+  updatedAt: dateNow,
   __v: 0
 };
 
@@ -17,6 +19,7 @@ module.exports = [
     personalName: 'Super Admin',
     active: true,
     emailConfirmed: true,
+    emailConfirmedAt: dateNow,
     role: ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN'),
     ...DEFAULT_USER
   },
@@ -27,6 +30,7 @@ module.exports = [
     personalName: 'Administrator Admin',
     active: true,
     emailConfirmed: true,
+    emailConfirmedAt: dateNow,
     role: ROLES_MIGRATION.find(role => role.name === 'ADMIN'),
     ...DEFAULT_USER
   },
@@ -37,6 +41,7 @@ module.exports = [
     personalName: 'User User',
     active: true,
     emailConfirmed: true,
+    emailConfirmedAt: dateNow,
     role: ROLES_MIGRATION.find(role => role.name === 'USER'),
     ...DEFAULT_USER
   },
@@ -47,6 +52,7 @@ module.exports = [
     personalName: 'Guest Guest',
     active: true,
     emailConfirmed: true,
+    emailConfirmedAt: dateNow,
     role: ROLES_MIGRATION.find(role => role.name === 'GUEST'),
     ...DEFAULT_USER
   }

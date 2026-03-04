@@ -64,6 +64,10 @@ export class UserUpdateDto extends MongodbDocumentDto {
   @IsBoolean()
   emailConfirmed?: boolean;
 
+  @IsOptional()
+  @IsDate()
+  emailConfirmedAt?: Date;
+
   @IsNotEmpty()
   @IsString()
   @IsMongoId()
