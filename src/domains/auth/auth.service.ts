@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
 import { getFrontendUrl } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
-import { AuthLoginDto, AuthRefreshDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
+import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto, AuthTokenValidationDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
 
 @Injectable()
@@ -62,15 +62,15 @@ export class AuthService {
     return token;
   }
 
-  public async refresh(email: string, authRefreshDto: AuthRefreshDto): Promise<IJwtToken> {
-    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+  public async tokenValidation(authTokenValidationDto: AuthTokenValidationDto): Promise<IJwtToken> {
+    const existUser: IUser = await this.usersService.findOne(authTokenValidationDto?.email, 'email') as IUser;
     if (!existUser) {
       throw new UnauthorizedException();
     }
 
-    const verifyToken: IAuthPayload = !authRefreshDto.isAccessToken
-      ? await this.jwtService.verifyRefreshToken(authRefreshDto.token) as IAuthPayload
-      : await this.jwtService.verifyToken(authRefreshDto.token) as IAuthPayload;
+    const verifyToken: IAuthPayload = !authTokenValidationDto?.isAccessToken
+      ? await this.jwtService.verifyRefreshToken(authTokenValidationDto?.token) as IAuthPayload
+      : await this.jwtService.verifyToken(authTokenValidationDto?.token) as IAuthPayload;
 
     if (verifyToken?.user?.email !== existUser.email) {
       throw new UnauthorizedException();

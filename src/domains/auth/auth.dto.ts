@@ -17,7 +17,13 @@ export class AuthLoginDto {
   password: string;
 }
 
-export class AuthRefreshDto {
+export class AuthTokenValidationDto {
+  @IsNotEmpty()
+  @IsString()
+  @Matches(REGEX_PATTERNS.EMAIL)
+  @MaxLength(MAGIC_NUMBERS.N_255)
+  email: string;
+
   @IsNotEmpty()
   @IsString()
   token: string;

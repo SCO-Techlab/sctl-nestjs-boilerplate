@@ -3,7 +3,7 @@ import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang } from '@shared/decorators';
-import { AuthLoginDto, AuthRefreshDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
+import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto, AuthTokenValidationDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @Controller(APP_CONTROLLERS.AUTH)
@@ -18,12 +18,9 @@ export class AuthController {
     return await this.authService.login(login);
   }
 
-  @Post('refresh/:email')
-  async refresh(
-    @Param('email') email: string,
-    @Body() authRefreshDto: AuthRefreshDto
-  ): Promise<IJwtToken> {
-    return await this.authService.refresh(email, authRefreshDto);
+  @Post('token/validation')
+  async tokenValidation(@Body() authTokenValidationDto: AuthTokenValidationDto): Promise<IJwtToken> {
+    return await this.authService.tokenValidation(authTokenValidationDto);
   }
 
   @Post('register')
