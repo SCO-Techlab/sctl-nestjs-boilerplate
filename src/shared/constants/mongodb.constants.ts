@@ -10,5 +10,9 @@ export const MONGODB_CONSTANTS = {
   USERS: {
     MODEL: 'Users',
     COLLECTION: 'users'
+  },
+  REFRESH_TOKENS: {
+    MODEL: 'RefreshToken',
+    COLLECTION: 'refresh-tokens'
   }
 }

@@ -5,10 +5,11 @@ import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
-import { getFrontendUrl } from '@shared/helpers';
+import { getFrontendUrl, parseDateUnits } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto, AuthTokenValidationDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
+import { IRefreshToken, RefreshTokenService } from './refresh-tokens';
 
 @Injectable()
 export class AuthService {
@@ -19,44 +20,56 @@ export class AuthService {
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
     private emailerService: EmailerService,
-    private rolesService: RolesService
+    private rolesService: RolesService,
+    private refreshTokenService: RefreshTokenService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
-    const exist_user: IUser = await this.usersService.findOne(login.email, 'email') as IUser;
-    if (!exist_user) {
+    const existUser: IUser = await this.usersService.findOne(login.email, 'email') as IUser;
+    if (!existUser) {
       throw new UnauthorizedException();
     }
 
-    const passwordsMatch: boolean = await this.bcryptService.compare(login.password, exist_user.password);
+    const passwordsMatch: boolean = await this.bcryptService.compare(login.password, existUser.password);
     if (!passwordsMatch) {
       throw new UnauthorizedException();
     }
 
-    if (!exist_user.active) {
+    if (!existUser.active) {
       throw new ForbiddenException('User is not active');
     }
 
     const payload: IAuthPayload = {
-      _id: exist_user._id as string,
+      _id: existUser._id as string,
       user: {
-        _id: exist_user._id as string,
-        email: exist_user.email,
+        _id: existUser._id as string,
+        email: existUser.email,
         password: '',
-        userName: exist_user.userName,
-        personalName: exist_user.personalName,
-        active: exist_user.active,
-        emailConfirmed: exist_user.emailConfirmed,
-        role: exist_user.role,
-        pwdRecoveryToken: exist_user.pwdRecoveryToken,
-        pwdRecoveryDate: exist_user.pwdRecoveryDate,
-        extension: exist_user.extension,
+        userName: existUser.userName,
+        personalName: existUser.personalName,
+        active: existUser.active,
+        emailConfirmed: existUser.emailConfirmed,
+        role: existUser.role,
+        pwdRecoveryToken: existUser.pwdRecoveryToken,
+        pwdRecoveryDate: existUser.pwdRecoveryDate,
+        extension: existUser.extension,
       }
     };
 
     const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
     if (!token) {
       throw new UnauthorizedException();
+    }
+
+    if (token.refreshToken) {
+      await this.refreshTokenService.updateMany({ user: existUser._id, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
+      await this.refreshTokenService.save({ 
+        user: existUser as IUser, 
+        tokenHash: token.refreshToken, 
+        expiresAt: new Date(Date.now() + parseDateUnits(this.configSerive.get('jwt').refresh.expiresIn)),
+        isRevoked: false,
+        revokedAt: undefined
+      });
     }
 
     return token;
@@ -96,6 +109,32 @@ export class AuthService {
     const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
     if (!token) {
       throw new UnauthorizedException();
+    }
+
+    const refreshToken: IRefreshToken = (await this.refreshTokenService.find({ user: existUser, isRevoked: false }) as IRefreshToken[])?.[MAGIC_NUMBERS.N_0];
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+    
+    const tokensAreaEquals: boolean = await this.bcryptService.compare(authTokenValidationDto.token, refreshToken?.tokenHash);
+    if (!tokensAreaEquals) {
+      throw new UnauthorizedException();
+    }
+
+    const tokenIsExpired: boolean = Date.now() > refreshToken.expiresAt.getTime();
+    if (tokenIsExpired) {
+      throw new UnauthorizedException();
+    }
+
+    if (token.refreshToken) {
+      await this.refreshTokenService.updateMany({ user: existUser._id, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
+      await this.refreshTokenService.save({ 
+        user: existUser as IUser, 
+        tokenHash: token.refreshToken, 
+        expiresAt: new Date(Date.now() + parseDateUnits(this.configSerive.get('jwt').refresh.expiresIn)),
+        isRevoked: false,
+        revokedAt: undefined
+      });
     }
 
     return token;
