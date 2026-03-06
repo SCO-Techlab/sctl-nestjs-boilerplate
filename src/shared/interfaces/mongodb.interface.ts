@@ -4,3 +4,8 @@ export interface IMongodbDocument {
   updatedAt?: Date;
   __v?: number;
 }
+
+export interface IMongodbRecord {
+  property: string;
+  value: any;
+}
