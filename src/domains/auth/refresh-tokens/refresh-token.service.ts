@@ -111,7 +111,7 @@ export class RefreshTokenService {
       );
 
       if (!updatedRefreshToken) {
-        throw this.refreshTokenNotFound(_id);
+        throw new NotFoundException(`RefreshToken not found`);
       }
 
       return updatedRefreshToken;
@@ -138,7 +138,7 @@ export class RefreshTokenService {
     try {
       const result = await this.RefreshTokenModel.deleteOne({ _id });
       if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
-        throw this.refreshTokenNotFound(_id);
+        throw new NotFoundException(`RefreshToken not found`);
       }
 
       return true;
@@ -154,9 +154,5 @@ export class RefreshTokenService {
     } catch (error) {
       throw formatMongodbError(error, 'RefreshTokenService', 'deleteMany');
     }
-  }
-
-  private refreshTokenNotFound(_id: string): NotFoundException {
-    return new NotFoundException(`RefreshToken with id '${_id}' does not exist`);
   }
 }
