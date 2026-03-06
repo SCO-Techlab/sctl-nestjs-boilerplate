@@ -14,7 +14,7 @@ const DEFAULT_USER = {
 module.exports = [
   {
     email: 'superadmin@superadmin.com',
-    password: '123456789Abc!',
+    password: '$2a$10$AT4Soj6Upx0oeedUtnfx6u9WiYzq3bbDuAKrGSJa2dC8nkkZlsvAC',
     userName: 'superadmin',
     personalName: 'Super Admin',
     active: true,
@@ -25,7 +25,7 @@ module.exports = [
   },
   {
     email: 'admin@admin.com',
-    password: '123456789Abc!',
+    password: '$2a$10$AT4Soj6Upx0oeedUtnfx6u9WiYzq3bbDuAKrGSJa2dC8nkkZlsvAC',
     userName: 'admin',
     personalName: 'Administrator Admin',
     active: true,
@@ -36,7 +36,7 @@ module.exports = [
   },
   {
     email: 'user@user.com',
-    password: '123456789Abc!',
+    password: '$2a$10$AT4Soj6Upx0oeedUtnfx6u9WiYzq3bbDuAKrGSJa2dC8nkkZlsvAC',
     userName: 'user',
     personalName: 'User User',
     active: true,
@@ -47,7 +47,7 @@ module.exports = [
   },
   {
     email: 'guest@guest.com',
-    password: '123456789Abc!',
+    password: '$2a$10$AT4Soj6Upx0oeedUtnfx6u9WiYzq3bbDuAKrGSJa2dC8nkkZlsvAC',
     userName: 'guest',
     personalName: 'Guest Guest',
     active: true,

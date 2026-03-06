@@ -49,10 +49,12 @@ export class AuthService {
         personalName: existUser.personalName,
         active: existUser.active,
         emailConfirmed: existUser.emailConfirmed,
+        emailConfirmedAt: existUser.emailConfirmedAt,
         role: existUser.role,
         pwdRecoveryToken: existUser.pwdRecoveryToken,
         pwdRecoveryDate: existUser.pwdRecoveryDate,
         extension: existUser.extension,
+        createdAt: existUser.createdAt,
       }
     };
 
@@ -99,10 +101,12 @@ export class AuthService {
         personalName: existUser.personalName,
         active: existUser.active,
         emailConfirmed: existUser.emailConfirmed,
+        emailConfirmedAt: existUser.emailConfirmedAt,
         role: existUser.role,
         pwdRecoveryToken: existUser.pwdRecoveryToken,
         pwdRecoveryDate: existUser.pwdRecoveryDate,
         extension: existUser.extension,
+        createdAt: existUser.createdAt,
       }
     };
 
@@ -162,7 +166,7 @@ export class AuthService {
         context: {
           welcome: {
             params: {
-              name: register.userName,
+            name: register.userName ?? register.personalName ?? register.email ?? '',
               link: getFrontendUrl(
                 this.configSerive.get('app').httpsEnabled,
                 this.configSerive.get('app').host,
@@ -251,7 +255,7 @@ export class AuthService {
       context: {
         forgotPassword: {
           params: {
-            name: existUser.userName,
+            name: existUser.userName ?? existUser.personalName ?? existUser.email ?? '',
             link: getFrontendUrl(
               this.configSerive.get('app').httpsEnabled,
               this.configSerive.get('app').host,
