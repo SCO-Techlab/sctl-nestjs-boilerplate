@@ -3,14 +3,40 @@ import { MAGIC_NUMBERS } from "@shared/constants";
 import { IMongodbRecord, IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
-import { Model, QueryFilter } from "mongoose";
+import { Model, QueryFilter, Schema } from "mongoose";
+import { MongodbService } from "./mongodb.service";
 
 @Injectable()
 export class MongodbRepository {
 
   constructor(
+    private mongodbService: MongodbService,
     private paginationService: PaginationService
   ) { }
+
+  getModel<T>(model: string, schema: Schema<T>, collection: string): Model<T> {
+    try {
+      return this.mongodbService.getModel<T>(
+        model,
+        schema,
+        collection
+      ) as Model<T>;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async setModelIndexes<T>(Model: Model<T>): Promise<void> {
+    if (!Model) {
+      return;
+    }
+
+    try {
+      await Model.createIndexes();
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async find<T>(Model: Model<T>, entityQuery?: IEntityQuery<T>): Promise<T[] | IPaginationResponse<T>> {
     const query: IEntityQuery<T> = { ...(entityQuery || {}) } as IEntityQuery<T>;
