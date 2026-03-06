@@ -33,7 +33,7 @@ export class RolesController {
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.CREATE })
-  async save(@Body() role: RoleCreateDto): Promise<IRole> {
+  async save(@Body() role: RoleCreateDto): Promise<IRole | undefined> {
     return await this.rolesService.save(role);
   }
 

@@ -1,7 +1,6 @@
 import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { PaginationService } from '@shared/services';
 import { PermissionsController } from './permissions.controller';
 import { PermissionsService } from './permissions.service';
 
@@ -13,8 +12,7 @@ const MODULE = {
     PermissionsController
   ],
   providers: [
-    PermissionsService,
-    PaginationService
+    PermissionsService
   ],
   exports: [
     PermissionsService

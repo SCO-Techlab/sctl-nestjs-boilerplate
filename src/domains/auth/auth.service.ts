@@ -155,7 +155,7 @@ export class AuthService {
       throw new ConflictException('Role not found');
     }
 
-    const createdUser: IUser = await this.usersService.save({ ...register, role: existRole._id as string });
+    const createdUser: IUser = await this.usersService.save({ ...register, role: existRole._id as string }) as IUser;
     if (!createdUser) {
       throw new ConflictException('Error creating user');
     }

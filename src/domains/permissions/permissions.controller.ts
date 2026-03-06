@@ -34,7 +34,7 @@ export class PermissionsController {
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.CREATE })
-  async save(@Body() permission: PermissionCreateDto): Promise<IPermission> {
+  async save(@Body() permission: PermissionCreateDto): Promise<IPermission | undefined> {
     return await this.permissionsService.save(permission);
   }
 

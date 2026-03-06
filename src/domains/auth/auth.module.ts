@@ -1,12 +1,12 @@
+import { RolesModule } from '@domains/roles';
 import { UsersModule } from '@domains/users';
 import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { BcryptService, PaginationService } from '@shared/services';
+import { BcryptService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
-import { RolesModule } from '@domains/roles';
 import { RefreshTokenService } from './refresh-tokens';
 
 const MODULE = {
@@ -21,9 +21,8 @@ const MODULE = {
   providers: [
     AuthService,
     AuthStrategy,
-    BcryptService,
     RefreshTokenService,
-    PaginationService
+    BcryptService
   ],
   exports: [
     AuthService

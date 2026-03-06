@@ -1,9 +1,8 @@
-import { MongodbService } from "@modules/mongodb";
+import { MongodbRepository } from "@modules/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
+import { MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
-import { IPaginationResponse } from "@shared/interfaces";
-import { PaginationService } from "@shared/services";
+import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { PermissionCreateDto, PermissionUpdateDto } from "./permissions.dto";
@@ -11,107 +10,66 @@ import { IPermission } from "./permissions.interface";
 import { PERMISSIONS_SCHEMA } from "./permissions.schema";
 
 @Injectable()
-export class PermissionsService {
+export class PermissionsService implements IMongodbRepository<IPermission> {
 
   private PermissionModel: Model<IPermission>;
 
   constructor(
-    private mongodbService: MongodbService,
-    private paginationService: PaginationService
+    private mongodbRepository: MongodbRepository
   ) { }
 
   async onModuleInit(): Promise<void> {
-    try {
-      this.PermissionModel = this.mongodbService.getModel<IPermission>(
-        MONGODB_CONSTANTS.PERMISSIONS.MODEL,
-        PERMISSIONS_SCHEMA,
-        MONGODB_CONSTANTS.PERMISSIONS.COLLECTION
-      ) as Model<IPermission>;
-
-      await this.PermissionModel.createIndexes();
-    } catch (error) {
-      console.error(`[PermissionsService] onModuleInit -> Error: ${error}`);
-    }
+    this.PermissionModel = this.getModel() as Model<IPermission>;
+    await this.setModelIndexes();
   }
 
   async find(entityQuery?: IEntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
-    const query: IEntityQuery<IPermission> = { ...(entityQuery || {}) };
-    const { page, limit } = query;
-
     try {
-      if (page === undefined || limit === undefined) {
-        const result: IPermission[] = await this.PermissionModel.find(query);
-        return result ?? [];
-      }
-
-      delete query?.page;
-      delete query?.limit;
-
-      const totalRecords = await this.PermissionModel.countDocuments(query).exec();
-      const { totalPages, finalPage, skip, sanitizedLimit } = this.paginationService.paginationParams(page, limit, totalRecords);
-
-      const data = await this.PermissionModel
-        .find(query)
-        .skip(skip)
-        .limit(sanitizedLimit);
-
-      return {
-        data: data ?? [],
-        totalRecords: totalRecords,
-        currentPage: finalPage,
-        totalPages: totalPages,
-        limit: sanitizedLimit,
-      };
+      return await this.mongodbRepository.find<IPermission>(this.PermissionModel, entityQuery);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'find');
     }
   }
 
   async findOne(value: any, property: string = '_id'): Promise<IPermission | undefined> {
+    const record: IMongodbRecord = { property, value };
     try {
-      const result = await this.PermissionModel.findOne({ [property]: value });
-      return result ?? undefined;
+      return await this.mongodbRepository.findOne<IPermission>(this.PermissionModel, record);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'findOne');
     }
   }
 
-  async save(permission: PermissionCreateDto): Promise<IPermission> {
-    const PermissionModel = new this.PermissionModel({
-      name: permission.name,
-      type: permission.type,
-      extension: permission.extension ?? {}
-    });
+  async save(newValue: PermissionCreateDto): Promise<IPermission | undefined> {
+    const value: Partial<IPermission> = {
+      name: newValue.name,
+      type: newValue.type,
+      extension: newValue.extension ?? {}
+    };
 
     try {
-      return await PermissionModel.save();
+      return await this.mongodbRepository.save<IPermission>(this.PermissionModel, value);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'save');
     }
   }
 
-  async updateOne(_id: string, permission: PermissionUpdateDto): Promise<IPermission> {
-    try {
-      const updatedPermission = await this.PermissionModel.findOneAndUpdate(
-        { _id },
-        {
-          $set: {
-            name: permission.name,
-            type: permission.type,
-            extension: permission.extension ?? {},
-          },
-        },
-        {
-          returnDocument: 'after',
-          runValidators: true
-        }
-      );
+  async updateOne(_id: string, updateValue: PermissionUpdateDto): Promise<IPermission | undefined> {
+    const record: IMongodbRecord = { property: '_id', value: _id };
 
-      if (!updatedPermission) {
-        throw this.permissionNotFound(_id);
+    const value: Partial<IPermission> = {
+      name: updateValue.name,
+      type: updateValue.type,
+      extension: updateValue.extension ?? {},
+    };
+
+    try {
+      const result: IPermission = await this.mongodbRepository.updateOne<IPermission>(this.PermissionModel, record, value) as IPermission;
+      if (!result) {
+        throw new NotFoundException(`Permission not found`);
       }
 
-      return updatedPermission;
+      return result;
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'updateOne');
     }
@@ -119,26 +77,21 @@ export class PermissionsService {
 
   async updateMany(filter: QueryFilter<IPermission>, update: Partial<PermissionUpdateDto>): Promise<number> {
     try {
-      const result = await this.PermissionModel.updateMany(
-        filter,
-        { $set: update },
-        { runValidators: true }
-      );
-
-      return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
+      return await this.mongodbRepository.updateMany<IPermission>(this.PermissionModel, filter, update as Partial<IPermission>);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'updateMany');
     }
   }
 
   async deleteOne(_id: string): Promise<boolean> {
+    const record: IMongodbRecord = { property: '_id', value: _id };
     try {
-      const result = await this.PermissionModel.deleteOne({ _id });
-      if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
-        throw this.permissionNotFound(_id);
+      const result: boolean = await this.mongodbRepository.deleteOne<IPermission>(this.PermissionModel, record);
+      if (!result) {
+        throw new NotFoundException(`Permission not found`);
       }
 
-      return true;
+      return result;
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'deleteOne');
     }
@@ -146,14 +99,30 @@ export class PermissionsService {
 
   async deleteMany(filter: QueryFilter<IPermission>): Promise<number> {
     try {
-      const result = await this.PermissionModel.deleteMany(filter);
-      return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
+      return await this.mongodbRepository.deleteMany(this.PermissionModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'deleteMany');
     }
   }
 
-  private permissionNotFound(_id: string): NotFoundException {
-    return new NotFoundException(`Permission with id '${_id}' does not exist`);
+  getModel(): Model<IPermission> | undefined {
+    try {
+      return this.mongodbRepository.getModel(
+        MONGODB_CONSTANTS.PERMISSIONS.MODEL,
+        PERMISSIONS_SCHEMA,
+        MONGODB_CONSTANTS.PERMISSIONS.COLLECTION
+      );
+    } catch (error) {
+      console.error(`[PermissionsService] getModel -> Error: ${error}`);
+      return undefined;
+    }
+  }
+
+  async setModelIndexes(): Promise<void> {
+    try {
+      this.mongodbRepository.setModelIndexes(this.PermissionModel);
+    } catch (error) {
+      console.error(`[PermissionsService] setModelIndexes -> Error: ${error}`);
+    }
   }
 }

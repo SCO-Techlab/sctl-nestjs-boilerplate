@@ -33,7 +33,7 @@ export class UsersController {
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.CREATE })
-  async save(@Body() user: UserCreateDto): Promise<IUser> {
+  async save(@Body() user: UserCreateDto): Promise<IUser | undefined> {
     return await this.usersService.save(user);
   }
 

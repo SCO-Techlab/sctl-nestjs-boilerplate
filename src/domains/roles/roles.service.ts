@@ -1,10 +1,9 @@
 import { IPermission, PermissionsService } from "@domains/permissions";
-import { MongodbService } from "@modules/mongodb";
+import { MongodbRepository } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
-import { IPaginationResponse } from "@shared/interfaces";
-import { PaginationService } from "@shared/services";
+import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { RoleCreateDto, RoleUpdateDto } from "./roles.dto";
@@ -12,107 +11,75 @@ import { IRole } from "./roles.interface";
 import { ROLES_SCHEMA } from "./roles.schema";
 
 @Injectable()
-export class RolesService {
+export class RolesService implements IMongodbRepository<IRole> {
 
   private RoleModel: Model<IRole>;
 
   constructor(
-    private mongodbService: MongodbService,
-    private paginationService: PaginationService,
+    private mongodbRepository: MongodbRepository,
     private permissionsService: PermissionsService
   ) { }
 
   async onModuleInit(): Promise<void> {
-    try {
-      this.RoleModel = this.mongodbService.getModel<IRole>(
-        MONGODB_CONSTANTS.ROLES.MODEL,
-        ROLES_SCHEMA,
-        MONGODB_CONSTANTS.ROLES.COLLECTION
-      ) as Model<IRole>;
-
-      await this.RoleModel.createIndexes();
-    } catch (error) {
-      console.error(`[RolesService] onModuleInit -> Error: ${error}`);
-    }
+    this.RoleModel = this.getModel() as Model<IRole>;
+    await this.setModelIndexes();
   }
 
   async find(entityQuery?: IEntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
-    const query: IEntityQuery<IRole> = { ...(entityQuery || {}) };
-    const { page, limit } = query;
-
     try {
-      if (page === undefined || limit === undefined) {
-        const result: IRole[] = await this.RoleModel.find(query);
-        return result ?? [];
-      }
-
-      delete query?.page;
-      delete query?.limit;
-
-      const totalRecords = await this.RoleModel.countDocuments(query).exec();
-      const { totalPages, finalPage, skip, sanitizedLimit } = this.paginationService.paginationParams(page, limit, totalRecords);
-
-      const data = await this.RoleModel
-        .find(query)
-        .skip(skip)
-        .limit(sanitizedLimit);
-
-      return {
-        data: data ?? [],
-        totalRecords,
-        currentPage: finalPage,
-        totalPages,
-        limit: sanitizedLimit,
-      };
+      return await this.mongodbRepository.find<IRole>(this.RoleModel, entityQuery);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'find');
     }
   }
 
   async findOne(value: any, property: string = '_id'): Promise<IRole | undefined> {
+    const record: IMongodbRecord = { property, value };
     try {
-      const result = await this.RoleModel.findOne({ [property]: value });
-      return result ?? undefined;
+      return await this.mongodbRepository.findOne<IRole>(this.RoleModel, record);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'findOne');
     }
   }
 
-  async save(role: RoleCreateDto): Promise<IRole> {
+  async save(role: RoleCreateDto): Promise<IRole | undefined> {
     const permissions: IPermission[] = role.permissions && role.permissions.length > MAGIC_NUMBERS.N_0
       ? await this.resolvePermissions(role.permissions.map(_id => _id))
       : [];
 
-    const RoleModel = new this.RoleModel({
+    const value: Partial<IRole> = {
       name: role.name,
       permissions,
       extension: role.extension ?? {},
-    });
+    };
 
     try {
-      return await RoleModel.save();
+      return await this.mongodbRepository.save<IRole>(this.RoleModel, value);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'save');
     }
   }
 
   async updateOne(_id: string, role: RoleUpdateDto): Promise<IRole> {
+    const record: IMongodbRecord = { property: '_id', value: _id };
+
     const permissions: IPermission[] = role.permissions && role.permissions.length > MAGIC_NUMBERS.N_0
       ? await this.resolvePermissions(role.permissions.map(_id => _id))
       : [];
 
-    try {
-      const updatedRole = await this.RoleModel.findOneAndUpdate(
-        { _id },
-        { $set: { name: role.name, permissions, extension: role.extension ?? {} } },
-        { runValidators: true, returnDocument: 'after' }
-      );
+    const value: Partial<IRole> = {
+      name: role.name,
+      permissions,
+      extension: role.extension ?? {}
+    };
 
-      if (!updatedRole) {
-        throw this.roleNotFound(_id);
+    try {
+      const result: IRole = await this.mongodbRepository.updateOne<IRole>(this.RoleModel, record, value) as IRole;
+      if (!result) {
+        throw new NotFoundException(`Role not found`);
       }
 
-      return updatedRole;
+      return result;
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'updateOne');
     }
@@ -120,26 +87,21 @@ export class RolesService {
 
   async updateMany(filter: QueryFilter<IRole>, update: Partial<RoleUpdateDto>): Promise<number> {
     try {
-      const result = await this.RoleModel.updateMany(
-        filter,
-        { $set: update },
-        { runValidators: true }
-      );
-
-      return result?.modifiedCount ?? MAGIC_NUMBERS.N_0;
+      return await this.mongodbRepository.updateMany<IRole>(this.RoleModel, filter, update as Partial<IRole>);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'updateMany');
     }
   }
 
   async deleteOne(_id: string): Promise<boolean> {
+    const record: IMongodbRecord = { property: '_id', value: _id };
     try {
-      const result = await this.RoleModel.deleteOne({ _id });
-      if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
-        throw this.roleNotFound(_id);
+      const result: boolean = await this.mongodbRepository.deleteOne<IRole>(this.RoleModel, record);
+      if (!result) {
+        throw new NotFoundException(`Role not found`);
       }
 
-      return true;
+      return result;
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'deleteOne');
     }
@@ -147,10 +109,30 @@ export class RolesService {
 
   async deleteMany(filter: QueryFilter<IRole>): Promise<number> {
     try {
-      const result = await this.RoleModel.deleteMany(filter);
-      return result?.deletedCount ?? MAGIC_NUMBERS.N_0;
+      return await this.mongodbRepository.deleteMany(this.RoleModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'deleteMany');
+    }
+  }
+
+  getModel(): Model<IRole> | undefined {
+    try {
+      return this.mongodbRepository.getModel(
+        MONGODB_CONSTANTS.ROLES.MODEL,
+        ROLES_SCHEMA,
+        MONGODB_CONSTANTS.ROLES.COLLECTION
+      );
+    } catch (error) {
+      console.error(`[RolesService] getModel -> Error: ${error}`);
+      return undefined;
+    }
+  }
+
+  async setModelIndexes(): Promise<void> {
+    try {
+      this.mongodbRepository.setModelIndexes(this.RoleModel);
+    } catch (error) {
+      console.error(`[RolesService] setModelIndexes -> Error: ${error}`);
     }
   }
 
@@ -163,9 +145,5 @@ export class RolesService {
     }
 
     return permissions;
-  }
-
-  private roleNotFound(_id: string): NotFoundException {
-    return new NotFoundException(`Role with id '${_id}' does not exist`);
   }
 }
