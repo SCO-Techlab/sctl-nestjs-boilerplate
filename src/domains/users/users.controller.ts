@@ -59,7 +59,7 @@ export class UsersController {
 
   @Put('update/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
-  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE })
+  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE_BULK })
   async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<UserUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.usersService.updateMany(filter, bulkUpdate.data);
@@ -74,7 +74,7 @@ export class UsersController {
 
   @Delete('delete/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
-  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.DELETE })
+  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.DELETE_BULK })
   async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
     const filter = { _id: { $in: bulkDelete._ids } };
     return await this.usersService.deleteMany(filter);
