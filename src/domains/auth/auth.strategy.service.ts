@@ -23,6 +23,6 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     if (!user || !user.active) {
       throw new UnauthorizedException();
     }
-    return user;
+    return user['_doc'];
   }
 }
