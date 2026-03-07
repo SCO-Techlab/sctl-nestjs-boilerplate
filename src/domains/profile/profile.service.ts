@@ -2,7 +2,7 @@ import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { IJwtToken, JwtService } from "@modules/jwt";
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { createJwtPayload, formatObjectId } from "@shared/helpers";
-import { UpdateUserInfoDto } from "./profile.dto";
+import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
 
 @Injectable()
 export class ProfileService {
@@ -38,5 +38,23 @@ export class ProfileService {
     }
 
     return token;
+  }
+
+  async updateUserPassword(_id: string, update: UpdateUserPasswordDto, requestUser: IUser): Promise<boolean> {
+    if (_id !== formatObjectId(requestUser._id as string)) {
+      throw new UnauthorizedException();
+    }
+
+    const existUser: IUser = await this.userService.findOne(_id) as IUser;
+    if (!existUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedPassword: boolean = await this.userService.updatePassword(_id, update, true);
+    if (!updatedPassword) {
+      throw new NotFoundException('Error updating user password');
+    }
+
+    return updatedPassword;
   }
 }
