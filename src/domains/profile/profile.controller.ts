@@ -1,4 +1,5 @@
 import { IUser } from '@domains/users';
+import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
@@ -18,7 +19,7 @@ export class ProfileController {
     @User() user: types.IRequestUser,
     @Param('_id') _id: string,
     @Body() updateUserInfoDto: UpdateUserInfoDto
-  ): Promise<IUser> {
+  ): Promise<IJwtToken> {
     return await this.profileService.updateUserInfo(_id, updateUserInfoDto, user as IUser);
   }
 }

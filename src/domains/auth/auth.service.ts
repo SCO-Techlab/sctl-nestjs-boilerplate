@@ -5,7 +5,7 @@ import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
-import { getFrontendUrl, parseDateUnits } from '@shared/helpers';
+import { createJwtPayload, getFrontendUrl, parseDateUnits } from '@shared/helpers';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto, AuthTokenValidationDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
@@ -39,35 +39,16 @@ export class AuthService {
       throw new ForbiddenException('User is not active');
     }
 
-    const payload: IAuthPayload = {
-      _id: existUser._id as string,
-      user: {
-        _id: existUser._id as string,
-        email: existUser.email,
-        password: '',
-        userName: existUser.userName,
-        personalName: existUser.personalName,
-        active: existUser.active,
-        emailConfirmed: existUser.emailConfirmed,
-        emailConfirmedAt: existUser.emailConfirmedAt,
-        role: existUser.role,
-        pwdRecoveryToken: existUser.pwdRecoveryToken,
-        pwdRecoveryDate: existUser.pwdRecoveryDate,
-        extension: existUser.extension,
-        createdAt: existUser.createdAt,
-      }
-    };
-
-    const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
+    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(existUser)) as IJwtToken;
     if (!token) {
       throw new UnauthorizedException();
     }
 
     if (token.refreshToken) {
       await this.refreshTokenService.updateMany({ user: existUser._id, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
-      await this.refreshTokenService.save({ 
-        user: existUser as IUser, 
-        tokenHash: token.refreshToken, 
+      await this.refreshTokenService.save({
+        user: existUser as IUser,
+        tokenHash: token.refreshToken,
         expiresAt: new Date(Date.now() + parseDateUnits(this.configSerive.get('jwt').refresh.expiresIn)),
         isRevoked: false,
         revokedAt: undefined
@@ -91,26 +72,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload: IAuthPayload = {
-      _id: existUser._id as string,
-      user: {
-        _id: existUser._id as string,
-        email: existUser.email,
-        password: '',
-        userName: existUser.userName,
-        personalName: existUser.personalName,
-        active: existUser.active,
-        emailConfirmed: existUser.emailConfirmed,
-        emailConfirmedAt: existUser.emailConfirmedAt,
-        role: existUser.role,
-        pwdRecoveryToken: existUser.pwdRecoveryToken,
-        pwdRecoveryDate: existUser.pwdRecoveryDate,
-        extension: existUser.extension,
-        createdAt: existUser.createdAt,
-      }
-    };
-
-    const token: IJwtToken = this.jwtService.createToken(payload) as IJwtToken;
+    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(existUser)) as IJwtToken;
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -119,7 +81,7 @@ export class AuthService {
     if (!refreshToken) {
       throw new UnauthorizedException();
     }
-    
+
     const tokensAreaEquals: boolean = await this.bcryptService.compare(authTokenValidationDto.token, refreshToken?.tokenHash);
     if (!tokensAreaEquals) {
       throw new UnauthorizedException();
@@ -132,9 +94,9 @@ export class AuthService {
 
     if (token.refreshToken) {
       await this.refreshTokenService.updateMany({ user: existUser._id, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
-      await this.refreshTokenService.save({ 
-        user: existUser as IUser, 
-        tokenHash: token.refreshToken, 
+      await this.refreshTokenService.save({
+        user: existUser as IUser,
+        tokenHash: token.refreshToken,
         expiresAt: new Date(Date.now() + parseDateUnits(this.configSerive.get('jwt').refresh.expiresIn)),
         isRevoked: false,
         revokedAt: undefined
@@ -166,7 +128,7 @@ export class AuthService {
         context: {
           welcome: {
             params: {
-            name: register.userName ?? register.personalName ?? register.email ?? '',
+              name: register.userName ?? register.personalName ?? register.email ?? '',
               link: getFrontendUrl(
                 this.configSerive.get('app').httpsEnabled,
                 this.configSerive.get('app').host,
