@@ -1,3 +1,4 @@
+import { RefreshTokenService } from "@domains/auth/refresh-tokens";
 import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@modules/gridfs";
 import { IJwtToken, JwtService } from "@modules/jwt";
@@ -13,6 +14,7 @@ export class ProfileService {
     private userService: UsersService,
     private jwtService: JwtService,
     private gridfsService: GridfsService,
+    private refreshTokenService: RefreshTokenService,
   ) { }
 
   async updateUserInfo(_id: string, update: UpdateUserInfoDto, requestUser: IUser): Promise<IJwtToken> {
@@ -78,12 +80,7 @@ export class ProfileService {
       throw new BadRequestException('File size too large (max 1MB)');
     }
 
-    const getPptions: IGridfsGetFileOptions = { filter: { 'metadata.email': existUser.email } };
-    const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(GRIDFS_BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
-    if (currentAvatar) {
-      await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
-    }
-
+    await this.deleteCurrentUserAvatar(existUser);
     const avatarMetadata: IGridfsFileMetadata = { mimetype: file.mimetype, email: existUser.email };
     const uploadResponse: IGridfsUploadResponse = (await this.gridfsService.uploadFiles(GRIDFS_BUCKETS.AVATARS, [file], avatarMetadata))[MAGIC_NUMBERS.N_0];
     if (!uploadResponse.id) {
@@ -103,6 +100,13 @@ export class ProfileService {
     return token;
   }
 
+  async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
+    const existUser: IUser = await this.validateUserRequest(_id, requestUser);
+    await this.deleteCurrentUserAvatar(existUser);
+    await this.refreshTokenService.deleteMany({ user: existUser._id });
+    return await this.userService.deleteOne(_id);
+  }
+
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {
     if (_id !== formatObjectId(requestUser._id as string)) {
       throw new UnauthorizedException();
@@ -114,5 +118,13 @@ export class ProfileService {
     }
 
     return existUser;
+  }
+
+  private async deleteCurrentUserAvatar(user: IUser): Promise<void> {
+    const getPptions: IGridfsGetFileOptions = { filter: { 'metadata.email': user.email } };
+    const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(GRIDFS_BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
+    if (currentAvatar) {
+      await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
+    }
   }
 }

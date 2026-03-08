@@ -1,3 +1,4 @@
+import { AuthModule } from "@domains/auth";
 import { UsersModule } from "@domains/users";
 import { JWT_TOKEN_TYPE } from "@modules/jwt";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -8,7 +9,8 @@ import { ProfileService } from "./profile.service";
 const MODULE = {
   imports: [
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
-    UsersModule
+    UsersModule,
+    AuthModule,
   ],
   controllers: [
     ProfileController

@@ -25,7 +25,8 @@ const MODULE = {
     BcryptService
   ],
   exports: [
-    AuthService
+    AuthService,
+    RefreshTokenService,
   ]
 };
 

@@ -1,7 +1,7 @@
 import { IUser } from '@domains/users';
 import { IGridfsFileStream } from '@modules/gridfs';
 import { IJwtToken } from '@modules/jwt';
-import { Body, Controller, Get, Param, Put, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { APP_CONTROLLERS } from '@shared/constants';
@@ -61,5 +61,14 @@ export class ProfileController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IJwtToken> {
     return await this.profileService.updateUserAvatar(_id, file, requestUser as IUser);
+  }
+
+  @Delete('delete/user/account/:_id')
+  @UseGuards(AuthGuard())
+  async deleteUserAccount(
+    @User() requestUser: types.IRequestUser,
+    @Param('_id') _id: string,
+  ): Promise<boolean> {
+    return await this.profileService.deleteUserAccount(_id, requestUser as IUser);
   }
 }
