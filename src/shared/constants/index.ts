@@ -1,5 +1,6 @@
 export * from './controllers.constants';
 export * from './date-patterns.constants';
+export * from './gridfs.constants';
 export * from './magic-numbers.constants';
 export * from './pagination.constants';
 export * from './reggex-patterns.constants';

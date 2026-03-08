@@ -5,11 +5,13 @@ import { RolesModule } from '@domains/roles';
 import { UsersModule } from '@domains/users';
 import { PublicMiddleware } from '@middlewares/public.middleware';
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
+import { GridfsModule } from '@modules/gridfs';
 import { IJwtConfig, JwtModule } from '@modules/jwt';
 import { LoggerModule } from '@modules/logger';
 import { IMongodbConfig, MongodbModule } from '@modules/mongodb';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GRIDFS_BUCKETS } from '@shared/constants';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
 
 @Module({
@@ -33,6 +35,11 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
         ];
       },
       inject: [ConfigService],
+    }),
+    GridfsModule.register({
+      buckets: [
+        { name: GRIDFS_BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'] }] }
+      ]
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

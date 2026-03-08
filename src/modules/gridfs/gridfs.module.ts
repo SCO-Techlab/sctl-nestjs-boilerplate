@@ -1,0 +1,42 @@
+import { DynamicModule, Module } from "@nestjs/common";
+import { createAsyncConfigProvider, createConfigProvider } from "@shared/helpers";
+import { IModuleAsyncConfig } from "@shared/interfaces";
+import { IGridfsConfig } from "./gridfs.config";
+import { GridfsManagerService } from "./gridfs.manager";
+import { GridfsService } from "./gridfs.service";
+import { GridfsUtilsService } from "./gridfs.utils.service";
+
+@Module({})
+export class GridfsModule {
+  static register(options: IGridfsConfig): DynamicModule {
+    return {
+      module: GridfsModule,
+      providers: [
+        ...createConfigProvider(options),
+        GridfsService,
+        GridfsManagerService,
+        GridfsUtilsService
+      ],
+      exports: [
+        GridfsService
+      ],
+      global: true
+    };
+  }
+
+  public static registerAsync(options: IModuleAsyncConfig): DynamicModule {
+    return {
+      module: GridfsModule,
+      providers: [
+        ...createAsyncConfigProvider(options),
+        GridfsService,
+        GridfsManagerService,
+        GridfsUtilsService
+      ],
+      exports: [
+        GridfsService
+      ],
+      global: true
+    };
+  }
+}
