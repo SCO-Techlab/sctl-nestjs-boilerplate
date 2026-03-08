@@ -4,7 +4,7 @@ import { PROVIDER_CONFIG } from "@shared/helpers";
 import { GridFSBucket, ObjectId } from "mongodb";
 import { Connection } from "mongoose";
 import type { IGridfsConfig } from "./gridfs.config";
-import { IGridfsDeleteResponse, IGridfsFile, IGridfsGetFileOptions, IGridfsUploadResponse } from "./gridfs.interface";
+import { IGridfsDeleteResponse, IGridfsFile, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "./gridfs.interface";
 import { GridfsManagerService } from "./gridfs.manager";
 import { GridfsUtilsService } from "./gridfs.utils.service";
 
@@ -23,11 +23,30 @@ export class GridfsService {
     }
 
     for (const bucketConfig of this.config.buckets) {
-      const bucketName: string = bucketConfig.name;
-      const bucket = new GridFSBucket(connection.db as any, { bucketName });
-      this.manager.set(bucketConfig.name, bucket);
-      await this.utils.createIndexes(bucketConfig, connection);
+      try {
+        const bucketName: string = bucketConfig.name;
+        const bucket = new GridFSBucket(connection.db as any, { bucketName });
+        this.manager.set(bucketConfig.name, bucket);
+        await this.utils.createIndexes(bucketConfig, connection);
+        console.log(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Connected`);
+      } catch (error) {
+        console.error(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Error: ${error}`);
+      }
     }
+  }
+
+  public getFileStream(bucketName: string, file: IGridfsFile): IGridfsFileStream {
+    if (!file?._id) {
+      throw new BadRequestException(`[Gridfs] File required`);
+    }
+
+    const bucket = this.manager.get(bucketName);
+    if (!bucket) {
+      throw new NotFoundException(`[Gridfs] Bucket '${bucketName}' not found`);
+    }
+
+    const stream = bucket.openDownloadStream(new ObjectId(file._id as string));
+    return { file, stream };
   }
 
   public async uploadFiles(bucketName: string, files: Express.Multer.File[], metadata?: any): Promise<IGridfsUploadResponse[]> {

@@ -76,6 +76,10 @@ export class UserUpdateDto extends MongodbDocumentDto {
   @IsOptional()
   @IsString()
   pwdRecoveryToken?: string | null;
+
+  @IsOptional()
+  @IsMongoId()
+  avatar?: string;
 }
 
 export class UserPasswordUpdateDto {

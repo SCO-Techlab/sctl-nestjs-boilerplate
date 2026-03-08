@@ -56,6 +56,11 @@ export const USERS_SCHEMA = new Schema<IUser>(
       type: Date,
       required: false,
       default: null,
+    },
+    avatar: {
+      type: Types.ObjectId,
+      required: false,
+      default: null
     }
   },
   {

@@ -1,4 +1,5 @@
 import { IRole } from '@domains/roles';
+import { IGridfsFile } from '@modules/gridfs';
 import { IMongodbDocument } from '@shared/interfaces';
 import { Types } from 'mongoose';
 
@@ -13,4 +14,5 @@ export interface IUser extends IMongodbDocument {
   role: Types.ObjectId[] | IRole;
   pwdRecoveryToken?: string;
   pwdRecoveryDate?: Date;
+  avatar?: Types.ObjectId | IGridfsFile;
 }

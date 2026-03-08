@@ -1,3 +1,5 @@
+import { GridFSBucketReadStream } from "mongodb";
+
 export class IGridfsFile {
   _id?: string;
   filename?: string;
@@ -32,4 +34,9 @@ export interface IGridfsUploadResponse {
 export interface IGridfsDeleteResponse {
   deletedIds: string[];
   errorId?: string;
+}
+
+export interface IGridfsFileStream {
+  file: IGridfsFile;
+  stream: GridFSBucketReadStream;
 }

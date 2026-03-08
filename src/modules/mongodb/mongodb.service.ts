@@ -1,3 +1,4 @@
+import { GridfsService } from '@modules/gridfs';
 import { LoggerService } from '@modules/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS } from '@shared/constants';
@@ -13,7 +14,8 @@ export class MongodbService {
 
   constructor(
     @Inject(PROVIDER_CONFIG) private options: IMongodbConfig[],
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private gridfsService: GridfsService
   ) {
     if (!this.validateOptions(this.options)) {
       return;
@@ -59,6 +61,7 @@ export class MongodbService {
 
         this._dbConnections.get(config.name)?.once('open', async () => {
           this.loggerService.log(`[MongoDbService] createConnectionDB (${config.name}) -> Connected to '${config.database}'`);
+          await this.gridfsService.connectBuckets(this.getConnection() as Connection);
           resolve();
         });
 
