@@ -16,11 +16,6 @@ export const PERMISSIONS_SCHEMA = new Schema<IPermission>(
       required: true,
       enum: Object.values(PERMISSION_TYPE),
       index: true
-    },
-    extension: {
-      type: Schema.Types.Mixed,
-      required: false,
-      default: {},
     }
   },
   {

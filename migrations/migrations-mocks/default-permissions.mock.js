@@ -1,5 +1,4 @@
 const DEFAULT_PERMISSION = {
-  extension: {},
   createdAt: new Date(),
   updatedAt: new Date(),
   __v: 0

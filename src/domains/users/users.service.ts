@@ -49,8 +49,7 @@ export class UsersService implements IMongodbRepository<IUser> {
 
     const value: Partial<IUser> = {
       ...user,
-      role,
-      extension: user.extension ?? {}
+      role
     };
 
     try {

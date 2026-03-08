@@ -56,11 +56,6 @@ export const USERS_SCHEMA = new Schema<IUser>(
       type: Date,
       required: false,
       default: null,
-    },
-    extension: {
-      type: Schema.Types.Mixed,
-      required: false,
-      default: {},
     }
   },
   {

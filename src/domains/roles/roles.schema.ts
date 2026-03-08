@@ -16,11 +16,6 @@ export const ROLES_SCHEMA = new Schema<IRole>(
       autopopulate: true,
       required: false,
       default: []
-    },
-    extension: {
-      type: Schema.Types.Mixed,
-      required: false,
-      default: {},
     }
   },
   {

@@ -43,8 +43,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
   async save(newValue: PermissionCreateDto): Promise<IPermission | undefined> {
     const value: Partial<IPermission> = {
       name: newValue.name,
-      type: newValue.type,
-      extension: newValue.extension ?? {}
+      type: newValue.type
     };
 
     try {
@@ -59,8 +58,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
 
     const value: Partial<IPermission> = {
       name: updateValue.name,
-      type: updateValue.type,
-      extension: updateValue.extension ?? {},
+      type: updateValue.type
     };
 
     try {

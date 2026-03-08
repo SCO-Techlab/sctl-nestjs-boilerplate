@@ -1,7 +1,6 @@
 const PERMISSIONS_MIGRATION = require('./default-permissions.mock');
 
 const DEFAULT_ROLE = {
-  extension: {},
   createdAt: new Date(),
   updatedAt: new Date(),
   __v: 0

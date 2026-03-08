@@ -1,7 +1,7 @@
 
 import { MAGIC_NUMBERS, REGEX_PATTERNS } from '@shared/constants';
 import { MongodbDocumentDto } from '@shared/dtos';
-import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class UserCreateDto extends MongodbDocumentDto {
   @IsNotEmpty()
@@ -34,10 +34,6 @@ export class UserCreateDto extends MongodbDocumentDto {
   @IsString()
   @IsMongoId()
   role: string;
-
-  @IsOptional()
-  @IsObject()
-  extension?: any;
 }
 
 export class UserUpdateDto extends MongodbDocumentDto {
@@ -72,10 +68,6 @@ export class UserUpdateDto extends MongodbDocumentDto {
   @IsString()
   @IsMongoId()
   role?: string;
-
-  @IsOptional()
-  @IsObject()
-  extension?: any;
 
   @IsOptional()
   @IsDate()

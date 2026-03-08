@@ -49,8 +49,7 @@ export class RolesService implements IMongodbRepository<IRole> {
 
     const value: Partial<IRole> = {
       name: role.name,
-      permissions,
-      extension: role.extension ?? {},
+      permissions
     };
 
     try {
@@ -69,8 +68,7 @@ export class RolesService implements IMongodbRepository<IRole> {
 
     const value: Partial<IRole> = {
       name: role.name,
-      permissions,
-      extension: role.extension ?? {}
+      permissions
     };
 
     try {

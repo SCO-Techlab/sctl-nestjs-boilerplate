@@ -16,7 +16,6 @@ export const createJwtPayload = (user: IUser): IAuthPayload => {
       role: user.role,
       pwdRecoveryToken: user.pwdRecoveryToken,
       pwdRecoveryDate: user.pwdRecoveryDate,
-      extension: user.extension,
       createdAt: user.createdAt,
     }
   };

@@ -5,7 +5,6 @@ const dateNow = new Date();
 const DEFAULT_USER = {
   pwdRecoveryToken: null,
   pwdRecoveryDate: null,
-  extension: {},
   createdAt: dateNow,
   updatedAt: dateNow,
   __v: 0

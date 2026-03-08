@@ -13,5 +13,4 @@ export interface IUser extends IMongodbDocument {
   role: Types.ObjectId[] | IRole;
   pwdRecoveryToken?: string;
   pwdRecoveryDate?: Date;
-  extension?: any;
 }
