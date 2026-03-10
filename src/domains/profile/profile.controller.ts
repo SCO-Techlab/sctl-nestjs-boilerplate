@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { User } from '@shared/decorators';
+import { UserGuard } from '@shared/guards';
 import * as types from '@shared/types';
 import express from 'express';
 import { UpdateUserInfoDto, UpdateUserPasswordDto } from './profile.dto';
@@ -17,7 +18,7 @@ export class ProfileController {
   constructor(private profileService: ProfileService) { }
 
   @Put('update/user/info/:_id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserGuard)
   async updateUserInfo(
     @User() requestUser: types.IRequestUser,
     @Param('_id') _id: string,
@@ -27,7 +28,7 @@ export class ProfileController {
   }
 
   @Put('update/user/password/:_id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserGuard)
   async updateUserPassword(
     @User() requestUser: types.IRequestUser,
     @Param('_id') _id: string,
@@ -53,7 +54,7 @@ export class ProfileController {
   }
 
   @Put('update/user/avatar/:_id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateUserAvatar(
     @User() requestUser: types.IRequestUser,
@@ -64,7 +65,7 @@ export class ProfileController {
   }
 
   @Delete('delete/user/account/:_id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserGuard)
   async deleteUserAccount(
     @User() requestUser: types.IRequestUser,
     @Param('_id') _id: string,
