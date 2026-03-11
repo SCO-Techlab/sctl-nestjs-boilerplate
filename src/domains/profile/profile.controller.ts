@@ -1,3 +1,4 @@
+import { IMenuFront } from '@domains/menu-front';
 import { IUser } from '@domains/users';
 import { IGridfsFileStream } from '@modules/gridfs';
 import { IJwtToken } from '@modules/jwt';
@@ -71,5 +72,14 @@ export class ProfileController {
     @Param('_id') _id: string,
   ): Promise<boolean> {
     return await this.profileService.deleteUserAccount(_id, requestUser as IUser);
+  }
+
+  @Get('get/user/menu-front/:_id')
+  @UseGuards(AuthGuard(), UserGuard)
+  async getUserMenuFront(
+    @User() requestUser: types.IRequestUser,
+    @Param('_id') _id: string,
+  ): Promise<IMenuFront[]> {
+    return await this.profileService.getUserMenuFront(_id, requestUser as IUser);
   }
 }

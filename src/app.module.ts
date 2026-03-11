@@ -1,4 +1,5 @@
 import { AuthModule } from '@domains/auth';
+import { MenuFrontModule } from '@domains/menu-front';
 import { PermissionsModule } from '@domains/permissions';
 import { ProfileModule } from '@domains/profile';
 import { RolesModule } from '@domains/roles';
@@ -62,7 +63,8 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
     PermissionsModule,
     RolesModule,
     UsersModule,
-    ProfileModule
+    ProfileModule,
+    MenuFrontModule
   ]
 })
 export class AppModule implements NestModule {

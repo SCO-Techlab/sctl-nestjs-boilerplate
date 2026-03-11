@@ -3,5 +3,6 @@ export const APP_CONTROLLERS = {
   ROLES: 'roles',
   USERS: 'users',
   AUTH: 'auth',
-  PROFILE: 'profile'
+  PROFILE: 'profile',
+  MENU_FRONT: 'menu-front'
 }

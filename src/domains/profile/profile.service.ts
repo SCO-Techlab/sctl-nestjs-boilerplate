@@ -1,4 +1,5 @@
 import { RefreshTokenService } from "@domains/auth/refresh-tokens";
+import { IMenuFront, MenuFrontService } from "@domains/menu-front";
 import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@modules/gridfs";
 import { IJwtToken, JwtService } from "@modules/jwt";
@@ -15,6 +16,7 @@ export class ProfileService {
     private jwtService: JwtService,
     private gridfsService: GridfsService,
     private refreshTokenService: RefreshTokenService,
+    private menuFrontService: MenuFrontService
   ) { }
 
   async updateUserInfo(_id: string, update: UpdateUserInfoDto, requestUser: IUser): Promise<IJwtToken> {
@@ -107,6 +109,25 @@ export class ProfileService {
     return await this.userService.deleteOne(_id);
   }
 
+  async getUserMenuFront(_id: string, requestUser: IUser): Promise<IMenuFront[]> {
+    const existUser: IUser = await this.validateUserRequest(_id, requestUser);
+
+    const menuFront: IMenuFront[] = await this.menuFrontService
+      .find({
+        $or: [
+          { roles: existUser.role },
+          { roles: { $size: MAGIC_NUMBERS.N_0 } },
+          { roles: null }
+        ]
+      } as any) as IMenuFront[];
+
+    if (!menuFront || menuFront.length === MAGIC_NUMBERS.N_0) {
+      return [];
+    }
+
+    return this.sortMenuRecursive(menuFront);
+  }
+
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {
     if (_id !== formatObjectId(requestUser._id as string)) {
       throw new UnauthorizedException();
@@ -126,5 +147,25 @@ export class ProfileService {
     if (currentAvatar) {
       await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
     }
+  }
+
+  private sortMenuRecursive(menu: IMenuFront[]): IMenuFront[] {
+    if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
+      return [];
+    }
+
+    menu.sort(
+      (a, b) =>
+        (a?.order ?? MAGIC_NUMBERS.N_0) -
+        (b?.order ?? MAGIC_NUMBERS.N_0)
+    );
+
+    for (const item of menu) {
+      if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
+        item.items = this.sortMenuRecursive(item.items);
+      }
+    }
+
+    return menu;
   }
 }

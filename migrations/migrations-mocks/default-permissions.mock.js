@@ -25,4 +25,11 @@ module.exports = [
   { name: 'USERS', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
   { name: 'USERS', type: 'DELETE', ...DEFAULT_PERMISSION },
   { name: 'USERS', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
+
+  { name: 'MENU_FRONT', type: 'CREATE', ...DEFAULT_PERMISSION },
+  { name: 'MENU_FRONT', type: 'READ', ...DEFAULT_PERMISSION },
+  { name: 'MENU_FRONT', type: 'UPDATE', ...DEFAULT_PERMISSION },
+  { name: 'MENU_FRONT', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
+  { name: 'MENU_FRONT', type: 'DELETE', ...DEFAULT_PERMISSION },
+  { name: 'MENU_FRONT', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
 ];
