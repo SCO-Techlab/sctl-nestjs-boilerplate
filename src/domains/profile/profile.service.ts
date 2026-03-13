@@ -5,7 +5,7 @@ import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGr
 import { IJwtToken, JwtService } from "@modules/jwt";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES, GRIDFS_BUCKETS, MAGIC_NUMBERS } from "@shared/constants";
-import { createJwtPayload, formatObjectId } from "@shared/helpers";
+import { createJwtPayload, formatObjectId, sortMenuRecursive } from "@shared/helpers";
 import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
 
 @Injectable()
@@ -125,7 +125,7 @@ export class ProfileService {
       return [];
     }
 
-    return this.sortMenuRecursive(menuFront);
+    return sortMenuRecursive(menuFront);
   }
 
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {
@@ -147,25 +147,5 @@ export class ProfileService {
     if (currentAvatar) {
       await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
     }
-  }
-
-  private sortMenuRecursive(menu: IMenuFront[]): IMenuFront[] {
-    if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
-      return [];
-    }
-
-    menu.sort(
-      (a, b) =>
-        (a?.order ?? MAGIC_NUMBERS.N_0) -
-        (b?.order ?? MAGIC_NUMBERS.N_0)
-    );
-
-    for (const item of menu) {
-      if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
-        item.items = this.sortMenuRecursive(item.items);
-      }
-    }
-
-    return menu;
   }
 }

@@ -1,3 +1,4 @@
+import { IMenuFront } from "@domains/menu-front";
 import { MAGIC_NUMBERS } from "@shared/constants";
 
 export const attempt = async <T>(fn: () => Promise<T>) => {
@@ -44,3 +45,23 @@ export const parseDateUnits = (dateUnit: string): number => {
 
   return value * multipliers[unit];
 }
+
+export const sortMenuRecursive = (menu: IMenuFront[]): IMenuFront[] => {
+    if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
+      return [];
+    }
+
+    menu.sort(
+      (a, b) =>
+        (a?.order ?? MAGIC_NUMBERS.N_0) -
+        (b?.order ?? MAGIC_NUMBERS.N_0)
+    );
+
+    for (const item of menu) {
+      if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
+        item.items = sortMenuRecursive(item.items);
+      }
+    }
+
+    return menu;
+  }
