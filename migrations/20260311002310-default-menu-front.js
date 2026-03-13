@@ -4,11 +4,25 @@ module.exports = {
   async up(db, client) {
     const session = client.startSession();
     try {
+      const roles = await db.collection('roles').find().toArray();
+
       for (const menuFront of MENU_FRONT_MIGRATION) {
         const existMenuFront = await db.collection('menu-front').findOne({ order: menuFront.order });
         if (existMenuFront) {
           await db.collection('menu-front').deleteOne({ order: menuFront.order });
         }
+
+        if (menuFront.roles && menuFront.roles.length > 0) {
+          let newRoles = [];
+          for (const role of menuFront.roles) {
+            const existRole = roles.find(r => r.name === role);
+            if (existRole) {
+              newRoles.push(existRole._id);
+            }
+          }
+          menuFront.roles = newRoles;
+        }
+
         await db.collection('menu-front').insertOne(menuFront);
       }
     } catch (error) {
