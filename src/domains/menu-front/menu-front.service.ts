@@ -44,13 +44,12 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
 
   async save(newValue: MenuFrontDto): Promise<IMenuFront | undefined> {
     const roles = await this.resolveRoles(newValue.roles as string[]);
-    const items = await this.resolveChildrens(newValue.items as string[]);
     const value: Partial<IMenuFront> = {
       label: newValue?.label ?? '',
       separator: newValue?.separator ?? false,
       icon: newValue?.icon ?? '',
       routerLink: newValue?.routerLink ?? '',
-      items: items?.length > MAGIC_NUMBERS.N_0 ? items : null,
+      items: newValue?.items ?? null,
       roles,
       order: newValue?.order ?? MAGIC_NUMBERS.N_0
     };
@@ -66,13 +65,12 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     const record: IMongodbRecord = { property: '_id', value: _id };
 
     const roles = await this.resolveRoles(updateValue.roles as string[]);
-    const items = await this.resolveChildrens(updateValue.items as string[]);
     const value: Partial<IMenuFront> = {
       label: updateValue?.label ?? '',
       separator: updateValue?.separator ?? false,
       icon: updateValue?.icon ?? '',
       routerLink: updateValue?.routerLink ?? '',
-      items: items?.length > MAGIC_NUMBERS.N_0 ? items : null,
+      items: updateValue?.items ?? null,
       roles,
       order: updateValue?.order ?? MAGIC_NUMBERS.N_0
     };
@@ -151,20 +149,5 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     }
 
     return dbRoles;
-  }
-
-  private async resolveChildrens(childrensIds: string[]): Promise<IMenuFront[]> {
-    if (!childrensIds || childrensIds.length === MAGIC_NUMBERS.N_0) {
-      return [];
-    }
-
-    const _ids = [...new Set(childrensIds.map(_id => _id))];
-    const childrens = await this.find({ _id: { $in: _ids } } as any) as IMenuFront[];
-
-    if (childrens.length !== _ids.length) {
-      throw new BadRequestException('One or more childrens do not exist');
-    }
-
-    return childrens;
   }
 }

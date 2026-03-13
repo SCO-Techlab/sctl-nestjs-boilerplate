@@ -1,5 +1,6 @@
 import { MongodbDocumentDto } from '@shared/dtos';
 import { IsArray, IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IMenuFront } from './menu-front.interface';
 
 export class MenuFrontDto extends MongodbDocumentDto {
   @IsOptional()
@@ -20,8 +21,7 @@ export class MenuFrontDto extends MongodbDocumentDto {
 
   @IsOptional()
   @IsArray()
-  @IsMongoId({ each: true })
-  items?: string[];
+  items?: IMenuFront[];
 
   @IsOptional()
   @IsArray()

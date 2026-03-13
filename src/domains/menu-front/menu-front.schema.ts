@@ -26,9 +26,7 @@ export const MENU_FRONT_SCHEMA = new Schema<IMenuFront>(
       default: null
     },
     items: {
-      type: [Types.ObjectId],
-      ref: MONGODB_CONSTANTS.MENU_FRONT.MODEL,
-      autopopulate: true,
+      type: [Schema.Types.Mixed],
       required: false,
       default: null
     },
@@ -50,4 +48,5 @@ export const MENU_FRONT_SCHEMA = new Schema<IMenuFront>(
 );
 
 MENU_FRONT_SCHEMA.index({ order: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
+MENU_FRONT_SCHEMA.plugin(require('mongoose-autopopulate'));
 MENU_FRONT_SCHEMA.plugin(setIncrementalVersion);
