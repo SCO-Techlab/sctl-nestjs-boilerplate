@@ -61,19 +61,10 @@ module.exports = [
         ]
       },
       {
-        label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.REFRESH-TOKENS',
-        icon: 'pi pi-refresh',
-        routerLink: '/administrator/refresh-tokens',
-        order: 2,
-        roles: [
-          'superadmin'
-        ]
-      },
-      {
         label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.PERMISSIONS',
         icon: 'pi pi-users',
         routerLink: '/administrator/permissions',
-        order: 3,
+        order: 2,
         roles: [
           'superadmin'
         ]
@@ -82,7 +73,7 @@ module.exports = [
         label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.ROLES',
         icon: 'pi pi-users',
         routerLink: '/administrator/roles',
-        order: 4,
+        order: 3,
         roles: [
           'superadmin'
         ]
@@ -91,7 +82,7 @@ module.exports = [
         label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.USERS',
         icon: 'pi pi-users',
         routerLink: '/administrator/users',
-        order: 5,
+        order: 4,
         roles: [
           'superadmin',
           'admin'

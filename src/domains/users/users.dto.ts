@@ -1,6 +1,7 @@
 
 import { MAGIC_NUMBERS, REGEX_PATTERNS } from '@shared/constants';
 import { MongodbDocumentDto } from '@shared/dtos';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class UserCreateDto extends MongodbDocumentDto {
@@ -62,6 +63,7 @@ export class UserUpdateDto extends MongodbDocumentDto {
 
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   emailConfirmedAt?: Date;
 
   @IsNotEmpty()
@@ -71,6 +73,7 @@ export class UserUpdateDto extends MongodbDocumentDto {
 
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   pwdRecoveryDate?: Date | null;
 
   @IsOptional()

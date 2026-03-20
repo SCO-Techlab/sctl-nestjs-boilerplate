@@ -5,6 +5,7 @@ import { createTransport, Transporter } from 'nodemailer';
 import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
+import { timer } from 'rxjs';
 
 @Injectable()
 export class EmailerService {
@@ -21,9 +22,11 @@ export class EmailerService {
       return;
     }
 
-    for (const config of this.options) {
-      await this.createTransporter(config);
-    }
+    timer(MAGIC_NUMBERS.N_10).subscribe(async () => {
+      for (const config of this.options) {
+        await this.createTransporter(config);
+      }
+    });
   }
 
   public closeTransporter(name: string = 'default'): boolean {

@@ -3,7 +3,7 @@ import { UsersModule } from '@domains/users';
 import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { BcryptService } from '@shared/services';
+import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
@@ -22,7 +22,8 @@ const MODULE = {
     AuthService,
     AuthStrategy,
     RefreshTokenService,
-    BcryptService
+    BcryptService,
+    EmailTemplatesService
   ],
   exports: [
     AuthService,

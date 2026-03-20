@@ -4,7 +4,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
-import { BcryptService } from "@shared/services";
+import { BcryptService, EmailTemplatesService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
@@ -20,6 +20,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     private mongodbRepository: MongodbRepository,
     private rolesService: RolesService,
     private bcryptService: BcryptService,
+    private emailTemplatesService: EmailTemplatesService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -62,7 +63,17 @@ export class UsersService implements IMongodbRepository<IUser> {
   async updateOne(_id: string, user: UserUpdateDto): Promise<IUser> {
     const record: IMongodbRecord = { property: '_id', value: _id };
 
-    const value = { ...user } as unknown as Partial<IUser>;
+    const value = { 
+      email: user.email,
+      userName: user.userName,
+      personalName: user.personalName,
+      active: user.active,
+      emailConfirmed: user.emailConfirmed,
+      emailConfirmedAt: user.emailConfirmed ? user.emailConfirmedAt : null,
+      pwdRecoveryToken: user.pwdRecoveryToken,
+      pwdRecoveryDate: user.pwdRecoveryDate,
+      avatar: user.avatar
+    } as Partial<IUser>;
     if (user.role) {
       value.role = await this.resolveRole(user.role);
     }
@@ -155,6 +166,15 @@ export class UsersService implements IMongodbRepository<IUser> {
     } catch (error) {
       console.error(`[UsersService] setModelIndexes -> Error: ${error}`);
     }
+  }
+
+  async sendWelcomeEmail(_id: string, lang: string): Promise<boolean> {
+    const existUser: IUser = await this.findOne(_id) as IUser;
+    if (!existUser) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    return await this.emailTemplatesService.sendWelcomeEmail(existUser, lang);
   }
 
   private async resolveRole(roleId: string): Promise<IRole | undefined> {

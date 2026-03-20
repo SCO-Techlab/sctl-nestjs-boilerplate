@@ -1,5 +1,5 @@
 import { MongodbDocumentDto } from '@shared/dtos';
-import { ArrayNotEmpty, IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, } from 'class-validator';
+import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, } from 'class-validator';
 
 export class RoleCreateDto extends MongodbDocumentDto {
   @IsNotEmpty()
@@ -8,7 +8,6 @@ export class RoleCreateDto extends MongodbDocumentDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
   @IsMongoId({ each: true })
   permissions?: string[];
 }
@@ -20,7 +19,6 @@ export class RoleUpdateDto extends MongodbDocumentDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
   @IsMongoId({ each: true })
   permissions?: string[];
 }

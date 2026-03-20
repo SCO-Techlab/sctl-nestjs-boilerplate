@@ -2,7 +2,7 @@ import { PERMISSION_TYPE, PERMISSIONS } from '@domains/permissions';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
-import { Permissions } from '@shared/decorators';
+import { Lang, Permissions } from '@shared/decorators';
 import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@shared/dtos';
 import { PermissionsGuard } from '@shared/guards';
 import { IPaginationResponse } from '@shared/interfaces';
@@ -30,6 +30,16 @@ export class UsersController {
     return await this.usersService.findOne(_id);
   }
 
+  @Get('send/welcome/email/:_id')
+  @UseGuards(AuthGuard(), PermissionsGuard)
+  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.CREATE })
+  async sendWelcomeEmail(
+    @Lang() lang: string,
+    @Param('_id') _id: string
+  ): Promise<boolean> {
+    return await this.usersService.sendWelcomeEmail(_id, lang);
+  }
+
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.CREATE })
@@ -54,7 +64,7 @@ export class UsersController {
     @Param('_id') _id: string,
     @Body() user: UserPasswordUpdateDto
   ): Promise<boolean> {
-    return await this.usersService.updatePassword(_id, user);
+    return await this.usersService.updatePassword(_id, user, false);
   }
 
   @Put('update/bulk')
