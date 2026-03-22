@@ -65,6 +65,7 @@ export class MongodbRepository {
         currentPage: finalPage,
         totalPages: totalPages,
         limit: sanitizedLimit,
+        first: (finalPage - MAGIC_NUMBERS.N_1) * sanitizedLimit
       };
     } catch (error) {
       throw error;

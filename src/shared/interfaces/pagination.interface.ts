@@ -9,4 +9,5 @@ export interface IPaginationResponse<T> {
   currentPage: number;
   totalPages: number;
   limit: number;
+  first: number;
 }

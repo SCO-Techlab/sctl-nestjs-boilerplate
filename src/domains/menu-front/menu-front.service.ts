@@ -27,8 +27,11 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
 
   async find(entityQuery?: IEntityQuery<Partial<IMenuFront>>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
     try {
-      const menu: IMenuFront[] = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as IEntityQuery<IMenuFront>) as IMenuFront[];
-      return sortMenuRecursive(menu);
+      const response: IMenuFront[] | IPaginationResponse<IMenuFront> = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as IEntityQuery<IMenuFront>) as IMenuFront[];
+      const menu = sortMenuRecursive((response as any)?.data ?? response);
+      return (response as any)?.data 
+        ? { ...response, data: menu } 
+        : menu;
     } catch (error) {
       throw formatMongodbError(error, 'MenuFrontService', 'find');
     }

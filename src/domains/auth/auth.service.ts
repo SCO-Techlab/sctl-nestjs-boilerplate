@@ -111,6 +111,11 @@ export class AuthService {
       throw new ConflictException('User with email already exists');
     }
 
+    const existUserName: IUser = await this.usersService.findOne(register.userName, 'userName') as IUser;
+    if (existUserName) {
+      throw new ConflictException('User with userName already exists');
+    }
+
     const existRole: IRole = await this.rolesService.findOne(register.role, 'name') as IRole;
     if (!existRole) {
       throw new ConflictException('Role not found');
