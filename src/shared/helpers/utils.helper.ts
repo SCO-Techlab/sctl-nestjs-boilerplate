@@ -1,5 +1,6 @@
 import { IMenuFront } from "@domains/menu-front";
 import { MAGIC_NUMBERS } from "@shared/constants";
+import { randomUUID } from 'crypto';
 
 export const attempt = async <T>(fn: () => Promise<T>) => {
   try {
@@ -16,14 +17,14 @@ export const attempt = async <T>(fn: () => Promise<T>) => {
 };
 
 export const getFrontendUrl = (httpsEnabled: boolean, host: string, port: number, extraPath?: string): string => {
-  const protocol = httpsEnabled 
-    ? 'https' 
+  const protocol = httpsEnabled
+    ? 'https'
     : 'http';
-    
+
   const url: string = `${protocol}://${host}:${port}`;
-  
-  return extraPath 
-    ? `${url}/${extraPath}` 
+
+  return extraPath
+    ? `${url}/${extraPath}`
     : url;
 }
 
@@ -47,21 +48,25 @@ export const parseDateUnits = (dateUnit: string): number => {
 }
 
 export const sortMenuRecursive = (menu: IMenuFront[]): IMenuFront[] => {
-    if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
-      return [];
-    }
-
-    menu.sort(
-      (a, b) =>
-        (a?.order ?? MAGIC_NUMBERS.N_0) -
-        (b?.order ?? MAGIC_NUMBERS.N_0)
-    );
-
-    for (const item of menu) {
-      if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
-        item.items = sortMenuRecursive(item.items);
-      }
-    }
-
-    return menu;
+  if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
+    return [];
   }
+
+  menu.sort(
+    (a, b) =>
+      (a?.order ?? MAGIC_NUMBERS.N_0) -
+      (b?.order ?? MAGIC_NUMBERS.N_0)
+  );
+
+  for (const item of menu) {
+    if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
+      item.items = sortMenuRecursive(item.items);
+    }
+  }
+
+  return menu;
+}
+
+export const createRandomUUID = (): string => {
+  return randomUUID();
+}

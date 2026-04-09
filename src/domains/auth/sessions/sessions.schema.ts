@@ -15,11 +15,7 @@ export const SESSION_SCHEMA = new Schema<ISession>(
       type: String,
       required: true,
     },
-    accessExpiresAt: {
-      type: Date,
-      required: true,
-    },
-    refreshExpiresAt: {
+    expiresAt: {
       type: Date,
       required: true,
     },

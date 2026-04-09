@@ -35,6 +35,10 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
+    if (this.sessionsService.sessionIsExpired(activeSession)) {
+      throw new UnauthorizedException();
+    }
+
     return user['_doc'];
   }
 }

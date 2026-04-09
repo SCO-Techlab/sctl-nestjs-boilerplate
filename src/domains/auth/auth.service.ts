@@ -4,7 +4,7 @@ import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS } from '@shared/constants';
-import { createJwtPayload } from '@shared/helpers';
+import { createJwtPayload, createRandomUUID } from '@shared/helpers';
 import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
@@ -38,14 +38,25 @@ export class AuthService {
       throw new ForbiddenException('User is not active');
     }
 
-    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(existUser)) as IJwtToken;
-    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    const accessToken: string = this.jwtService.createToken(createJwtPayload(existUser, createRandomUUID(), false));
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
+    const refreshToken: string = login.rememberMe 
+      ? this.jwtService.createRefreshToken(createJwtPayload(existUser, createRandomUUID(), true)) 
+      : '';
+
+    if (refreshToken) {
+      const refreshTokenJti: string = this.jwtService.getJtiFromToken(refreshToken, true);
+      if (!refreshTokenJti) {
+        throw new UnauthorizedException();
+      }
+    }
+
     await this.sessionsService.updateUserSession(existUser, tokenJti);
-    return token;
+    return this.jwtService.createTokenResponse(accessToken, refreshToken);
   }
 
   public async refreshLogin(refreshLogin: AuthRefreshLoginDto): Promise<IJwtToken> {
@@ -55,7 +66,7 @@ export class AuthService {
     }
 
     const decodedRefresh: IAuthPayload = this.jwtService.verifyRefreshToken(refreshLogin.token) as IAuthPayload;
-    if (!decodedRefresh?.jti) {
+    if (!decodedRefresh?.jti || !decodedRefresh.isRefreshToken) {
       throw new UnauthorizedException();
     }
 
@@ -63,22 +74,31 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(existUser)) as IJwtToken;
-    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    const accessToken: string = this.jwtService.createToken(createJwtPayload(existUser, createRandomUUID(), false));
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
-    await this.sessionsService.updateUserSession(existUser, tokenJti);
-    return token;
-  }
-
-  public async logout(userId: string): Promise<boolean> {
-    if (!userId) {
+    const refreshToken: string = this.jwtService.createRefreshToken(createJwtPayload(existUser, createRandomUUID(), true));
+    const refreshTokenJti: string = this.jwtService.getJtiFromToken(refreshToken, true);
+    if (!refreshTokenJti) {
       throw new UnauthorizedException();
     }
 
-    const result: number = await this.sessionsService.updateMany({ user: userId, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
+    return this.jwtService.createTokenResponse(accessToken, refreshToken);
+  }
+
+  public async logout(user: IUser): Promise<boolean> {
+    if (!user?._id) {
+      throw new UnauthorizedException();
+    }
+
+    const result: number = await this.sessionsService.updateMany(
+      { user: user._id, isRevoked: false }, 
+      { isRevoked: true, revokedAt: new Date() }
+    );
     return result > MAGIC_NUMBERS.N_0;
   }
 

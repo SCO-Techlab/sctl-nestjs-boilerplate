@@ -1,4 +1,5 @@
 export const MAGIC_NUMBERS = {
+  N_MINUS_1: -1,
   N_0: 0,
   N_1: 1,
   N_2: 2,

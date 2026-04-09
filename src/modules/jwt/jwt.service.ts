@@ -4,6 +4,7 @@ import { PROVIDER_CONFIG } from '@shared/helpers';
 import { IJwtConfig } from './jwt.config';
 import { JWT_TOKEN_TYPE } from './jwt.enum';
 import { IJwtToken } from './jwt.interface';
+import { IAuthPayload } from '@domains/auth';
 
 @Injectable()
 export class JwtService {
@@ -13,13 +14,15 @@ export class JwtService {
     private nestjsJwtService: NestjsJwtService,
   ) { }
 
-  /* 
-    Create a new authenticate user token
-     - accessToken: The token used to authenticate the user
-     - refreshToken: The token used to refresh and remember the user in the frontend web application
-     - tokenType: The type of token, in this case is 'jwt'
-  */
-  public createToken<T extends object>(payload: T): IJwtToken | undefined {
+  public createTokenResponse(accessToken: string, refreshToken?: string): IJwtToken {
+    return {
+      accessToken,
+      refreshToken: refreshToken ?? '',
+      tokenType: JWT_TOKEN_TYPE.JWT,
+    };
+  }
+
+  public createToken<T extends object>(payload: T): string {
     try {
       const accessToken: string = this.nestjsJwtService.sign(payload, {
         secret: this.options.secret,
@@ -29,16 +32,10 @@ export class JwtService {
         algorithm: this.options.algorithm as any,
       });
 
-      const refreshToken: string = this.createRefreshToken(payload) as string;
-
-      return {
-        accessToken: accessToken ?? undefined,
-        refreshToken: refreshToken ? refreshToken : undefined,
-        tokenType: JWT_TOKEN_TYPE.JWT,
-      } as IJwtToken;
+      return accessToken ?? '';
     } catch (error) {
       console.error(`[JwtService] createToken -> Error: ${error}`);
-      return undefined;
+      return '';
     }
   }
 
@@ -55,6 +52,27 @@ export class JwtService {
     }
   }
 
+  public createRefreshToken<T extends object>(payload: T): string {
+    if (!this.options.refresh?.secret) {
+      return '';
+    }
+
+    try {
+      const refreshToken: string = this.nestjsJwtService.sign(payload, {
+        secret: this.options.refresh?.secret,
+        expiresIn: this.options.refresh?.expiresIn as any,
+        issuer: this.options.refresh?.issuer ?? this.options.signOptions.issuer,
+        audience: this.options.refresh?.audience ?? this.options.signOptions.audience,
+        algorithm: this.options.algorithm as any,
+      });
+
+      return refreshToken ?? '';
+    } catch (error) {
+      console.error(`[JwtService] createRefreshToken -> Error: ${error}`);
+      return '';
+    }
+  }
+
   public verifyRefreshToken<T = any>(refreshToken: string): T | undefined {
     try {
       return this.nestjsJwtService.verify<any>(refreshToken, {
@@ -68,39 +86,15 @@ export class JwtService {
     }
   }
 
-  public getJtiFromToken(token: IJwtToken): string {
-    if (!token?.accessToken) {
+  public getJtiFromToken(token: string, refresh?: boolean): string {
+    if (!token) {
       return '';
     }
 
-    const decodedToken = this.verifyToken(token.accessToken);
-    if (!decodedToken?.jti) {
-      return '';
-    }
+    const decodedToken: IAuthPayload = refresh
+      ? this.verifyRefreshToken<IAuthPayload>(token) as IAuthPayload
+      : this.verifyToken<IAuthPayload>(token) as IAuthPayload;
 
-    return decodedToken.jti;
-  }
-
-  private createRefreshToken<T extends object>(payload: T): string | undefined {
-    if (!this.options.refresh || !this.options.refresh.secret) {
-      return undefined;
-    }
-
-    try {
-      const refreshToken: string = this.nestjsJwtService.sign(payload, {
-        secret: this.options.refresh?.secret,
-        expiresIn: this.options.refresh?.expiresIn as any,
-        issuer: this.options.refresh?.issuer ?? this.options.signOptions.issuer,
-        audience: this.options.refresh?.audience ?? this.options.signOptions.audience,
-        algorithm: this.options.algorithm as any,
-      });
-
-      return refreshToken !== undefined
-        ? refreshToken
-        : undefined;
-    } catch (error) {
-      console.error(`[JwtService] createRefreshToken -> Error: ${error}`);
-      return undefined;
-    }
+    return decodedToken?.jti ?? '';
   }
 }

@@ -5,7 +5,7 @@ import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGr
 import { IJwtToken, JwtService } from "@modules/jwt";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES, GRIDFS_BUCKETS, MAGIC_NUMBERS } from "@shared/constants";
-import { createJwtPayload, formatObjectId, sortMenuRecursive } from "@shared/helpers";
+import { createJwtPayload, createRandomUUID, formatObjectId, sortMenuRecursive } from "@shared/helpers";
 import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
 
 @Injectable()
@@ -32,14 +32,14 @@ export class ProfileService {
       throw new NotFoundException('Error updating user');
     }
 
-    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(updatedUser)) as IJwtToken;
-    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    const accessToken: string = this.jwtService.createToken(createJwtPayload(updatedUser, createRandomUUID(), false));
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
     await this.sessionsService.updateUserSession(updatedUser, tokenJti);
-    return token;
+    return this.jwtService.createTokenResponse(accessToken);
   }
 
   async updateUserPassword(_id: string, update: UpdateUserPasswordDto, requestUser: IUser): Promise<boolean> {
@@ -96,14 +96,14 @@ export class ProfileService {
       throw new NotFoundException('Error updating user');
     }
 
-    const token: IJwtToken = this.jwtService.createToken(createJwtPayload(updatedUser)) as IJwtToken;
-    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    const accessToken: string = this.jwtService.createToken(createJwtPayload(updatedUser, createRandomUUID(), false));
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
     await this.sessionsService.updateUserSession(updatedUser, tokenJti);
-    return token;
+    return this.jwtService.createTokenResponse(accessToken);
   }
 
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {

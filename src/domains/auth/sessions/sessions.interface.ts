@@ -5,8 +5,7 @@ import { Types } from "mongoose";
 export interface ISession extends IMongodbDocument {
   user: Types.ObjectId[] | IUser;
   jti: string;
-  accessExpiresAt: Date;
-  refreshExpiresAt?: Date;
+  expiresAt: Date;
   isRevoked: boolean;
   revokedAt: Date | undefined;
 }

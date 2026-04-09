@@ -15,6 +15,10 @@ export class AuthLoginDto {
   @MaxLength(MAGIC_NUMBERS.N_64)
   @Matches(REGEX_PATTERNS.PASSWORD)
   password: string;
+
+  @IsOptional()
+  @IsBoolean()
+  rememberMe?: boolean;
 }
 
 export class AuthRefreshLoginDto {

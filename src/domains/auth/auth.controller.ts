@@ -1,8 +1,10 @@
 import { IUser } from '@domains/users';
 import { IJwtToken } from '@modules/jwt';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
-import { Lang } from '@shared/decorators';
+import { Lang, User } from '@shared/decorators';
+import * as types from '@shared/types';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -23,9 +25,10 @@ export class AuthController {
     return await this.authService.refreshLogin(refreshLogin);
   }
 
-  @Post('logout/:_id')
-  async logout(@Param('_id') _id: string): Promise<boolean> {
-    return await this.authService.logout(_id);
+  @Post('logout')
+  @UseGuards(AuthGuard())
+  async logout(@User() requestUser: types.IRequestUser,): Promise<boolean> {
+    return await this.authService.logout(requestUser as IUser);
   }
 
   @Post('register')

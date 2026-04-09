@@ -3,11 +3,11 @@ import { IJwtConfig } from "@modules/jwt";
 import { MongodbRepository } from "@modules/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MONGODB_CONSTANTS } from "@shared/constants";
+import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError, parseDateUnits } from "@shared/helpers";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
 import { IEntityQuery } from "@shared/types";
-import { Model, QueryFilter } from "mongoose";
+import { Model, QueryFilter, SortOrder } from "mongoose";
 import { ISession } from "./sessions.interface";
 import { SESSION_SCHEMA } from "./sessions.schema";
 
@@ -47,8 +47,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     const value: Partial<ISession> = {
       user: session.user,
       jti: session.jti,
-      accessExpiresAt: session.accessExpiresAt,
-      refreshExpiresAt: session.refreshExpiresAt,
+      expiresAt: session.expiresAt,
       isRevoked: session.isRevoked ?? false,
       revokedAt: session.revokedAt ?? undefined,
     };
@@ -66,8 +65,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     const value: Partial<ISession> = {
       user: session.user,
       jti: session.jti,
-      accessExpiresAt: session.accessExpiresAt,
-      refreshExpiresAt: session.refreshExpiresAt,
+      expiresAt: session.expiresAt,
       isRevoked: session.isRevoked,
       revokedAt: session.revokedAt,
     };
@@ -120,7 +118,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       return await this.SessionModel
         .findOne({ user: userId, isRevoked: false })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: MAGIC_NUMBERS.N_MINUS_1 as SortOrder })
         .exec() ?? undefined;
     } catch (error) {
       throw formatMongodbError(error, 'SessionsService', 'findLastActiveUserSession');
@@ -135,16 +133,18 @@ export class SessionsService implements IMongodbRepository<ISession> {
       { isRevoked: true, revokedAt: new Date() }
     );
 
+    const expiresAt: Date = new Date(Date.now() + parseDateUnits(jwtConfig?.signOptions?.expiresIn));
     await this.save({
       user,
       jti,
-      accessExpiresAt: new Date(Date.now() + parseDateUnits(jwtConfig?.signOptions?.expiresIn)),
-      refreshExpiresAt: jwtConfig?.refresh?.expiresIn
-        ? new Date(Date.now() + parseDateUnits(jwtConfig.refresh.expiresIn))
-        : undefined,
+      expiresAt,
       isRevoked: false,
       revokedAt: undefined
     });
+  }
+
+  sessionIsExpired(session: ISession): boolean {
+    return session.expiresAt < new Date();
   }
 
   getModel(): Model<ISession> | undefined {

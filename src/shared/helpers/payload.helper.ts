@@ -1,25 +1,14 @@
 import { IAuthPayload } from "@domains/auth";
 import { IUser } from "@domains/users";
-import { randomUUID } from 'crypto';
 
-export const createJwtPayload = (user: IUser): IAuthPayload => {
+export const createJwtPayload = (user: IUser, jti: string, refreshToken: boolean): IAuthPayload => {
   const payload: IAuthPayload = {
-    _id: user._id as string,
-    jti: randomUUID(),
+    _id: `${user._id}_${jti}`,
+    jti,
+    isRefreshToken: refreshToken,
     user: {
-      _id: user._id as string,
-      email: user.email,
+      ...user['_doc'],
       password: '',
-      userName: user.userName,
-      personalName: user.personalName,
-      active: user.active,
-      emailConfirmed: user.emailConfirmed,
-      emailConfirmedAt: user.emailConfirmedAt,
-      role: user.role,
-      pwdRecoveryToken: user.pwdRecoveryToken,
-      pwdRecoveryDate: user.pwdRecoveryDate,
-      avatar: user.avatar,
-      createdAt: user.createdAt,
     }
   };
 
