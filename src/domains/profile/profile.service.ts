@@ -1,4 +1,5 @@
-import { RefreshTokenService } from "@domains/auth/refresh-tokens";
+import { IAuthPayload } from "@domains/auth";
+import { TokensService } from "@domains/auth/tokens";
 import { IMenuFront, MenuFrontService } from "@domains/menu-front";
 import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@modules/gridfs";
@@ -15,7 +16,7 @@ export class ProfileService {
     private userService: UsersService,
     private jwtService: JwtService,
     private gridfsService: GridfsService,
-    private refreshTokenService: RefreshTokenService,
+    private tokensService: TokensService,
     private menuFrontService: MenuFrontService
   ) { }
 
@@ -33,10 +34,12 @@ export class ProfileService {
     }
 
     const token: IJwtToken = this.jwtService.createToken(createJwtPayload(updatedUser)) as IJwtToken;
-    if (!token) {
+    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
+    await this.tokensService.updateUserSession(updatedUser, tokenJti);
     return token;
   }
 
@@ -95,17 +98,19 @@ export class ProfileService {
     }
 
     const token: IJwtToken = this.jwtService.createToken(createJwtPayload(updatedUser)) as IJwtToken;
-    if (!token) {
+    const tokenJti: string = this.jwtService.getJtiFromToken(token);
+    if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
+    await this.tokensService.updateUserSession(updatedUser, tokenJti);
     return token;
   }
 
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
     await this.deleteCurrentUserAvatar(existUser);
-    await this.refreshTokenService.deleteMany({ user: existUser._id });
+    await this.tokensService.deleteMany({ user: existUser._id });
     return await this.userService.deleteOne(_id);
   }
 

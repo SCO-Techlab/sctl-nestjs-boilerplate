@@ -1,10 +1,9 @@
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
 import { setIncrementalVersion } from '@shared/helpers';
-import * as bcrypt from 'bcrypt';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { IRefreshToken } from './refresh-token.interface';
+import { IToken } from './tokens.interface';
 
-export const REFRESH_TOKENS_SCHEMA = new Schema<IRefreshToken>(
+export const TOKENS_SCHEMA = new Schema<IToken>(
   {
     user: {
       type: Types.ObjectId,
@@ -12,11 +11,15 @@ export const REFRESH_TOKENS_SCHEMA = new Schema<IRefreshToken>(
       autopopulate: true,
       required: true
     },
-    tokenHash: {
+    jti: {
       type: String,
       required: true,
     },
-    expiresAt: {
+    accessExpiresAt: {
+      type: Date,
+      required: true,
+    },
+    refreshExpiresAt: {
       type: Date,
       required: true,
     },
@@ -29,19 +32,13 @@ export const REFRESH_TOKENS_SCHEMA = new Schema<IRefreshToken>(
       type: Date,
       required: false,
       default: null,
-    },
+    }
   },
   {
     timestamps: true,
   },
 );
 
-REFRESH_TOKENS_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-REFRESH_TOKENS_SCHEMA.plugin(require('mongoose-autopopulate'));
-REFRESH_TOKENS_SCHEMA.plugin(setIncrementalVersion);
-
-REFRESH_TOKENS_SCHEMA.pre<IRefreshToken>('save', async function () {
-  const salt = await bcrypt.genSalt(MAGIC_NUMBERS.N_10);
-  const hash = await bcrypt.hash(this.tokenHash, salt);
-  this.tokenHash = hash;
-});
+TOKENS_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
+TOKENS_SCHEMA.plugin(require('mongoose-autopopulate'));
+TOKENS_SCHEMA.plugin(setIncrementalVersion);

@@ -68,6 +68,19 @@ export class JwtService {
     }
   }
 
+  public getJtiFromToken(token: IJwtToken): string {
+    if (!token?.accessToken) {
+      return '';
+    }
+
+    const decodedToken = this.verifyToken(token.accessToken);
+    if (!decodedToken?.jti) {
+      return '';
+    }
+
+    return decodedToken.jti;
+  }
+
   private createRefreshToken<T extends object>(payload: T): string | undefined {
     if (!this.options.refresh || !this.options.refresh.secret) {
       return undefined;

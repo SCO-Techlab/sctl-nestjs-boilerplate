@@ -3,7 +3,7 @@ import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang } from '@shared/decorators';
-import { AuthLoginDto, AuthRegisterDto, AuthResetPasswordDto, AuthTokenValidationDto } from './auth.dto';
+import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @Controller(APP_CONTROLLERS.AUTH)
@@ -18,9 +18,14 @@ export class AuthController {
     return await this.authService.login(login);
   }
 
-  @Post('token/validation')
-  async tokenValidation(@Body() authTokenValidationDto: AuthTokenValidationDto): Promise<IJwtToken> {
-    return await this.authService.tokenValidation(authTokenValidationDto);
+  @Post('refresh/login')
+  async refreshLogin(@Body() refreshLogin: AuthRefreshLoginDto): Promise<IJwtToken> {
+    return await this.authService.refreshLogin(refreshLogin);
+  }
+
+  @Post('logout/:_id')
+  async logout(@Param('_id') _id: string): Promise<boolean> {
+    return await this.authService.logout(_id);
   }
 
   @Post('register')

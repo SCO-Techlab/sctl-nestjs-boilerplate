@@ -7,7 +7,7 @@ import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
-import { RefreshTokenService } from './refresh-tokens';
+import { TokensService } from './tokens';
 
 const MODULE = {
   imports: [
@@ -21,13 +21,13 @@ const MODULE = {
   providers: [
     AuthService,
     AuthStrategy,
-    RefreshTokenService,
+    TokensService,
     BcryptService,
     EmailTemplatesService
   ],
   exports: [
     AuthService,
-    RefreshTokenService,
+    TokensService,
   ]
 };
 

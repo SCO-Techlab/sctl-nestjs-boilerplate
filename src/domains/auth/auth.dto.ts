@@ -17,7 +17,7 @@ export class AuthLoginDto {
   password: string;
 }
 
-export class AuthTokenValidationDto {
+export class AuthRefreshLoginDto {
   @IsNotEmpty()
   @IsString()
   @Matches(REGEX_PATTERNS.EMAIL)
@@ -27,9 +27,6 @@ export class AuthTokenValidationDto {
   @IsNotEmpty()
   @IsString()
   token: string;
-
-  @IsOptional()
-  isAccessToken?: boolean;
 }
 
 export class AuthRegisterDto {

@@ -11,9 +11,9 @@ export const MONGODB_CONSTANTS = {
     MODEL: 'Users',
     COLLECTION: 'users'
   },
-  REFRESH_TOKENS: {
-    MODEL: 'RefreshToken',
-    COLLECTION: 'refresh-tokens'
+  TOKENS: {
+    MODEL: 'Tokens',
+    COLLECTION: 'tokens'
   },
   MENU_FRONT: {
     MODEL: 'MenuFront',
