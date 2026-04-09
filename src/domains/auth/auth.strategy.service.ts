@@ -4,14 +4,14 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IAuthPayload } from "./auth.interface";
-import { IToken, TokensService } from "./tokens";
+import { ISession, SessionsService } from "./sessions";
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy) {
 
   constructor(
     private usersService: UsersService,
-    private tokensService: TokensService,
+    private sessionsService: SessionsService,
     private configSerive: ConfigService
   ) {
     super({
@@ -26,12 +26,12 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const activeToken: IToken = await this.tokensService.findLatestActiveByUser(user._id as string) as IToken;
-    if (!activeToken) {
+    const activeSession: ISession = await this.sessionsService.findLastActiveUserSession(user._id as string) as ISession;
+    if (!activeSession) {
       throw new UnauthorizedException();
     }
 
-    if (activeToken.jti !== payload.jti) {
+    if (activeSession.jti !== payload.jti) {
       throw new UnauthorizedException();
     }
 

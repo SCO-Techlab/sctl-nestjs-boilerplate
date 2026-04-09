@@ -2,7 +2,7 @@ import { IUser } from "@domains/users";
 import { IMongodbDocument } from "@shared/interfaces";
 import { Types } from "mongoose";
 
-export interface IToken extends IMongodbDocument {
+export interface ISession extends IMongodbDocument {
   user: Types.ObjectId[] | IUser;
   jti: string;
   accessExpiresAt: Date;

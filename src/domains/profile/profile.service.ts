@@ -1,5 +1,4 @@
-import { IAuthPayload } from "@domains/auth";
-import { TokensService } from "@domains/auth/tokens";
+import { SessionsService } from "@domains/auth/sessions";
 import { IMenuFront, MenuFrontService } from "@domains/menu-front";
 import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@modules/gridfs";
@@ -16,7 +15,7 @@ export class ProfileService {
     private userService: UsersService,
     private jwtService: JwtService,
     private gridfsService: GridfsService,
-    private tokensService: TokensService,
+    private sessionsService: SessionsService,
     private menuFrontService: MenuFrontService
   ) { }
 
@@ -39,7 +38,7 @@ export class ProfileService {
       throw new UnauthorizedException();
     }
 
-    await this.tokensService.updateUserSession(updatedUser, tokenJti);
+    await this.sessionsService.updateUserSession(updatedUser, tokenJti);
     return token;
   }
 
@@ -103,14 +102,14 @@ export class ProfileService {
       throw new UnauthorizedException();
     }
 
-    await this.tokensService.updateUserSession(updatedUser, tokenJti);
+    await this.sessionsService.updateUserSession(updatedUser, tokenJti);
     return token;
   }
 
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
     await this.deleteCurrentUserAvatar(existUser);
-    await this.tokensService.deleteMany({ user: existUser._id });
+    await this.sessionsService.deleteMany({ user: existUser._id });
     return await this.userService.deleteOne(_id);
   }
 

@@ -8,7 +8,7 @@ import { createJwtPayload } from '@shared/helpers';
 import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
-import { TokensService } from './tokens';
+import { SessionsService } from './sessions';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
     private configSerive: ConfigService,
     private emailTemplatesService: EmailTemplatesService,
     private rolesService: RolesService,
-    private tokensService: TokensService
+    private sessionsService: SessionsService,
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
@@ -44,7 +44,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    await this.tokensService.updateUserSession(existUser, tokenJti);
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
     return token;
   }
 
@@ -69,7 +69,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    await this.tokensService.updateUserSession(existUser, tokenJti);
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
     return token;
   }
 
@@ -78,7 +78,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const result: number = await this.tokensService.updateMany({ user: userId, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
+    const result: number = await this.sessionsService.updateMany({ user: userId, isRevoked: false }, { isRevoked: true, revokedAt: new Date() });
     return result > MAGIC_NUMBERS.N_0;
   }
 

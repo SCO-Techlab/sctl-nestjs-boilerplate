@@ -1,9 +1,9 @@
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
 import { setIncrementalVersion } from '@shared/helpers';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { IToken } from './tokens.interface';
+import { ISession } from './sessions.interface';
 
-export const TOKENS_SCHEMA = new Schema<IToken>(
+export const SESSION_SCHEMA = new Schema<ISession>(
   {
     user: {
       type: Types.ObjectId,
@@ -39,6 +39,6 @@ export const TOKENS_SCHEMA = new Schema<IToken>(
   },
 );
 
-TOKENS_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-TOKENS_SCHEMA.plugin(require('mongoose-autopopulate'));
-TOKENS_SCHEMA.plugin(setIncrementalVersion);
+SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
+SESSION_SCHEMA.plugin(require('mongoose-autopopulate'));
+SESSION_SCHEMA.plugin(setIncrementalVersion);
