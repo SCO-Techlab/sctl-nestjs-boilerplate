@@ -4,5 +4,6 @@ export const APP_CONTROLLERS = {
   USERS: 'users',
   AUTH: 'auth',
   PROFILE: 'profile',
-  MENU_FRONT: 'menu-front'
+  MENU_FRONT: 'menu-front',
+  SESSIONS: 'sessions',
 }

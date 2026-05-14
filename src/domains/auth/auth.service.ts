@@ -1,5 +1,5 @@
 import { IRole, RolesService } from '@domains/roles';
-import { IRefreshSession, RefreshSessionsService, SessionsService } from '@domains/sessions';
+import { ISession, RefreshSessionsService, SessionsService } from '@domains/sessions';
 import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
 import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -77,8 +77,8 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const activeRefreshSession: IRefreshSession = await this.refreshSessionsService
-      .findActiveUserSessionByJti(existUser._id ?? '', decodedRefresh.jti) as IRefreshSession;
+    const activeRefreshSession: ISession = await this.refreshSessionsService
+      .findActiveUserSessionByJti(existUser._id ?? '', decodedRefresh.jti) as ISession;
 
     if (!activeRefreshSession || activeRefreshSession?.isRevoked || activeRefreshSession?.jti !== decodedRefresh.jti) {
       throw new UnauthorizedException();

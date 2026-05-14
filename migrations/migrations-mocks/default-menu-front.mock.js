@@ -103,6 +103,15 @@ module.exports = [
           'superadmin'
         ]
       },
+      {
+        label: 'LAYOUT.MENU.SUPERADMINISTRATOR.ITEMS.SESSIONS',
+        icon: 'pi pi-clock',
+        routerLink: '/administrator/sessions',
+        order: 4,
+        roles: [
+          'superadmin'
+        ]
+      }
     ],
     roles: [ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN').name],
     order: 7,

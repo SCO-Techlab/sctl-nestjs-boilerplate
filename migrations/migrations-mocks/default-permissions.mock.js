@@ -32,4 +32,11 @@ module.exports = [
   { name: 'MENU_FRONT', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
   { name: 'MENU_FRONT', type: 'DELETE', ...DEFAULT_PERMISSION },
   { name: 'MENU_FRONT', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
+
+  { name: 'SESSIONS', type: 'CREATE', ...DEFAULT_PERMISSION },
+  { name: 'SESSIONS', type: 'READ', ...DEFAULT_PERMISSION },
+  { name: 'SESSIONS', type: 'UPDATE', ...DEFAULT_PERMISSION },
+  { name: 'SESSIONS', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
+  { name: 'SESSIONS', type: 'DELETE', ...DEFAULT_PERMISSION },
+  { name: 'SESSIONS', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
 ];
