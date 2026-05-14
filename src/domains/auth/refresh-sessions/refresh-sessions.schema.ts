@@ -1,9 +1,9 @@
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
 import { setIncrementalVersion } from '@shared/helpers';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { ISession } from './sessions.interface';
+import { IRefreshSession } from './refresh-sessions.interface';
 
-export const SESSION_SCHEMA = new Schema<ISession>(
+export const REFRESH_SESSION_SCHEMA = new Schema<IRefreshSession>(
   {
     user: {
       type: Types.ObjectId,
@@ -35,11 +35,11 @@ export const SESSION_SCHEMA = new Schema<ISession>(
   },
 );
 
-SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-SESSION_SCHEMA.index({ jti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
-SESSION_SCHEMA.index(
+REFRESH_SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
+REFRESH_SESSION_SCHEMA.index({ jti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
+REFRESH_SESSION_SCHEMA.index(
   { user: MAGIC_NUMBERS.N_1 as IndexDirection, isRevoked: MAGIC_NUMBERS.N_1 as IndexDirection },
   { unique: false }
 );
-SESSION_SCHEMA.plugin(require('mongoose-autopopulate'));
-SESSION_SCHEMA.plugin(setIncrementalVersion);
+REFRESH_SESSION_SCHEMA.plugin(require('mongoose-autopopulate'));
+REFRESH_SESSION_SCHEMA.plugin(setIncrementalVersion);

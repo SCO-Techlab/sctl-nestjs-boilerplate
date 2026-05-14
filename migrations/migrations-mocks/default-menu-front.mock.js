@@ -52,37 +52,10 @@ module.exports = [
     label: `${i18n}.ADMINISTRATOR.LABEL`,
     items: [
       {
-        label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.MENU-FRONT',
-        icon: 'pi pi-book',
-        routerLink: '/administrator/menu-front',
-        order: 1,
-        roles: [
-          'superadmin'
-        ]
-      },
-      {
-        label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.PERMISSIONS',
-        icon: 'pi pi-users',
-        routerLink: '/administrator/permissions',
-        order: 2,
-        roles: [
-          'superadmin'
-        ]
-      },
-      {
-        label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.ROLES',
-        icon: 'pi pi-users',
-        routerLink: '/administrator/roles',
-        order: 3,
-        roles: [
-          'superadmin'
-        ]
-      },
-      {
-        label: 'LAYOUT.MENU.ADMINISTRATOR.ITEMS.USERS',
+        label: `${i18n}.ADMINISTRATOR.ITEMS.USERS`,
         icon: 'pi pi-users',
         routerLink: '/administrator/users',
-        order: 4,
+        order: 1,
         roles: [
           'superadmin',
           'admin'
@@ -91,6 +64,48 @@ module.exports = [
     ],
     roles: [ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN').name, ROLES_MIGRATION.find(role => role.name === 'ADMIN').name],
     order: 5,
+    ...DEFAULT_MENU_FRONT
+  },
+  {
+    label: `SUPERADMINISTRATOR.SEPARATOR`,
+    separator: true,
+    order: 6,
+    roles: [ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN').name],
+    ...DEFAULT_MENU_FRONT
+  },
+  {
+    label: `${i18n}.SUPERADMINISTRATOR.LABEL`,
+    items: [
+      {
+        label: `${i18n}.SUPERADMINISTRATOR.ITEMS.MENU-FRONT`,
+        icon: 'pi pi-book',
+        routerLink: '/administrator/menu-front',
+        order: 1,
+        roles: [
+          'superadmin'
+        ]
+      },
+      {
+        label: `${i18n}.SUPERADMINISTRATOR.ITEMS.PERMISSIONS`,
+        icon: 'pi pi-users',
+        routerLink: '/administrator/permissions',
+        order: 2,
+        roles: [
+          'superadmin'
+        ]
+      },
+      {
+        label: `${i18n}.SUPERADMINISTRATOR.ITEMS.ROLES`,
+        icon: 'pi pi-users',
+        routerLink: '/administrator/roles',
+        order: 3,
+        roles: [
+          'superadmin'
+        ]
+      },
+    ],
+    roles: [ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN').name],
+    order: 7,
     ...DEFAULT_MENU_FRONT
   },
 ];

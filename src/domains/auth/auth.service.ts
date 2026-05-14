@@ -8,6 +8,7 @@ import { createJwtPayload, createRandomUUID } from '@shared/helpers';
 import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
+import { IRefreshSession, RefreshSessionsService } from './refresh-sessions';
 import { SessionsService } from './sessions';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class AuthService {
     private emailTemplatesService: EmailTemplatesService,
     private rolesService: RolesService,
     private sessionsService: SessionsService,
+    private refreshSessionsService: RefreshSessionsService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
@@ -53,6 +55,8 @@ export class AuthService {
       if (!refreshTokenJti) {
         throw new UnauthorizedException();
       }
+
+      await this.refreshSessionsService.updateUserSession(existUser, refreshTokenJti);
     }
 
     await this.sessionsService.updateUserSession(existUser, tokenJti);
@@ -74,6 +78,20 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    const activeRefreshSession: IRefreshSession = await this.refreshSessionsService
+      .findActiveUserSessionByJti(existUser._id ?? '', decodedRefresh.jti) as IRefreshSession;
+
+    if (!activeRefreshSession || activeRefreshSession?.isRevoked || activeRefreshSession?.jti !== decodedRefresh.jti) {
+      throw new UnauthorizedException();
+    }
+
+    if (this.refreshSessionsService.sessionIsExpired(activeRefreshSession)) {
+      activeRefreshSession.isRevoked = true;
+      activeRefreshSession.revokedAt = new Date();
+      await this.refreshSessionsService.updateOne(activeRefreshSession._id as string, activeRefreshSession);
+      throw new UnauthorizedException();
+    }
+
     const accessToken: string = this.jwtService.createToken(createJwtPayload(existUser, createRandomUUID(), false));
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
@@ -87,6 +105,7 @@ export class AuthService {
     }
 
     await this.sessionsService.updateUserSession(existUser, tokenJti);
+    await this.refreshSessionsService.rotateUserSession(existUser, decodedRefresh.jti, refreshTokenJti);
     return this.jwtService.createTokenResponse(accessToken, refreshToken);
   }
 

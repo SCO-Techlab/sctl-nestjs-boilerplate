@@ -15,6 +15,10 @@ export const MONGODB_CONSTANTS = {
     MODEL: 'Sessions',
     COLLECTION: 'sessions'
   },
+  REFRESH_SESSIONS: {
+    MODEL: 'RefreshSessions',
+    COLLECTION: 'refresh-sessions'
+  },
   MENU_FRONT: {
     MODEL: 'MenuFront',
     COLLECTION: 'menu-front'

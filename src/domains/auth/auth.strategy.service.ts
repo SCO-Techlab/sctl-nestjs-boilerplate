@@ -27,15 +27,14 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     }
 
     const activeSession: ISession = await this.sessionsService.findLastActiveUserSession(user._id as string) as ISession;
-    if (!activeSession) {
-      throw new UnauthorizedException();
-    }
-
-    if (activeSession.jti !== payload.jti) {
+    if (!activeSession || activeSession?.isRevoked || activeSession?.jti !== payload?.jti) {
       throw new UnauthorizedException();
     }
 
     if (this.sessionsService.sessionIsExpired(activeSession)) {
+      activeSession.isRevoked = true;
+      activeSession.revokedAt = new Date();
+      await this.sessionsService.updateOne(activeSession._id as string, activeSession);
       throw new UnauthorizedException();
     }
 

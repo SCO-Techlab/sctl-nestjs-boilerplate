@@ -7,6 +7,7 @@ import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
+import { RefreshSessionsService } from './refresh-sessions';
 import { SessionsService } from './sessions';
 
 const MODULE = {
@@ -22,12 +23,14 @@ const MODULE = {
     AuthService,
     AuthStrategy,
     SessionsService,
+    RefreshSessionsService,
     BcryptService,
     EmailTemplatesService
   ],
   exports: [
     AuthService,
     SessionsService,
+    RefreshSessionsService
   ]
 };
 
