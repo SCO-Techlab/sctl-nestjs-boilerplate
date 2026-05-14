@@ -3,6 +3,7 @@ import { MenuFrontModule } from '@domains/menu-front';
 import { PermissionsModule } from '@domains/permissions';
 import { ProfileModule } from '@domains/profile';
 import { RolesModule } from '@domains/roles';
+import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
 import { PublicMiddleware } from '@middlewares/public.middleware';
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
@@ -60,6 +61,7 @@ import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG 
     }),
 
     AuthModule.register(),
+    SessionsModule,
     PermissionsModule,
     RolesModule,
     UsersModule,

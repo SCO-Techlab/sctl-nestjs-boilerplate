@@ -1,5 +1,5 @@
-import { SessionsService } from "@domains/auth/sessions";
 import { IMenuFront, MenuFrontService } from "@domains/menu-front";
+import { SessionsService } from "@domains/sessions";
 import { IUser, UsersService, UserUpdateDto } from "@domains/users";
 import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@modules/gridfs";
 import { IJwtToken, JwtService } from "@modules/jwt";

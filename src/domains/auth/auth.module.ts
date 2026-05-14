@@ -1,4 +1,5 @@
 import { RolesModule } from '@domains/roles';
+import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
 import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
@@ -7,12 +8,11 @@ import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
-import { RefreshSessionsService } from './refresh-sessions';
-import { SessionsService } from './sessions';
 
 const MODULE = {
   imports: [
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
+    SessionsModule,
     UsersModule,
     RolesModule,
   ],
@@ -22,15 +22,11 @@ const MODULE = {
   providers: [
     AuthService,
     AuthStrategy,
-    SessionsService,
-    RefreshSessionsService,
     BcryptService,
     EmailTemplatesService
   ],
   exports: [
     AuthService,
-    SessionsService,
-    RefreshSessionsService
   ]
 };
 

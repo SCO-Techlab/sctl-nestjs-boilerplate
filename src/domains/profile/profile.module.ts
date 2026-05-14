@@ -1,5 +1,5 @@
-import { AuthModule } from "@domains/auth";
 import { MenuFrontModule } from "@domains/menu-front";
+import { SessionsModule } from "@domains/sessions";
 import { UsersModule } from "@domains/users";
 import { JWT_TOKEN_TYPE } from "@modules/jwt";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -11,7 +11,7 @@ const MODULE = {
   imports: [
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
     UsersModule,
-    AuthModule,
+    SessionsModule,
     MenuFrontModule
   ],
   controllers: [

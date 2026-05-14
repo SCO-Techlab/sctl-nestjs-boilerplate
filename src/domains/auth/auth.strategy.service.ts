@@ -1,10 +1,10 @@
+import { ISession, SessionsService } from "@domains/sessions";
 import { IUser, UsersService } from "@domains/users";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IAuthPayload } from "./auth.interface";
-import { ISession, SessionsService } from "./sessions";
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy) {

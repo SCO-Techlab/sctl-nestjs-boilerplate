@@ -1,15 +1,15 @@
+import { IUser } from "@domains/users";
+import { IJwtConfig } from "@modules/jwt";
 import { MongodbRepository } from "@modules/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
+import { MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError, parseDateUnits } from "@shared/helpers";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
 import { IEntityQuery } from "@shared/types";
-import { Model, QueryFilter, SortOrder } from "mongoose";
+import { Model, QueryFilter } from "mongoose";
 import { IRefreshSession } from "./refresh-sessions.interface";
 import { REFRESH_SESSION_SCHEMA } from "./refresh-sessions.schema";
-import { IUser } from "@domains/users";
-import { IJwtConfig } from "@modules/jwt";
 
 @Injectable()
 export class RefreshSessionsService implements IMongodbRepository<IRefreshSession> {

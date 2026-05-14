@@ -1,4 +1,5 @@
 import { IRole, RolesService } from '@domains/roles';
+import { IRefreshSession, RefreshSessionsService, SessionsService } from '@domains/sessions';
 import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
 import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -8,8 +9,6 @@ import { createJwtPayload, createRandomUUID } from '@shared/helpers';
 import { BcryptService, EmailTemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
-import { IRefreshSession, RefreshSessionsService } from './refresh-sessions';
-import { SessionsService } from './sessions';
 
 @Injectable()
 export class AuthService {
@@ -46,8 +45,8 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const refreshToken: string = login.rememberMe 
-      ? this.jwtService.createRefreshToken(createJwtPayload(existUser, createRandomUUID(), true)) 
+    const refreshToken: string = login.rememberMe
+      ? this.jwtService.createRefreshToken(createJwtPayload(existUser, createRandomUUID(), true))
       : '';
 
     if (refreshToken) {
@@ -115,7 +114,7 @@ export class AuthService {
     }
 
     const result: number = await this.sessionsService.updateMany(
-      { user: user._id, isRevoked: false }, 
+      { user: user._id, isRevoked: false },
       { isRevoked: true, revokedAt: new Date() }
     );
     return result > MAGIC_NUMBERS.N_0;
