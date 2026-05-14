@@ -67,6 +67,13 @@ export class UsersController {
     return await this.usersService.updatePassword(_id, user, false);
   }
 
+  @Put('delete/avatar/:_id')
+  @UseGuards(AuthGuard(), PermissionsGuard)
+  @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE })
+  async deleteUserAvatar(@Param('_id') _id: string): Promise<boolean> {
+    return await this.usersService.deleteUserAvatar(_id);
+  }
+
   @Put('update/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE_BULK })

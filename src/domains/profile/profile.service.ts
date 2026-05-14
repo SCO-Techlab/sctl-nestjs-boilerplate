@@ -84,7 +84,7 @@ export class ProfileService {
       throw new BadRequestException('File size too large (max 1MB)');
     }
 
-    await this.deleteCurrentUserAvatar(existUser);
+    await this.userService.deleteUserAvatar(_id);
     const avatarMetadata: IGridfsFileMetadata = { mimetype: file.mimetype, email: existUser.email };
     const uploadResponse: IGridfsUploadResponse = (await this.gridfsService.uploadFiles(GRIDFS_BUCKETS.AVATARS, [file], avatarMetadata))[MAGIC_NUMBERS.N_0];
     if (!uploadResponse.id) {
@@ -108,7 +108,7 @@ export class ProfileService {
 
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
-    await this.deleteCurrentUserAvatar(existUser);
+    await this.userService.deleteUserAvatar(_id);
     await this.sessionsService.deleteMany({ user: existUser._id });
     return await this.userService.deleteOne(_id);
   }
@@ -143,13 +143,5 @@ export class ProfileService {
     }
 
     return existUser;
-  }
-
-  private async deleteCurrentUserAvatar(user: IUser): Promise<void> {
-    const getPptions: IGridfsGetFileOptions = { filter: { 'metadata.email': user.email } };
-    const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(GRIDFS_BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
-    if (currentAvatar) {
-      await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
-    }
   }
 }

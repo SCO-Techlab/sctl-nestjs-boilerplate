@@ -1,7 +1,8 @@
 import { IRole, RolesService } from "@domains/roles";
+import { GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@modules/gridfs";
 import { MongodbRepository } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { MONGODB_CONSTANTS } from "@shared/constants";
+import { GRIDFS_BUCKETS, MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
 import { BcryptService, EmailTemplatesService } from "@shared/services";
@@ -18,6 +19,7 @@ export class UsersService implements IMongodbRepository<IUser> {
 
   constructor(
     private mongodbRepository: MongodbRepository,
+    private gridfsService: GridfsService,
     private rolesService: RolesService,
     private bcryptService: BcryptService,
     private emailTemplatesService: EmailTemplatesService
@@ -63,7 +65,7 @@ export class UsersService implements IMongodbRepository<IUser> {
   async updateOne(_id: string, user: UserUpdateDto): Promise<IUser> {
     const record: IMongodbRecord = { property: '_id', value: _id };
 
-    const value = { 
+    const value = {
       email: user.email,
       userName: user.userName,
       personalName: user.personalName,
@@ -175,6 +177,26 @@ export class UsersService implements IMongodbRepository<IUser> {
     }
 
     return await this.emailTemplatesService.sendWelcomeEmail(existUser, lang);
+  }
+
+  async deleteUserAvatar(_id: string): Promise<boolean> {
+    const existUser: IUser = await this.findOne(_id) as IUser;
+    if (!existUser) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    try {
+      const getPptions: IGridfsGetFileOptions = { filter: { 'metadata.email': existUser?.email } };
+      const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(GRIDFS_BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
+      if (currentAvatar) {
+        await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
+      }
+
+      await this.UserModel.updateOne({ _id }, { $unset: { avatar: '' } }).exec();
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private async resolveRole(roleId: string): Promise<IRole | undefined> {
