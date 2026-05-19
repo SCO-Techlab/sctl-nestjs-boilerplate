@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
+import { timer } from 'rxjs';
 import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
-import { timer } from 'rxjs';
 
 @Injectable()
 export class EmailerService {
@@ -17,7 +17,7 @@ export class EmailerService {
     private emailerTemplateService: EmailerTemplateService
   ) { }
 
-  async onModuleInit(): Promise<void> {
+  public async onModuleInit(): Promise<void> {
     if (!this.validateOptions(this.options)) {
       return;
     }
@@ -102,7 +102,7 @@ export class EmailerService {
     }
   }
 
-  async sendTemplate(template: IEmailerTemplate, name: string = 'default'): Promise<boolean> {
+  public async sendTemplate(template: IEmailerTemplate, name: string = 'default'): Promise<boolean> {
     if (!this.transporters.has(name)) {
       return false;
     }

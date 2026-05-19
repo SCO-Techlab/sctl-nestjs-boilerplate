@@ -8,7 +8,7 @@ import { IAppConfig } from './app.config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const httpsEnabled: boolean = process.env.HTTPS_ENABLED === 'true';
+  const httpsEnabled = process.env.HTTPS_ENABLED === 'true';
   const certificatesPath = process.env.CERTIFICATES_PATH ?? '';
   const certificates = httpsEnabled && certificatesPath
     ? getCertificates(certificatesPath, { certName: 'fullchain.pem', keyName: 'privkey.pem' })
@@ -17,10 +17,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule,
     {
       logger: new LoggerService(),
-      httpsOptions: !certificates ? undefined : {
-        key: certificates.key,
-        cert: certificates.cert
-      }
+      httpsOptions: !certificates
+        ? undefined
+        : { key: certificates.key, cert: certificates.cert }
     }
   );
 

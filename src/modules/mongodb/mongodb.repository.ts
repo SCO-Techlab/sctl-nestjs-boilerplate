@@ -14,7 +14,7 @@ export class MongodbRepository {
     private paginationService: PaginationService
   ) { }
 
-  getModel<T>(model: string, schema: Schema<T>, collection: string): Model<T> {
+  public getModel<T>(model: string, schema: Schema<T>, collection: string): Model<T> {
     try {
       return this.mongodbService.getModel<T>(
         model,
@@ -26,7 +26,7 @@ export class MongodbRepository {
     }
   }
 
-  async setModelIndexes<T>(Model: Model<T>): Promise<void> {
+  public async setModelIndexes<T>(Model: Model<T>): Promise<void> {
     if (!Model) {
       return;
     }
@@ -38,7 +38,7 @@ export class MongodbRepository {
     }
   }
 
-  async find<T>(Model: Model<T>, entityQuery?: IEntityQuery<T>): Promise<T[] | IPaginationResponse<T>> {
+  public async find<T>(Model: Model<T>, entityQuery?: IEntityQuery<T>): Promise<T[] | IPaginationResponse<T>> {
     const query: IEntityQuery<T> = { ...(entityQuery || {}) } as IEntityQuery<T>;
     const { page, limit } = query;
 
@@ -72,7 +72,7 @@ export class MongodbRepository {
     }
   }
 
-  async findOne<T>(Model: Model<T>, record: IMongodbRecord): Promise<T | undefined> {
+  public async findOne<T>(Model: Model<T>, record: IMongodbRecord): Promise<T | undefined> {
     try {
       const result = await Model.findOne({ [record.property]: record.value });
       return result ?? undefined;
@@ -81,7 +81,7 @@ export class MongodbRepository {
     }
   }
 
-  async save<T>(Model: Model<T>, value: Partial<T>): Promise<T | undefined> {
+  public async save<T>(Model: Model<T>, value: Partial<T>): Promise<T | undefined> {
     const NewModelValue = new Model(value);
     try {
       const result = await NewModelValue.save() as T;
@@ -91,7 +91,7 @@ export class MongodbRepository {
     }
   }
 
-  async updateOne<T>(Model: Model<T>, record: IMongodbRecord, value: Partial<T>): Promise<T | undefined> {
+  public async updateOne<T>(Model: Model<T>, record: IMongodbRecord, value: Partial<T>): Promise<T | undefined> {
     try {
       const updatedValue = await Model.findOneAndUpdate(
         {
@@ -112,7 +112,7 @@ export class MongodbRepository {
     }
   }
 
-  async updateMany<T>(Model: Model<T>, filter: QueryFilter<T>, update: Partial<T>): Promise<number> {
+  public async updateMany<T>(Model: Model<T>, filter: QueryFilter<T>, update: Partial<T>): Promise<number> {
     try {
       const result = await Model.updateMany(
         filter,
@@ -126,7 +126,7 @@ export class MongodbRepository {
     }
   }
 
-  async deleteOne<T>(Model: Model<T>, record: IMongodbRecord): Promise<boolean> {
+  public async deleteOne<T>(Model: Model<T>, record: IMongodbRecord): Promise<boolean> {
     try {
       const result = await Model.deleteOne({ [record.property]: record.value });
       if (result?.deletedCount !== MAGIC_NUMBERS.N_1) {
@@ -139,7 +139,7 @@ export class MongodbRepository {
     }
   }
 
-  async deleteMany<T>(Model: Model<T>, filter: QueryFilter<T>): Promise<number> {
+  public async deleteMany<T>(Model: Model<T>, filter: QueryFilter<T>): Promise<number> {
     try {
       const result = await Model.deleteMany(filter);
       return result?.deletedCount ?? MAGIC_NUMBERS.N_0;

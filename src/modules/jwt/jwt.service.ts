@@ -4,7 +4,6 @@ import { PROVIDER_CONFIG } from '@shared/helpers';
 import { IJwtConfig } from './jwt.config';
 import { JWT_TOKEN_TYPE } from './jwt.enum';
 import { IJwtToken } from './jwt.interface';
-import { IAuthPayload } from '@domains/auth';
 
 @Injectable()
 export class JwtService {
@@ -91,9 +90,9 @@ export class JwtService {
       return '';
     }
 
-    const decodedToken: IAuthPayload = refresh
-      ? this.verifyRefreshToken<IAuthPayload>(token) as IAuthPayload
-      : this.verifyToken<IAuthPayload>(token) as IAuthPayload;
+    const decodedToken = refresh
+      ? this.verifyRefreshToken(token)
+      : this.verifyToken(token);
 
     return decodedToken?.jti ?? '';
   }

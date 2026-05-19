@@ -32,27 +32,27 @@ export class LoggerService {
     this.replaceConsole();
   }
 
-  log(message: string, prefix: string = '') {
+  public log(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('info', message);
   }
 
-  warn(message: string, prefix: string = '') {
+  public warn(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('warn', message);
   }
 
-  error(message: string, prefix: string = '') {
+  public error(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('error', message);
   }
 
-  debug(message: string, prefix: string = '') {
+  public debug(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('debug', message);
   }
 
-  verbose(message: string, prefix: string = '') {
+  public verbose(message: string, prefix: string = '') {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('verbose', message);
   }

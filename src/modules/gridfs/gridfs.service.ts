@@ -17,7 +17,7 @@ export class GridfsService {
     private readonly utils: GridfsUtilsService
   ) { }
 
-  public async connectBuckets(connection: Connection) {
+  public async connectBuckets(connection: Connection): Promise<void> {
     if (!this.config?.buckets || this.config?.buckets?.length === MAGIC_NUMBERS.N_0 || !connection) {
       return;
     }

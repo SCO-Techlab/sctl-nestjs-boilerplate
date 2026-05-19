@@ -12,12 +12,10 @@ export class PublicMiddleware implements NestMiddleware {
   private apiPrefix: string;
 
   constructor(private configService: ConfigService) {
-    this.apiPrefix = configService.get('app')?.prefix
-      ? `/${configService.get('app')?.prefix}`
-      : `/api`;
+    this.apiPrefix = this.getApiPrefix();
   }
 
-  use(req: any, res: any, next: () => void) {
+  public use(req: any, res: any, next: () => void) {
     const url = req.originalUrl || req.url;
 
     if (url.startsWith(this.apiPrefix)) {
@@ -33,5 +31,11 @@ export class PublicMiddleware implements NestMiddleware {
     }
 
     return res.sendFile(path.join(this.PUBLIC_DIR, `index.${FILE_EXTENSION.HTML}`));
+  }
+
+  private getApiPrefix(): string {
+    return this.configService.get('app')?.prefix
+      ? `/${this.configService.get('app')?.prefix}`
+      : `/api`;
   }
 }

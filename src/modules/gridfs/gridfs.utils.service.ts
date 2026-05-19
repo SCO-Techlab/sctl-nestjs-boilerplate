@@ -23,7 +23,7 @@ export class GridfsUtilsService {
     };
   }
 
-  public formatFilter(filter: any) {
+  public formatFilter(filter: any): any {
     if (!filter) {
       return {};
     }
@@ -51,7 +51,7 @@ export class GridfsUtilsService {
     });
   }
 
-  public async createIndexes(bucketConfig: IGridfsBucketConfig, connection: Connection) {
+  public async createIndexes(bucketConfig: IGridfsBucketConfig, connection: Connection): Promise<void> {
     if (!bucketConfig.indexes || bucketConfig.indexes?.length === MAGIC_NUMBERS.N_0) {
       return;
     }
