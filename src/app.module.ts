@@ -2,6 +2,7 @@ import { EmailerModule, IEmailerConfig } from '@core/emailer';
 import { GridfsModule } from '@core/gridfs';
 import { IJwtConfig, JwtModule } from '@core/jwt';
 import { LoggerModule } from '@core/logger';
+import { PublicMiddleware } from '@core/middlewares';
 import { IMongodbConfig, MongodbModule } from '@core/mongodb';
 import { AuthModule } from '@domains/auth';
 import { MenuFrontModule } from '@domains/menu-front';
@@ -14,7 +15,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GRIDFS_BUCKETS } from '@shared/constants';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
-import { PublicMiddleware } from './middlewares';
 
 @Module({
   imports: [
