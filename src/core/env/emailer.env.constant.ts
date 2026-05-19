@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-export const EMAILER_ENV_CONFIG = registerAs('emailer', () => ({
+export const EMAILER_ENV = registerAs('emailer', () => ({
   name: process.env.EMAILER_NAME || 'default',
   sender: process.env.EMAILER_SENDER || '',
   authUser: process.env.EMAILER_AUTH_USER || '',

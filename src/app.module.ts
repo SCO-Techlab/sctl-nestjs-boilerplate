@@ -1,3 +1,4 @@
+import { APP_ENV, EMAILER_ENV, JWT_ENV, MONGODB_ENV } from '@core/env';
 import { PublicMiddleware } from '@core/middlewares';
 import { CoreModule } from '@core/modules';
 import { AuthModule } from '@domains/auth';
@@ -9,16 +10,15 @@ import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [
-        APP_ENV_CONFIG,
-        MONGODB_ENV_CONFIG,
-        JWT_ENV_CONFIG,
-        EMAILER_ENV_CONFIG,
+        APP_ENV,
+        MONGODB_ENV,
+        JWT_ENV,
+        EMAILER_ENV,
       ],
       envFilePath: `./env/${process.env.NODE_ENV}.env`,
       isGlobal: true,

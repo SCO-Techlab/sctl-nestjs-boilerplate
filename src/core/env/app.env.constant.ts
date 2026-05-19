@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { MAGIC_NUMBERS } from '@shared/constants';
 
-export const APP_ENV_CONFIG = registerAs('app', () => ({
+export const APP_ENV = registerAs('app', () => ({
   environment: process.env.ENVIRONMENT ?? 'development',
   port: Number.parseInt(process.env.PORT ?? `${MAGIC_NUMBERS.N_3005}`, MAGIC_NUMBERS.N_10) ?? MAGIC_NUMBERS.N_3005,
   production: process.env.PRODUCTION === 'true',
