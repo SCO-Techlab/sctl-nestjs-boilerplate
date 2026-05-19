@@ -2,13 +2,14 @@ import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { BcryptService, SendTemplatesService } from '@shared/services';
+import { SharedModule } from '@shared/modules';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 const MODULE = {
   imports: [
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
+    SharedModule,
     RolesModule,
   ],
   controllers: [
@@ -16,8 +17,6 @@ const MODULE = {
   ],
   providers: [
     UsersService,
-    BcryptService,
-    SendTemplatesService
   ],
   exports: [
     UsersService
