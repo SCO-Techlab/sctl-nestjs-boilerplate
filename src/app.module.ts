@@ -1,13 +1,7 @@
 import { APP_ENV, EMAILER_ENV, JWT_ENV, MONGODB_ENV } from '@core/env';
 import { PublicMiddleware } from '@core/middlewares';
 import { CoreModule } from '@core/modules';
-import { AuthModule } from '@domains/auth';
-import { MenuFrontModule } from '@domains/menu-front';
-import { PermissionsModule } from '@domains/permissions';
-import { ProfileModule } from '@domains/profile';
-import { RolesModule } from '@domains/roles';
-import { SessionsModule } from '@domains/sessions';
-import { UsersModule } from '@domains/users';
+import { DomainsModule } from '@domains/modules';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -24,14 +18,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
     CoreModule,
-
-    AuthModule.register(),
-    SessionsModule,
-    PermissionsModule,
-    RolesModule,
-    UsersModule,
-    ProfileModule,
-    MenuFrontModule
+    DomainsModule,
   ]
 })
 export class AppModule implements NestModule {
