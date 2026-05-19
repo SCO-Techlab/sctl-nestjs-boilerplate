@@ -21,13 +21,17 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: IAuthPayload): Promise<IUser> {
+    if (payload.isRefreshToken) {
+      throw new UnauthorizedException();
+    }
+
     const user: IUser = await this.usersService.findOne(payload.user.email, 'email') as IUser;
     if (!user || !user.active) {
       throw new UnauthorizedException();
     }
 
-    const activeSession: ISession = await this.sessionsService.findLastActiveUserSession(user._id as string) as ISession;
-    if (!activeSession || activeSession?.isRevoked || activeSession?.jti !== payload?.jti) {
+    const activeSession: ISession = await this.sessionsService.findActiveSessionByAccessJti(user._id as string, payload?.jti) as ISession;
+    if (!activeSession || activeSession?.isRevoked || activeSession?.accessJti !== payload?.jti) {
       throw new UnauthorizedException();
     }
 

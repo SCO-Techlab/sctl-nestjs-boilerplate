@@ -24,12 +24,6 @@ export class AuthLoginDto {
 export class AuthRefreshLoginDto {
   @IsNotEmpty()
   @IsString()
-  @Matches(REGEX_PATTERNS.EMAIL)
-  @MaxLength(MAGIC_NUMBERS.N_255)
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
   token: string;
 }
 

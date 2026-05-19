@@ -46,9 +46,13 @@ export class SessionsService implements IMongodbRepository<ISession> {
   async save(session: ISession): Promise<ISession | undefined> {
     const value: Partial<ISession> = {
       user: session.user,
-      jti: session.jti,
-      expiresAt: session.expiresAt,
+      accessJti: session.accessJti,
+      accessExpiresAt: session.accessExpiresAt,
+      refreshJti: session.refreshJti ?? undefined,
+      refreshExpiresAt: session.refreshExpiresAt ?? undefined,
       isRevoked: session.isRevoked ?? false,
+      isAccessRevoked: session.isAccessRevoked ?? false,
+      isRefreshRevoked: session.isRefreshRevoked ?? false,
       revokedAt: session.revokedAt ?? undefined,
     };
 
@@ -64,9 +68,13 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
     const value: Partial<ISession> = {
       user: session.user,
-      jti: session.jti,
-      expiresAt: session.expiresAt,
+      accessJti: session.accessJti,
+      accessExpiresAt: session.accessExpiresAt,
+      refreshJti: session.refreshJti,
+      refreshExpiresAt: session.refreshExpiresAt,
       isRevoked: session.isRevoked,
+      isAccessRevoked: session.isAccessRevoked ?? false,
+      isRefreshRevoked: session.isRefreshRevoked ?? false,
       revokedAt: session.revokedAt,
     };
 
@@ -125,26 +133,80 @@ export class SessionsService implements IMongodbRepository<ISession> {
     }
   }
 
-  async updateUserSession(user: IUser, jti: string): Promise<void> {
+  async findActiveSessionByRefreshJti(userId: string, refreshJti: string): Promise<ISession | undefined> {
+    try {
+      return await this.SessionModel
+        .findOne({ user: userId, refreshJti, isRevoked: false, isRefreshRevoked: false })
+        .exec() ?? undefined;
+    } catch (error) {
+      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByRefreshJti');
+    }
+  }
+
+  async findActiveSessionByAccessJti(userId: string, accessJti: string): Promise<ISession | undefined> {
+    try {
+      return await this.SessionModel
+        .findOne({ user: userId, accessJti, isRevoked: false, isAccessRevoked: false })
+        .exec() ?? undefined;
+    } catch (error) {
+      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByAccessJti');
+    }
+  }
+
+  async updateUserSession(user: IUser, accessJti: string, refreshJti?: string): Promise<void> {
     const jwtConfig: IJwtConfig = this.configService.get('jwt') as IJwtConfig;
 
     await this.updateMany(
       { user: user._id, isRevoked: false },
-      { isRevoked: true, revokedAt: new Date() }
+      {
+        isRevoked: true,
+        isAccessRevoked: true,
+        isRefreshRevoked: true,
+        revokedAt: new Date()
+      }
     );
 
-    const expiresAt: Date = new Date(Date.now() + parseDateUnits(jwtConfig?.signOptions?.expiresIn));
+    const accessExpiresAt: Date = new Date(Date.now() + parseDateUnits(jwtConfig?.signOptions?.expiresIn));
+    const refreshExpiresAt: Date | undefined = refreshJti
+      ? new Date(Date.now() + parseDateUnits(jwtConfig?.refresh?.expiresIn as string))
+      : undefined;
+
     await this.save({
       user,
-      jti,
-      expiresAt,
+      accessJti,
+      accessExpiresAt,
+      refreshJti,
+      refreshExpiresAt,
       isRevoked: false,
+      isAccessRevoked: false,
+      isRefreshRevoked: false,
       revokedAt: undefined
     });
   }
 
+  async rotateSession(_id: string, accessJti: string, refreshJti: string): Promise<ISession> {
+    const session: ISession = await this.findOne(_id) as ISession;
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    const jwtConfig: IJwtConfig = this.configService.get('jwt') as IJwtConfig;
+    session.accessJti = accessJti;
+    session.accessExpiresAt = new Date(Date.now() + parseDateUnits(jwtConfig?.signOptions?.expiresIn));
+    session.refreshJti = refreshJti;
+    session.refreshExpiresAt = new Date(Date.now() + parseDateUnits(jwtConfig?.refresh?.expiresIn as string));
+    session.isAccessRevoked = false;
+    session.isRefreshRevoked = false;
+
+    return await this.updateOne(_id, session);
+  }
+
   sessionIsExpired(session: ISession): boolean {
-    return session.expiresAt < new Date();
+    return session.accessExpiresAt < new Date();
+  }
+
+  refreshSessionIsExpired(session: ISession): boolean {
+    return !session.refreshExpiresAt || session.refreshExpiresAt < new Date();
   }
 
   getModel(): Model<ISession> | undefined {

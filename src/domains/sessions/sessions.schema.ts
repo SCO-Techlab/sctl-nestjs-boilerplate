@@ -10,15 +10,35 @@ const SCHEMA_DEFINITION = {
     autopopulate: true,
     required: true
   },
-  jti: {
+  accessJti: {
     type: String,
     required: true,
   },
-  expiresAt: {
+  accessExpiresAt: {
     type: Date,
     required: true,
   },
+  refreshJti: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  refreshExpiresAt: {
+    type: Date,
+    required: false,
+    default: undefined,
+  },
   isRevoked: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  isAccessRevoked: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  isRefreshRevoked: {
     type: Boolean,
     required: true,
     default: false,
@@ -36,18 +56,8 @@ export const SESSION_SCHEMA = new Schema<ISession>(
 );
 
 SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-SESSION_SCHEMA.index({ jti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
+SESSION_SCHEMA.index({ accessJti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
+SESSION_SCHEMA.index({ refreshJti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true, sparse: true });
 SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection, isRevoked: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
 SESSION_SCHEMA.plugin(require('mongoose-autopopulate'));
 SESSION_SCHEMA.plugin(setIncrementalVersion);
-
-export const REFRESH_SESSION_SCHEMA = new Schema<ISession>(
-  SCHEMA_DEFINITION,
-  { timestamps: true },
-);
-
-REFRESH_SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-REFRESH_SESSION_SCHEMA.index({ jti: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: true });
-REFRESH_SESSION_SCHEMA.index({ user: MAGIC_NUMBERS.N_1 as IndexDirection, isRevoked: MAGIC_NUMBERS.N_1 as IndexDirection }, { unique: false });
-REFRESH_SESSION_SCHEMA.plugin(require('mongoose-autopopulate'));
-REFRESH_SESSION_SCHEMA.plugin(setIncrementalVersion);

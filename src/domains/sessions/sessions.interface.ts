@@ -4,8 +4,12 @@ import { Types } from "mongoose";
 
 export interface ISession extends IMongodbDocument {
   user: Types.ObjectId | IUser;
-  jti: string;
-  expiresAt: Date;
+  accessJti: string;
+  accessExpiresAt: Date;
+  refreshJti?: string;
+  refreshExpiresAt?: Date;
   isRevoked: boolean;
-  revokedAt: Date | undefined;
+  isAccessRevoked?: boolean;
+  isRefreshRevoked?: boolean;
+  revokedAt?: Date;
 }
