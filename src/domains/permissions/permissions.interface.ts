@@ -1,4 +1,4 @@
-import { IMongodbDocument } from "@shared/interfaces";
+import { IMongodbDocument } from "@core/mongodb";
 import { PERMISSION_TYPE } from "./permissions.enum";
 
 export interface IPermission extends IMongodbDocument {

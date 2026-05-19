@@ -1,5 +1,5 @@
-import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from '@shared/constants';
-import { setIncrementalVersion } from '@shared/helpers';
+import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
+import { MAGIC_NUMBERS } from '@shared/constants';
 import * as bcrypt from 'bcrypt';
 import { IndexDirection, Schema, Types } from 'mongoose';
 import { IUser } from './users.interface';

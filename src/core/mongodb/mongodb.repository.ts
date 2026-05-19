@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { MAGIC_NUMBERS } from "@shared/constants";
-import { IMongodbRecord, IPaginationResponse } from "@shared/interfaces";
+import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter, Schema } from "mongoose";
+import { IMongodbRecord } from "./mongodb.interface";
 import { MongodbService } from "./mongodb.service";
 
 @Injectable()

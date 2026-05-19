@@ -1,7 +1,7 @@
+import { formatObjectId } from '@core/mongodb';
 import { IUser } from '@domains/users';
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { formatObjectId } from '@shared/helpers';
 
 @Injectable()
 export class UserGuard implements CanActivate {

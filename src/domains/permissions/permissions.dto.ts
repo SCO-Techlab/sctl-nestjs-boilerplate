@@ -1,4 +1,4 @@
-import { MongodbDocumentDto } from '@shared/dtos';
+import { MongodbDocumentDto } from '@core/mongodb';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { PERMISSION_TYPE } from './permissions.enum';
 

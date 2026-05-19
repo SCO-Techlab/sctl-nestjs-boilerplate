@@ -1,10 +1,9 @@
-import { GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
-import { MongodbRepository } from "@core/mongodb";
+import { GRIDFS_BUCKETS, GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
+import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
 import { IRole, RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { GRIDFS_BUCKETS, MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
-import { formatMongodbError } from "@shared/helpers";
-import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
+import { MAGIC_NUMBERS } from "@shared/constants";
+import { IPaginationResponse } from "@shared/interfaces";
 import { BcryptService, SendTemplatesService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";

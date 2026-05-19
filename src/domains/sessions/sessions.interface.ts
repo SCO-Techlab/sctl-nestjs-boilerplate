@@ -1,5 +1,5 @@
+import { IMongodbDocument } from "@core/mongodb";
 import { IUser } from "@domains/users";
-import { IMongodbDocument } from "@shared/interfaces";
 import { Types } from "mongoose";
 
 export interface ISession extends IMongodbDocument {

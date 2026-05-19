@@ -1,5 +1,5 @@
+import { IMongodbDocument } from "@core/mongodb";
 import { IRole } from "@domains/roles";
-import { IMongodbDocument } from "@shared/interfaces";
 import { Types } from "mongoose";
 
 export interface IMenuFront extends IMongodbDocument {

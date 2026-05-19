@@ -1,4 +1,4 @@
-import { IMongodbDocument } from '@shared/interfaces';
+import { IMongodbDocument } from '@core/mongodb';
 import { Types } from 'mongoose';
 import { IPermission } from '../permissions';
 

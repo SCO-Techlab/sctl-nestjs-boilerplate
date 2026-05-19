@@ -1,9 +1,9 @@
+import { MongodbBulkDeleteDto } from '@core/mongodb';
 import { PERMISSIONS, PERMISSION_TYPE } from '@domains/permissions';
 import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
-import { MongodbBulkDeleteDto } from '@shared/dtos';
 import { PermissionsGuard } from '@shared/guards';
 import { IPaginationResponse } from '@shared/interfaces';
 import * as types from '@shared/types';

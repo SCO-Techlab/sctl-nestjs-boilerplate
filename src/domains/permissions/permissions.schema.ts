@@ -1,5 +1,5 @@
+import { setIncrementalVersion } from '@core/mongodb';
 import { MAGIC_NUMBERS } from '@shared/constants';
-import { setIncrementalVersion } from '@shared/helpers';
 import { IndexDirection, Schema } from 'mongoose';
 import { PERMISSION_TYPE } from './permissions.enum';
 import { IPermission } from './permissions.interface';
