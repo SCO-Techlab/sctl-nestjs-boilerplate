@@ -6,7 +6,7 @@ import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from "@shared/constants";
 import { getFrontendUrl } from "@shared/helpers";
 
 @Injectable()
-export class EmailTemplatesService {
+export class SendTemplatesService {
 
   constructor(
     private emailerService: EmailerService,

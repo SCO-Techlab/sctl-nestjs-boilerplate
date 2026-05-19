@@ -4,7 +4,7 @@ import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { BcryptService, EmailTemplatesService } from '@shared/services';
+import { BcryptService, SendTemplatesService } from '@shared/services';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthStrategy } from './auth.strategy.service';
@@ -23,7 +23,7 @@ const MODULE = {
     AuthService,
     AuthStrategy,
     BcryptService,
-    EmailTemplatesService
+    SendTemplatesService
   ],
   exports: [
     AuthService,

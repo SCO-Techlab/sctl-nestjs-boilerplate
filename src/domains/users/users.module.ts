@@ -2,7 +2,7 @@ import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { BcryptService, EmailTemplatesService } from '@shared/services';
+import { BcryptService, SendTemplatesService } from '@shared/services';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -17,7 +17,7 @@ const MODULE = {
   providers: [
     UsersService,
     BcryptService,
-    EmailTemplatesService
+    SendTemplatesService
   ],
   exports: [
     UsersService

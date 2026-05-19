@@ -6,7 +6,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException, U
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS } from '@shared/constants';
 import { createJwtPayload, createRandomUUID } from '@shared/helpers';
-import { BcryptService, EmailTemplatesService } from '@shared/services';
+import { BcryptService, SendTemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { IAuthPayload } from './auth.interface';
 
@@ -18,7 +18,7 @@ export class AuthService {
     private usersService: UsersService,
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
-    private emailTemplatesService: EmailTemplatesService,
+    private sendTemplatesService: SendTemplatesService,
     private rolesService: RolesService,
     private sessionsService: SessionsService,
   ) { }
@@ -135,7 +135,7 @@ export class AuthService {
     }
 
     if (register.active !== true) {
-      const emailSend: boolean = await this.emailTemplatesService.sendWelcomeEmail(createdUser, lang);
+      const emailSend: boolean = await this.sendTemplatesService.sendWelcomeEmail(createdUser, lang);
       if (!emailSend) {
         throw new ConflictException('Error sending registration email');
       }
@@ -196,7 +196,7 @@ export class AuthService {
       throw new ConflictException('Error updating user');
     }
 
-    const emailSend: boolean = await this.emailTemplatesService.sendForgotPasswordEmail(updatedUser, lang);
+    const emailSend: boolean = await this.sendTemplatesService.sendForgotPasswordEmail(updatedUser, lang);
     if (!emailSend) {
       throw new ConflictException('Error sending password recovery email');
     }

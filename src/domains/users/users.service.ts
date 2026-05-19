@@ -5,7 +5,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { GRIDFS_BUCKETS, MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@shared/interfaces";
-import { BcryptService, EmailTemplatesService } from "@shared/services";
+import { BcryptService, SendTemplatesService } from "@shared/services";
 import { IEntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
@@ -22,7 +22,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     private gridfsService: GridfsService,
     private rolesService: RolesService,
     private bcryptService: BcryptService,
-    private emailTemplatesService: EmailTemplatesService
+    private sendTemplatesService: SendTemplatesService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -176,7 +176,7 @@ export class UsersService implements IMongodbRepository<IUser> {
       throw new NotFoundException(`User not found`);
     }
 
-    return await this.emailTemplatesService.sendWelcomeEmail(existUser, lang);
+    return await this.sendTemplatesService.sendWelcomeEmail(existUser, lang);
   }
 
   async deleteUserAvatar(_id: string): Promise<boolean> {

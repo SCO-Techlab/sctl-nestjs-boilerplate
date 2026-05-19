@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DATE_PATTERNS, MAGIC_NUMBERS } from '@shared/constants';
 import { createLogger, format, Logger, transports } from 'winston';
 import 'winston-daily-rotate-file';
-
-type LogLevel = 'info' | 'warn' | 'error' | 'debug' | 'verbose' | 'all';
+import { LogLevel } from './logger.types';
 
 @Injectable()
 export class LoggerService {
