@@ -1,5 +1,5 @@
+import { IGridfsFile } from '@core/gridfs';
 import { IRole } from '@domains/roles';
-import { IGridfsFile } from '@modules/gridfs';
 import { IMongodbDocument } from '@shared/interfaces';
 import { Types } from 'mongoose';
 

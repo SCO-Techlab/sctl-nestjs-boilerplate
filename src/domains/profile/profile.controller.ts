@@ -1,7 +1,7 @@
+import { IGridfsFileStream } from '@core/gridfs';
+import { IJwtToken } from '@core/jwt';
 import { IMenuFront } from '@domains/menu-front';
 import { IUser } from '@domains/users';
-import { IGridfsFileStream } from '@modules/gridfs';
-import { IJwtToken } from '@modules/jwt';
 import { Body, Controller, Delete, Get, Param, Put, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';

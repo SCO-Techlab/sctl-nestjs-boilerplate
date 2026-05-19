@@ -1,5 +1,5 @@
-import { GridfsService } from '@modules/gridfs';
-import { LoggerService } from '@modules/logger';
+import { GridfsService } from '@core/gridfs';
+import { LoggerService } from '@core/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';

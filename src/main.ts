@@ -1,4 +1,4 @@
-import { LoggerService } from '@modules/logger';
+import { LoggerService } from '@core/logger';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { formatOrigin, getCertificates } from '@shared/helpers';

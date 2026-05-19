@@ -1,7 +1,7 @@
+import { IJwtToken, JwtService } from '@core/jwt';
 import { IRole, RolesService } from '@domains/roles';
 import { ISession, SessionsService } from '@domains/sessions';
 import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
-import { IJwtToken, JwtService } from '@modules/jwt';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS } from '@shared/constants';

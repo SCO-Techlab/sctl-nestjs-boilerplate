@@ -1,5 +1,5 @@
+import { MongodbRepository } from "@core/mongodb";
 import { IRole, RolesService } from "@domains/roles";
-import { MongodbRepository } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError, sortMenuRecursive } from "@shared/helpers";
@@ -29,8 +29,8 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       const response: IMenuFront[] | IPaginationResponse<IMenuFront> = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as IEntityQuery<IMenuFront>) as IMenuFront[];
       const menu = sortMenuRecursive((response as any)?.data ?? response);
-      return (response as any)?.data 
-        ? { ...response, data: menu } 
+      return (response as any)?.data
+        ? { ...response, data: menu }
         : menu;
     } catch (error) {
       throw formatMongodbError(error, 'MenuFrontService', 'find');

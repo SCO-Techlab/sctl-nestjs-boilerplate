@@ -1,4 +1,4 @@
-import { JWT_TOKEN_TYPE } from '@modules/jwt';
+import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SessionsController } from './sessions.controller';

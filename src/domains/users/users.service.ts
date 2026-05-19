@@ -1,6 +1,6 @@
+import { GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
+import { MongodbRepository } from "@core/mongodb";
 import { IRole, RolesService } from "@domains/roles";
-import { GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@modules/gridfs";
-import { MongodbRepository } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { GRIDFS_BUCKETS, MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";

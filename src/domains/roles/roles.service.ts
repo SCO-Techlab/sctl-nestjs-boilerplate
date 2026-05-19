@@ -1,5 +1,5 @@
+import { MongodbRepository } from "@core/mongodb";
 import { IPermission, PermissionsService } from "@domains/permissions";
-import { MongodbRepository } from "@modules/mongodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";

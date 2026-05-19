@@ -1,6 +1,6 @@
+import { IJwtConfig } from "@core/jwt";
+import { MongodbRepository } from "@core/mongodb";
 import { IUser } from "@domains/users";
-import { IJwtConfig } from "@modules/jwt";
-import { MongodbRepository } from "@modules/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS, MONGODB_CONSTANTS } from "@shared/constants";

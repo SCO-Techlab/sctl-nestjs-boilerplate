@@ -22,11 +22,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@core/*": [
+        "./src/core/*"
+      ],
       "@domains/*": [
         "./src/domains/*"
-      ],
-      "@modules/*": [
-        "./src/modules/*"
       ],
       "@shared/*": [
         "./src/shared/*"

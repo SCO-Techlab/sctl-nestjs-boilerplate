@@ -1,5 +1,5 @@
+import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { PermissionsModule } from '@domains/permissions';
-import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { RolesController } from './roles.controller';

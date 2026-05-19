@@ -1,5 +1,5 @@
+import { EmailerService } from "@core/emailer";
 import { IUser } from "@domains/users";
-import { EmailerService } from "@modules/emailer";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from "@shared/constants";

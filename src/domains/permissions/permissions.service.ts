@@ -1,4 +1,4 @@
-import { MongodbRepository } from "@modules/mongodb";
+import { MongodbRepository } from "@core/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { MONGODB_CONSTANTS } from "@shared/constants";
 import { formatMongodbError } from "@shared/helpers";

@@ -1,7 +1,7 @@
+import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
-import { JWT_TOKEN_TYPE } from '@modules/jwt';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { BcryptService, EmailTemplatesService } from '@shared/services';
