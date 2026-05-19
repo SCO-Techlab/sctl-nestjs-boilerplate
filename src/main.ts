@@ -1,11 +1,11 @@
-import { LanguageInterceptor } from '@interceptors/language.interceptor';
 import { LoggerService } from '@modules/logger';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { SingleErrorValidationPipe } from '@pipes/single-error-validation.pipe';
 import { formatOrigin, getCertificates } from '@shared/helpers';
 import { IAppConfig } from './app.config';
 import { AppModule } from './app.module';
+import { LanguageInterceptor } from './interceptors';
+import { SingleErrorValidationPipe } from './pipes';
 
 async function bootstrap() {
   const httpsEnabled = process.env.HTTPS_ENABLED === 'true';

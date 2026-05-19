@@ -5,7 +5,6 @@ import { ProfileModule } from '@domains/profile';
 import { RolesModule } from '@domains/roles';
 import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
-import { PublicMiddleware } from '@middlewares/public.middleware';
 import { EmailerModule, IEmailerConfig } from '@modules/emailer';
 import { GridfsModule } from '@modules/gridfs';
 import { IJwtConfig, JwtModule } from '@modules/jwt';
@@ -15,6 +14,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GRIDFS_BUCKETS } from '@shared/constants';
 import { APP_ENV_CONFIG, EMAILER_ENV_CONFIG, JWT_ENV_CONFIG, MONGODB_ENV_CONFIG } from './env-configs';
+import { PublicMiddleware } from './middlewares';
 
 @Module({
   imports: [
