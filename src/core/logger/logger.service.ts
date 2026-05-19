@@ -31,38 +31,38 @@ export class LoggerService {
     this.replaceConsole();
   }
 
-  public log(message: string, prefix: string = '') {
+  public log(message: string, prefix: string = ''): void {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('info', message);
   }
 
-  public warn(message: string, prefix: string = '') {
+  public warn(message: string, prefix: string = ''): void {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('warn', message);
   }
 
-  public error(message: string, prefix: string = '') {
+  public error(message: string, prefix: string = ''): void {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('error', message);
   }
 
-  public debug(message: string, prefix: string = '') {
+  public debug(message: string, prefix: string = ''): void {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('debug', message);
   }
 
-  public verbose(message: string, prefix: string = '') {
+  public verbose(message: string, prefix: string = ''): void {
     message = this.fillMessageWithPrefix(message, prefix);
     this.write('verbose', message);
   }
 
-  private createLoggers() {
+  private createLoggers(): void {
     Object.values(this.LEVELS).forEach(level => {
       this.loggers.set(level, this.createLoggerObject(level));
     });
   }
 
-  private replaceConsole() {
+  private replaceConsole(): void {
     console.log = this.createConsoleWrapper('info');
     console.info = this.createConsoleWrapper('info');
     console.warn = this.createConsoleWrapper('warn');
@@ -71,7 +71,7 @@ export class LoggerService {
     console.trace = this.createConsoleWrapper('verbose');
   }
 
-  private createConsoleWrapper(level: LogLevel) {
+  private createConsoleWrapper(level: LogLevel): any {
     return (...args: any[]) => {
       const message = args
         .map(arg =>
@@ -83,7 +83,7 @@ export class LoggerService {
     };
   }
 
-  private write(level: LogLevel, message: string) {
+  private write(level: LogLevel, message: string): void {
     const logger = this.loggers.get(level);
     const loggerAll = this.loggers.get('all');
 

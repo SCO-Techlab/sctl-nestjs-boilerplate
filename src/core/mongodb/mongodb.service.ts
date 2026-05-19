@@ -17,13 +17,7 @@ export class MongodbService {
     private loggerService: LoggerService,
     private gridfsService: GridfsService
   ) {
-    if (!this.validateOptions(this.options)) {
-      return;
-    }
-
-    for (const config of this.options) {
-      this.createConnectionDB(config);
-    }
+    this.initService();
   }
 
   public clearConnection(name: string = 'default'): boolean {
@@ -90,6 +84,16 @@ export class MongodbService {
     }
 
     return this._dbConnections.get(name)?.model<T>(model, schema, collection);
+  }
+
+  private initService(): void {
+    if (!this.validateOptions(this.options)) {
+      return;
+    }
+
+    for (const config of this.options) {
+      this.createConnectionDB(config);
+    }
   }
 
   private validateOptions(options: IMongodbConfig[]): boolean {
