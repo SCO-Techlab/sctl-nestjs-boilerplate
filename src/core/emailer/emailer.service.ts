@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
-import { timer } from 'rxjs';
+import { take, timer } from 'rxjs';
 import { EmailerTemplateService } from './emailer-templates.service';
 import { IEmailerConfig } from './emailer.config';
 import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
@@ -17,60 +17,18 @@ export class EmailerService {
     private emailerTemplateService: EmailerTemplateService
   ) { }
 
-  public async onModuleInit(): Promise<void> {
+  async onModuleInit(): Promise<void> {
     if (!this.validateOptions(this.options)) {
       return;
     }
 
-    timer(MAGIC_NUMBERS.N_10).subscribe(async () => {
-      for (const config of this.options) {
-        await this.createTransporter(config);
-      }
-    });
-  }
-
-  public closeTransporter(name: string = 'default'): boolean {
-    if (!this.transporters.has(name)) {
-      return false;
-    }
-
-    try {
-      this.transporters.get(name)?.close?.();
-      this.transporters.delete(name);
-      return true;
-    } catch (err) {
-      console.error(`[EmailerService] closeTransporter (${name}) -> Error: ${err}`);
-      return false;
-    }
-  }
-
-  public async createTransporter(config: IEmailerConfig): Promise<boolean> {
-    this.closeTransporter(config?.name);
-
-    try {
-      const transporter: Transporter = createTransport({
-        service: config.service ?? '',
-        auth: {
-          user: config.authUser,
-          pass: config.authPassword,
-        },
-        tls: {
-          rejectUnauthorized: config.rejectUnauthorized !== undefined
-            ? config.rejectUnauthorized
-            : false,
-        },
-        secure: config.secure !== undefined
-          ? config.secure
-          : false
+    timer(MAGIC_NUMBERS.N_10)
+      .pipe(take(MAGIC_NUMBERS.N_1))
+      .subscribe(async () => {
+        for (const config of this.options) {
+          await this.createTransporter(config);
+        }
       });
-
-      this.transporters.set(config.name, transporter);
-      console.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
-      return true;
-    } catch (err) {
-      console.error(`[EmailerService] createTransporter (${config.name}) -> Error: ${err}`);
-      return false;
-    }
   }
 
   public async send(message: IEmailerMessage, name: string = 'default'): Promise<boolean> {
@@ -124,6 +82,50 @@ export class EmailerService {
       return await this.send(mailOptions, name);
     } catch (err) {
       console.error(`[EmailerService] sendTemplate (${name}) -> Error: ${err}`);
+      return false;
+    }
+  }
+
+  private closeTransporter(name: string = 'default'): boolean {
+    if (!this.transporters.has(name)) {
+      return false;
+    }
+
+    try {
+      this.transporters.get(name)?.close?.();
+      this.transporters.delete(name);
+      return true;
+    } catch (err) {
+      console.error(`[EmailerService] closeTransporter (${name}) -> Error: ${err}`);
+      return false;
+    }
+  }
+
+  private async createTransporter(config: IEmailerConfig): Promise<boolean> {
+    this.closeTransporter(config?.name);
+
+    try {
+      const transporter: Transporter = createTransport({
+        service: config.service ?? '',
+        auth: {
+          user: config.authUser,
+          pass: config.authPassword,
+        },
+        tls: {
+          rejectUnauthorized: config.rejectUnauthorized !== undefined
+            ? config.rejectUnauthorized
+            : false,
+        },
+        secure: config.secure !== undefined
+          ? config.secure
+          : false
+      });
+
+      this.transporters.set(config.name, transporter);
+      console.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
+      return true;
+    } catch (err) {
+      console.error(`[EmailerService] createTransporter (${config.name}) -> Error: ${err}`);
       return false;
     }
   }

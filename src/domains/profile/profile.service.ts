@@ -1,12 +1,12 @@
 import { GRIDFS_BUCKETS, GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/gridfs";
 import { IJwtToken, JwtService } from "@core/jwt";
-import { formatObjectId } from "@core/mongodb";
 import { IMenuFront, MenuFrontService } from "@domains/menu-front";
 import { SessionsService } from "@domains/sessions";
-import { IUser, UsersService, UserUpdateDto } from "@domains/users";
+import { UsersService, UserUpdateDto } from "@domains/users";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES, MAGIC_NUMBERS } from "@shared/constants";
-import { createJwtPayload, createRandomUUID, sortMenuRecursive } from "@shared/helpers";
+import { createJwtPayload, createRandomUUID, formatObjectId } from "@shared/helpers";
+import { IUser } from "@shared/interfaces";
 import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
 
 @Injectable()
@@ -130,7 +130,7 @@ export class ProfileService {
       return [];
     }
 
-    return sortMenuRecursive(menuFront);
+    return this.menuFrontService.sortMenuRecursive(menuFront);
   }
 
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {

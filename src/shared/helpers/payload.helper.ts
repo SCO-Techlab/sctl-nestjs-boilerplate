@@ -1,5 +1,4 @@
-import { IAuthPayload } from "@domains/auth";
-import { IUser } from "@domains/users";
+import { IAuthPayload, IUser } from "@shared/interfaces";
 
 export const createJwtPayload = (user: IUser, jti: string, refreshToken: boolean): IAuthPayload => {
   const payload: IAuthPayload = {

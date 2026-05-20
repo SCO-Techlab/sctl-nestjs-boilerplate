@@ -1,8 +1,8 @@
 import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
 import { MAGIC_NUMBERS } from '@shared/constants';
+import { IUser } from '@shared/interfaces';
 import * as bcrypt from 'bcrypt';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { IUser } from './users.interface';
 
 export const USERS_SCHEMA = new Schema<IUser>(
   {

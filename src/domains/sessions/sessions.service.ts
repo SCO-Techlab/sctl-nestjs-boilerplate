@@ -1,11 +1,10 @@
 import { IJwtConfig } from "@core/jwt";
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
-import { IUser } from "@domains/users";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { parseDateUnits } from "@shared/helpers";
-import { IPaginationResponse } from "@shared/interfaces";
+import { IPaginationResponse, IUser } from "@shared/interfaces";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter, SortOrder } from "mongoose";
 import { ISession } from "./sessions.interface";

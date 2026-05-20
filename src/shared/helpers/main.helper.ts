@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from '@shared/constants';
 import * as fs from 'fs';
-import { MAGIC_NUMBERS } from "../constants";
 
 export const formatOrigin = (origin: string): string[] => {
   if (!origin || origin.length === MAGIC_NUMBERS.N_0) {

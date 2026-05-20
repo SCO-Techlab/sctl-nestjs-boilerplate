@@ -1,14 +1,15 @@
+import { EmailerService } from '@core/emailer';
 import { IJwtToken, JwtService } from '@core/jwt';
 import { IRole, RolesService } from '@domains/roles';
 import { ISession, SessionsService } from '@domains/sessions';
-import { IUser, UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
+import { UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MAGIC_NUMBERS } from '@shared/constants';
-import { createJwtPayload, createRandomUUID } from '@shared/helpers';
-import { BcryptService, SendTemplatesService } from '@shared/services';
+import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
+import { createJwtPayload, createRandomUUID, getFrontendUrl } from '@shared/helpers';
+import { IAuthPayload, IUser } from '@shared/interfaces';
+import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
-import { IAuthPayload } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,9 +19,9 @@ export class AuthService {
     private usersService: UsersService,
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
-    private sendTemplatesService: SendTemplatesService,
     private rolesService: RolesService,
     private sessionsService: SessionsService,
+    private emailerService: EmailerService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
@@ -135,7 +136,7 @@ export class AuthService {
     }
 
     if (register.active !== true) {
-      const emailSend: boolean = await this.sendTemplatesService.sendWelcomeEmail(createdUser, lang);
+      const emailSend: boolean = await this.usersService.sendWelcomeEmail(createdUser?._id as string, lang);
       if (!emailSend) {
         throw new ConflictException('Error sending registration email');
       }
@@ -196,7 +197,38 @@ export class AuthService {
       throw new ConflictException('Error updating user');
     }
 
-    const emailSend: boolean = await this.sendTemplatesService.sendForgotPasswordEmail(updatedUser, lang);
+    const emailSend: boolean = await this.emailerService.sendTemplate({
+      template: TEMPLATES.FORGOT_PASSWORD,
+      context: {
+        forgotPassword: {
+          params: {
+            name: existUser.userName ?? existUser.personalName ?? existUser.email ?? '',
+            link: getFrontendUrl(
+              this.configSerive.get('app').httpsEnabled,
+              this.configSerive.get('app').host,
+              this.configSerive.get('app').production ? this.configSerive.get('app').port : MAGIC_NUMBERS.N_4200,
+              `auth/reset-password/${existUser.pwdRecoveryToken}`
+            ),
+            expiration: this.configSerive.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30
+          },
+          literals: {
+            welcomeText: TRANSLATES[lang].forgotPassword.welcomeText,
+            message: TRANSLATES[lang].forgotPassword.message,
+            message2: TRANSLATES[lang].forgotPassword.message2,
+            message3: TRANSLATES[lang].forgotPassword.message3,
+            linkText: TRANSLATES[lang].forgotPassword.linkText
+          }
+        },
+        footer: {
+          params: {
+            year: new Date().getFullYear(),
+            appName: this.configSerive.get('app').appName
+          }
+        }
+      },
+      receivers: [existUser.email],
+      subject: TRANSLATES[lang].forgotPassword.subject
+    });
     if (!emailSend) {
       throw new ConflictException('Error sending password recovery email');
     }

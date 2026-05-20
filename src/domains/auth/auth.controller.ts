@@ -1,9 +1,9 @@
 import { IJwtToken } from '@core/jwt';
-import { IUser } from '@domains/users';
 import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang, User } from '@shared/decorators';
+import { IUser } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';

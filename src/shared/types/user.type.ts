@@ -1,3 +1,3 @@
-import { IUser } from "@domains/users";
+import { IUser } from "@shared/interfaces";
 
 export type RequestUser = IUser | Partial<IUser> | undefined;

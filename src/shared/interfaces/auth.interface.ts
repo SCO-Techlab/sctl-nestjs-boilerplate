@@ -1,4 +1,4 @@
-import { IUser } from "@domains/users";
+import { IUser } from "./users.interface";
 
 export interface IAuthPayload {
   _id: string;

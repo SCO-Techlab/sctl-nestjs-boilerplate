@@ -1,13 +1,13 @@
 import { IGridfsFileStream } from '@core/gridfs';
 import { IJwtToken } from '@core/jwt';
 import { IMenuFront } from '@domains/menu-front';
-import { IUser } from '@domains/users';
 import { Body, Controller, Delete, Get, Param, Put, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { User } from '@shared/decorators';
 import { UserGuard } from '@shared/guards';
+import { IUser } from '@shared/interfaces';
 import * as types from '@shared/types';
 import express from 'express';
 import { UpdateUserInfoDto, UpdateUserPasswordDto } from './profile.dto';

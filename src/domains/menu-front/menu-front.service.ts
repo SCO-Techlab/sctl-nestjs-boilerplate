@@ -2,7 +2,6 @@ import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTAN
 import { IRole, RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS } from "@shared/constants";
-import { sortMenuRecursive } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
@@ -28,7 +27,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
   async find(entityQuery?: EntityQuery<Partial<IMenuFront>>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
     try {
       const response: IMenuFront[] | IPaginationResponse<IMenuFront> = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as EntityQuery<IMenuFront>) as IMenuFront[];
-      const menu = sortMenuRecursive((response as any)?.data ?? response);
+      const menu = this.sortMenuRecursive((response as any)?.data ?? response);
       return (response as any)?.data
         ? { ...response, data: menu }
         : menu;
@@ -140,6 +139,26 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     } catch (error) {
       console.error(`[MenuFrontService] setModelIndexes -> Error: ${error}`);
     }
+  }
+
+  public sortMenuRecursive(menu: IMenuFront[]): IMenuFront[] {
+    if (!menu || menu.length === MAGIC_NUMBERS.N_0) {
+      return [];
+    }
+
+    menu.sort(
+      (a, b) =>
+        (a?.order ?? MAGIC_NUMBERS.N_0) -
+        (b?.order ?? MAGIC_NUMBERS.N_0)
+    );
+
+    for (const item of menu) {
+      if (item.items && item.items.length > MAGIC_NUMBERS.N_0) {
+        item.items = this.sortMenuRecursive(item.items);
+      }
+    }
+
+    return menu;
   }
 
   private async resolveRoles(ids: string[]): Promise<IRole[] | undefined> {

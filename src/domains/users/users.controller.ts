@@ -5,10 +5,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Lang, Permissions } from '@shared/decorators';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse } from '@shared/interfaces';
+import { IPaginationResponse, IUser } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from './users.dto';
-import { IUser } from './users.interface';
 import { UsersService } from './users.service';
 
 @Controller(APP_CONTROLLERS.USERS)

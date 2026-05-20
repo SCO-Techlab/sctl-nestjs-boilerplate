@@ -1,14 +1,16 @@
+import { EmailerService } from "@core/emailer";
 import { GRIDFS_BUCKETS, GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
 import { IRole, RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
-import { IPaginationResponse } from "@shared/interfaces";
-import { BcryptService, SendTemplatesService } from "@shared/services";
+import { ConfigService } from "@nestjs/config";
+import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from "@shared/constants";
+import { getFrontendUrl } from "@shared/helpers";
+import { IPaginationResponse, IUser } from "@shared/interfaces";
+import { BcryptService } from "@shared/services";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
-import { IUser } from "./users.interface";
 import { USERS_SCHEMA } from "./users.schema";
 
 @Injectable()
@@ -21,7 +23,8 @@ export class UsersService implements IMongodbRepository<IUser> {
     private gridfsService: GridfsService,
     private rolesService: RolesService,
     private bcryptService: BcryptService,
-    private sendTemplatesService: SendTemplatesService
+    private emailerService: EmailerService,
+    private configService: ConfigService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -175,7 +178,35 @@ export class UsersService implements IMongodbRepository<IUser> {
       throw new NotFoundException(`User not found`);
     }
 
-    return await this.sendTemplatesService.sendWelcomeEmail(existUser, lang);
+    return await this.emailerService.sendTemplate({
+      template: TEMPLATES.WELCOME,
+      context: {
+        welcome: {
+          params: {
+            name: existUser.userName ?? existUser.personalName ?? existUser.email ?? '',
+            link: getFrontendUrl(
+              this.configService.get('app').httpsEnabled,
+              this.configService.get('app').host,
+              this.configService.get('app').production ? this.configService.get('app').port : MAGIC_NUMBERS.N_4200,
+              `auth/confirm-email/${existUser.email}`
+            )
+          },
+          literals: {
+            welcomeText: TRANSLATES[lang].welcome.welcomeText,
+            message: TRANSLATES[lang].welcome.message,
+            linkText: TRANSLATES[lang].welcome.linkText
+          }
+        },
+        footer: {
+          params: {
+            year: new Date().getFullYear(),
+            appName: this.configService.get('app').appName
+          }
+        }
+      },
+      receivers: [existUser.email],
+      subject: TRANSLATES[lang].welcome.subject
+    });
   }
 
   async deleteUserAvatar(_id: string): Promise<boolean> {
