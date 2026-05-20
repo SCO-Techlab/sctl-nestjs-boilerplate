@@ -1,12 +1,11 @@
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
-import { IPermission, PermissionsService } from "@domains/permissions";
+import { PermissionsService } from "@domains/permissions";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS } from "@shared/constants";
-import { IPaginationResponse } from "@shared/interfaces";
+import { IPaginationResponse, IPermission, IRole } from "@shared/interfaces";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { RoleCreateDto, RoleUpdateDto } from "./roles.dto";
-import { IRole } from "./roles.interface";
 import { ROLES_SCHEMA } from "./roles.schema";
 
 @Injectable()

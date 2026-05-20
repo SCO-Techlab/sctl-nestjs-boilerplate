@@ -1,13 +1,13 @@
 import { EmailerService } from '@core/emailer';
 import { IJwtToken, JwtService } from '@core/jwt';
-import { IRole, RolesService } from '@domains/roles';
-import { ISession, SessionsService } from '@domains/sessions';
+import { RolesService } from '@domains/roles';
+import { SessionsService } from '@domains/sessions';
 import { UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
 import { createJwtPayload, createRandomUUID, getFrontendUrl } from '@shared/helpers';
-import { IAuthPayload, IUser } from '@shared/interfaces';
+import { IAuthPayload, IRole, ISession, IUser } from '@shared/interfaces';
 import { BcryptService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 

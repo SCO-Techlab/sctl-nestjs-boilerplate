@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { HttpException, HttpStatus, ValidationError, ValidationPipe } from '@nestjs/common';
-import { MAGIC_NUMBERS } from '@shared/constants';
 
 export class SingleErrorValidationPipe extends ValidationPipe {
   constructor() {

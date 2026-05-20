@@ -1,5 +1,5 @@
 import { IMongodbDocument } from "@core/mongodb";
-import { PERMISSION_TYPE } from "./permissions.enum";
+import { PERMISSION_TYPE } from "@domains/permissions";
 
 export interface IPermission extends IMongodbDocument {
   name: string;

@@ -1,9 +1,7 @@
-import { IPermission, IRequiredPermission } from '@domains/permissions';
-import { IRole } from '@domains/roles';
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { MAGIC_NUMBERS } from '@shared/constants';
-import { IUser } from '@shared/interfaces';
+import { IPermission, IRequiredPermission, IRole, IUser } from '@shared/interfaces';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

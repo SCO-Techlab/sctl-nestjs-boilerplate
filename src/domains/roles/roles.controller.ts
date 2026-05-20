@@ -5,10 +5,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse } from '@shared/interfaces';
+import { IPaginationResponse, IRole } from '@shared/interfaces';
 import * as types from '@shared/types';
 import { RoleCreateDto, RoleUpdateDto } from './roles.dto';
-import { IRole } from './roles.interface';
 import { RolesService } from './roles.service';
 
 @Controller(APP_CONTROLLERS.ROLES)

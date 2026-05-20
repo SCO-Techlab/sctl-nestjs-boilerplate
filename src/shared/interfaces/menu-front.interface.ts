@@ -1,6 +1,6 @@
 import { IMongodbDocument } from "@core/mongodb";
-import { IRole } from "@domains/roles";
 import { Types } from "mongoose";
+import { IRole } from "./roles.interface";
 
 export interface IMenuFront extends IMongodbDocument {
   label?: string;

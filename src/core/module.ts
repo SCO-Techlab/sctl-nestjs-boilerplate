@@ -1,10 +1,11 @@
-import { EmailerModule, IEmailerConfig } from "@core/emailer";
-import { GRIDFS_BUCKETS, GridfsModule } from "@core/gridfs";
-import { IJwtConfig, JwtModule } from "@core/jwt";
-import { LoggerModule } from "@core/logger";
-import { IMongodbConfig, MongodbModule } from "@core/mongodb";
+
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { EmailerModule, IEmailerConfig } from "./modules/emailer";
+import { GRIDFS_BUCKETS, GridfsModule } from "./modules/gridfs";
+import { IJwtConfig, JwtModule } from "./modules/jwt";
+import { LoggerModule } from "./modules/logger";
+import { IMongodbConfig, MongodbModule } from "./modules/mongodb";
 
 @Module({
   imports: [
