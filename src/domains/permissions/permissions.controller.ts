@@ -14,7 +14,7 @@ import { PermissionsRepository } from './permissions.repository';
 @Controller(APP_CONTROLLERS.PERMISSIONS)
 export class PermissionsController {
 
-  constructor(private repository: PermissionsRepository) { }
+  constructor(private readonly repository: PermissionsRepository) { }
 
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)

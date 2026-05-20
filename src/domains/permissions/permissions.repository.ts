@@ -14,8 +14,8 @@ export class PermissionsRepository implements IMongodbRepository<IPermission> {
   private Model: Model<IPermission>;
 
   constructor(
-    private loggerService: LoggerService,
-    private mongodbRepository: MongodbRepository
+    private readonly loggerService: LoggerService,
+    private readonly mongodbRepository: MongodbRepository
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -105,5 +105,23 @@ export class PermissionsRepository implements IMongodbRepository<IPermission> {
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsRepository', 'deleteMany', this.loggerService);
     }
+  }
+
+  async dtoToEntity(dto: any): Promise<IPermission | undefined> {
+    const keys: string[] = Object.keys(dto ?? {});
+    if (!keys?.length) {
+      return undefined;
+    }
+
+    const entity: IPermission = {
+      _id: dto?._id ?? undefined,
+      name: dto?.name ?? undefined,
+      type: dto?.type ?? undefined,
+      createdAt: dto?.createdAt ?? undefined,
+      updatedAt: dto?.updatedAt ?? undefined,
+      __v: dto?.__v ?? undefined
+    };
+
+    return entity;
   }
 }
