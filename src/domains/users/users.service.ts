@@ -1,5 +1,6 @@
 import { EmailerService } from "@core/emailer";
 import { GridfsService } from "@core/gridfs";
+import { LoggerService } from "@core/logger";
 import { MongodbRepository, formatMongodbError } from "@core/mongodb";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
 import { IGridfsFile, IGridfsGetFileOptions, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
@@ -21,6 +22,7 @@ export class UsersService implements IMongodbRepository<IUser> {
   private UserModel: Model<IUser>;
 
   constructor(
+    private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
     private gridfsService: GridfsService,
     private rolesService: RolesService,
@@ -38,7 +40,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       return await this.mongodbRepository.find<IUser>(this.UserModel, entityQuery);
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'find');
+      throw formatMongodbError(error, 'UsersService', 'find', this.loggerService);
     }
   }
 
@@ -47,7 +49,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       return await this.mongodbRepository.findOne<IUser>(this.UserModel, record);
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'findOne');
+      throw formatMongodbError(error, 'UsersService', 'findOne', this.loggerService);
     }
   }
 
@@ -62,7 +64,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       return await this.mongodbRepository.save<IUser>(this.UserModel, value);
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'save');
+      throw formatMongodbError(error, 'UsersService', 'save', this.loggerService);
     }
   }
 
@@ -92,7 +94,7 @@ export class UsersService implements IMongodbRepository<IUser> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateOne');
+      throw formatMongodbError(error, 'UsersService', 'updateOne', this.loggerService);
     }
   }
 
@@ -119,7 +121,7 @@ export class UsersService implements IMongodbRepository<IUser> {
 
       return true;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updatePassword');
+      throw formatMongodbError(error, 'UsersService', 'updatePassword', this.loggerService);
     }
   }
 
@@ -127,7 +129,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       return await this.mongodbRepository.updateMany<IUser>(this.UserModel, filter, update as Partial<IUser>);
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateMany');
+      throw formatMongodbError(error, 'UsersService', 'updateMany', this.loggerService);
     }
   }
 
@@ -141,7 +143,7 @@ export class UsersService implements IMongodbRepository<IUser> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteOne');
+      throw formatMongodbError(error, 'UsersService', 'deleteOne', this.loggerService);
     }
   }
 
@@ -149,7 +151,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       return await this.mongodbRepository.deleteMany(this.UserModel, filter);
     } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteMany');
+      throw formatMongodbError(error, 'UsersService', 'deleteMany', this.loggerService);
     }
   }
 
@@ -161,7 +163,7 @@ export class UsersService implements IMongodbRepository<IUser> {
         COLLECTIONS.USERS.COLLECTION
       );
     } catch (error) {
-      console.error(`[UsersService] getModel -> Error: ${error}`);
+      this.loggerService.error(`[UsersService] getModel -> Error: ${error}`);
       return undefined;
     }
   }
@@ -170,7 +172,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     try {
       this.mongodbRepository.setModelIndexes(this.UserModel);
     } catch (error) {
-      console.error(`[UsersService] setModelIndexes -> Error: ${error}`);
+      this.loggerService.error(`[UsersService] setModelIndexes -> Error: ${error}`);
     }
   }
 
