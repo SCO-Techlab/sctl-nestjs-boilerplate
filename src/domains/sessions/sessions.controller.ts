@@ -1,12 +1,13 @@
-import { MongodbBulkDeleteDto } from '@core/mongodb';
-import { PERMISSIONS, PERMISSION_TYPE } from '@domains/permissions';
+import { MongodbBulkDeleteDto } from '@core/shared/dtos';
+import { IPaginationResponse } from '@core/shared/interfaces';
+import * as types from '@core/shared/types';
 import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { APP_CONTROLLERS } from '@shared/constants';
+import { APP_CONTROLLERS, PERMISSIONS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
+import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse, ISession } from '@shared/interfaces';
-import * as types from '@shared/types';
+import { ISession } from '@shared/interfaces';
 import { SessionsService } from './sessions.service';
 
 @Controller(APP_CONTROLLERS.SESSIONS)

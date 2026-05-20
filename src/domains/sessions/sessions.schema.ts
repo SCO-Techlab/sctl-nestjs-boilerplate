@@ -1,12 +1,13 @@
-import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
-import { MAGIC_NUMBERS } from '@shared/constants';
+import { setIncrementalVersion } from '@core/mongodb';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { COLLECTIONS } from '@shared/constants';
 import { ISession } from '@shared/interfaces';
 import { IndexDirection, Schema, Types } from 'mongoose';
 
 const SCHEMA_DEFINITION = {
   user: {
     type: Types.ObjectId,
-    ref: MONGODB_CONSTANTS.USERS.MODEL,
+    ref: COLLECTIONS.USERS.MODEL,
     autopopulate: true,
     required: true
   },

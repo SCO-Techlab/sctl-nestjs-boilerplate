@@ -1,9 +1,8 @@
-import { JWT_TOKEN_TYPE } from '@core/jwt';
+import { JWT_TOKEN_TYPE } from '@core/shared/enums';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SessionsController } from './sessions.controller';
 import { SessionsService } from './sessions.service';
-
 
 const MODULE = {
   imports: [

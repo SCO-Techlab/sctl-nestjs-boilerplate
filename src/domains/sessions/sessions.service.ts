@@ -1,11 +1,13 @@
-import { IJwtConfig } from "@core/jwt";
-import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
+import { LoggerService } from "@core/logger";
+import { formatMongodbError, MongodbRepository } from "@core/mongodb";
+import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { IJwtConfig, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
+import { EntityQuery } from "@core/shared/types";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MAGIC_NUMBERS } from "@shared/constants";
+import { COLLECTIONS } from "@shared/constants";
 import { parseDateUnits } from "@shared/helpers";
-import { IPaginationResponse, ISession, IUser } from "@shared/interfaces";
-import { EntityQuery } from "@shared/types";
+import { ISession, IUser } from "@shared/interfaces";
 import { Model, QueryFilter, SortOrder } from "mongoose";
 import { SESSION_SCHEMA } from "./sessions.schema";
 
@@ -15,6 +17,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
   private SessionModel: Model<ISession>;
 
   constructor(
+    private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
     private configService: ConfigService
   ) { }
@@ -28,7 +31,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       return await this.mongodbRepository.find<ISession>(this.SessionModel, entityQuery);
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'find');
+      throw formatMongodbError(error, 'SessionsService', 'find', this.loggerService);
     }
   }
 
@@ -37,7 +40,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       return await this.mongodbRepository.findOne<ISession>(this.SessionModel, record);
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'findOne');
+      throw formatMongodbError(error, 'SessionsService', 'findOne', this.loggerService);
     }
   }
 
@@ -57,7 +60,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       return await this.mongodbRepository.save<ISession>(this.SessionModel, value);
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'save');
+      throw formatMongodbError(error, 'SessionsService', 'save', this.loggerService);
     }
   }
 
@@ -85,7 +88,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'updateOne');
+      throw formatMongodbError(error, 'SessionsService', 'updateOne', this.loggerService);
     }
   }
 
@@ -94,7 +97,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
       return await this.mongodbRepository
         .updateMany<ISession>(this.SessionModel, filter, update as Partial<ISession>);
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'updateMany');
+      throw formatMongodbError(error, 'SessionsService', 'updateMany', this.loggerService);
     }
   }
 
@@ -108,7 +111,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'deleteOne');
+      throw formatMongodbError(error, 'SessionsService', 'deleteOne', this.loggerService);
     }
   }
 
@@ -116,7 +119,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       return await this.mongodbRepository.deleteMany(this.SessionModel, filter);
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'deleteMany');
+      throw formatMongodbError(error, 'SessionsService', 'deleteMany', this.loggerService);
     }
   }
 
@@ -127,7 +130,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
         .sort({ createdAt: MAGIC_NUMBERS.N_MINUS_1 as SortOrder })
         .exec() ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'findLastActiveUserSession');
+      throw formatMongodbError(error, 'SessionsService', 'findLastActiveUserSession', this.loggerService);
     }
   }
 
@@ -137,7 +140,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
         .findOne({ user: userId, refreshJti, isRevoked: false, isRefreshRevoked: false })
         .exec() ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByRefreshJti');
+      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByRefreshJti', this.loggerService);
     }
   }
 
@@ -147,7 +150,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
         .findOne({ user: userId, accessJti, isRevoked: false, isAccessRevoked: false })
         .exec() ?? undefined;
     } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByAccessJti');
+      throw formatMongodbError(error, 'SessionsService', 'findActiveSessionByAccessJti', this.loggerService);
     }
   }
 
@@ -210,12 +213,12 @@ export class SessionsService implements IMongodbRepository<ISession> {
   getModel(): Model<ISession> | undefined {
     try {
       return this.mongodbRepository.getModel(
-        MONGODB_CONSTANTS.SESSIONS.MODEL,
+        COLLECTIONS.SESSIONS.MODEL,
         SESSION_SCHEMA,
-        MONGODB_CONSTANTS.SESSIONS.COLLECTION
+        COLLECTIONS.SESSIONS.COLLECTION
       );
     } catch (error) {
-      console.error(`[SessionsService] getModel -> Error: ${error}`);
+      this.loggerService.error(`[SessionsService] getModel -> Error: ${error}`);
       return undefined;
     }
   }
@@ -224,7 +227,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     try {
       this.mongodbRepository.setModelIndexes(this.SessionModel);
     } catch (error) {
-      console.error(`[SessionsService] setModelIndexes -> Error: ${error}`);
+      this.loggerService.error(`[SessionsService] setModelIndexes -> Error: ${error}`);
     }
   }
 }
