@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { BadRequestException, ConflictException, HttpException, InternalServerErrorException } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
 
 export const formatMongodbError = (error: any, service: string, method: string): any => {
   if (error instanceof HttpException) {

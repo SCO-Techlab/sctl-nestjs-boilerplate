@@ -1,4 +1,4 @@
-import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { MAGIC_NUMBERS } from "@core/shared";
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { Observable } from "rxjs";
 

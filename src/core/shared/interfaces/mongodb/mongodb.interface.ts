@@ -1,6 +1,6 @@
-import { IPaginationResponse } from "@shared/interfaces";
-import { EntityQuery } from "@shared/types";
+import { EntityQuery } from "@core/shared/types";
 import { Model, QueryFilter, Schema } from "mongoose";
+import { IPaginationResponse } from "../pagination.interface";
 
 export interface IMongodbDocument {
   _id?: string;

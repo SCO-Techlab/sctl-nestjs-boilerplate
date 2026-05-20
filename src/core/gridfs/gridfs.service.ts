@@ -1,10 +1,9 @@
+import { MAGIC_NUMBERS, PROVIDER_CONFIG } from "@core/shared/constants";
+import * as types from '@core/shared/interfaces';
+import { IGridfsDeleteResponse, IGridfsFile, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/shared/interfaces";
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
-import { PROVIDER_CONFIG } from "@shared/helpers";
 import { GridFSBucket, ObjectId } from "mongodb";
 import { Connection } from "mongoose";
-import type { IGridfsConfig } from "./gridfs.config";
-import { IGridfsDeleteResponse, IGridfsFile, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "./gridfs.interface";
 import { GridfsManagerService } from "./gridfs.manager";
 import { GridfsUtilsService } from "./gridfs.utils.service";
 
@@ -12,7 +11,7 @@ import { GridfsUtilsService } from "./gridfs.utils.service";
 export class GridfsService {
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private config: IGridfsConfig,
+    @Inject(PROVIDER_CONFIG) private config: types.IGridfsConfig,
     private readonly manager: GridfsManagerService,
     private readonly utils: GridfsUtilsService
   ) { }

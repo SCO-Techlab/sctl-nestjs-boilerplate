@@ -1,9 +1,8 @@
 import { Module } from "@nestjs/common";
-import { BcryptService, PaginationService } from "@shared/services";
+import { BcryptService } from "@shared/services";
 
 const SERVICES = [
   BcryptService,
-  PaginationService,
 ];
 
 @Module({

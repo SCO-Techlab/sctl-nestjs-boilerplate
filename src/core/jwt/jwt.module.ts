@@ -1,8 +1,7 @@
+import { createAsyncConfigProvider, createConfigProvider } from '@core/shared/helpers';
+import { IJwtConfig, IModuleAsyncConfig } from '@core/shared/interfaces';
 import { DynamicModule, Module } from '@nestjs/common';
 import { JwtModule as NestjsJwtModule } from '@nestjs/jwt';
-import { createAsyncConfigProvider, createConfigProvider } from '@shared/helpers';
-import { IModuleAsyncConfig } from '@shared/interfaces';
-import { IJwtConfig } from './jwt.config';
 import { JwtService } from './jwt.service';
 
 @Module({})

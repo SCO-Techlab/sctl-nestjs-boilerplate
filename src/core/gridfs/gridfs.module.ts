@@ -1,7 +1,6 @@
+import { createAsyncConfigProvider, createConfigProvider } from "@core/shared/helpers";
+import { IGridfsConfig, IModuleAsyncConfig } from "@core/shared/interfaces";
 import { DynamicModule, Module } from "@nestjs/common";
-import { createAsyncConfigProvider, createConfigProvider } from "@shared/helpers";
-import { IModuleAsyncConfig } from "@shared/interfaces";
-import { IGridfsConfig } from "./gridfs.config";
 import { GridfsManagerService } from "./gridfs.manager";
 import { GridfsService } from "./gridfs.service";
 import { GridfsUtilsService } from "./gridfs.utils.service";

@@ -1,9 +1,8 @@
+import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { IGridfsBucketConfig, IGridfsFile, IGridfsFileBuffer, IGridfsFileMetadata } from "@core/shared/interfaces";
 import { Injectable } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
 import { GridFSBucketReadStream, GridFSFile, ObjectId } from "mongodb";
 import { Connection } from "mongoose";
-import { IGridfsBucketConfig } from "./gridfs.config";
-import { IGridfsFile, IGridfsFileBuffer, IGridfsFileMetadata } from "./gridfs.interface";
 
 @Injectable()
 export class GridfsUtilsService {

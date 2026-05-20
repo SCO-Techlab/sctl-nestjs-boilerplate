@@ -1,0 +1,1 @@
+export const PROVIDER_CONFIG: string = 'CONFIG_OPTIONS';

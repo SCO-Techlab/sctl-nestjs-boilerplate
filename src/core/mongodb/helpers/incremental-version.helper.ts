@@ -1,4 +1,4 @@
-import { MAGIC_NUMBERS } from "@shared/constants";
+import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { Schema } from "mongoose";
 
 export const setIncrementalVersion = (schema: Schema) => {

@@ -1,7 +1,6 @@
 import { Provider } from "@nestjs/common";
-import { IModuleAsyncConfig, IModuleConfigFactory } from "@shared/interfaces";
-
-export const PROVIDER_CONFIG: string = 'CONFIG_OPTIONS';
+import { PROVIDER_CONFIG } from "../constants";
+import { IModuleAsyncConfig, IModuleConfigFactory } from "../interfaces";
 
 export const createAsyncConfigProvider = (options: IModuleAsyncConfig): Provider[] => {
   if (options.useFactory) {

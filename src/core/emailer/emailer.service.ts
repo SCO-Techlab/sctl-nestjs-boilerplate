@@ -1,11 +1,9 @@
+import { MAGIC_NUMBERS, PROVIDER_CONFIG } from '@core/shared/constants';
+import { IEmailerConfig, IEmailerMessage, IEmailerTemplate } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { MAGIC_NUMBERS } from '@shared/constants';
-import { PROVIDER_CONFIG } from '@shared/helpers';
 import { createTransport, Transporter } from 'nodemailer';
 import { take, timer } from 'rxjs';
-import { EmailerTemplateService } from './emailer-templates.service';
-import { IEmailerConfig } from './emailer.config';
-import { IEmailerMessage, IEmailerTemplate } from './emailer.interface';
+import { EmailerRenderService } from './emailer-render.service';
 
 @Injectable()
 export class EmailerService {
@@ -14,7 +12,7 @@ export class EmailerService {
 
   constructor(
     @Inject(PROVIDER_CONFIG) private options: IEmailerConfig[],
-    private emailerTemplateService: EmailerTemplateService
+    private emailerRenderService: EmailerRenderService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -71,7 +69,7 @@ export class EmailerService {
     }
 
     try {
-      const html = this.emailerTemplateService.render(template.template, template.context, template.options);
+      const html = this.emailerRenderService.render(template.template, template.context, template.options);
       const mailOptions: IEmailerMessage = {
         text: html,
         html: html,

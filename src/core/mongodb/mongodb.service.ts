@@ -1,10 +1,9 @@
-import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { MAGIC_NUMBERS, PROVIDER_CONFIG } from '@core/shared/constants';
+import { IMongodbConfig } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { PROVIDER_CONFIG } from '@shared/helpers';
 import { Connection, createConnection, Model, Schema } from 'mongoose';
 import { GridfsService } from '../gridfs';
 import { LoggerService } from '../logger';
-import { IMongodbConfig } from './mongodb.config';
 
 @Injectable()
 export class MongodbService {

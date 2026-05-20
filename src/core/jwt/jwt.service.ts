@@ -1,9 +1,8 @@
+import { PROVIDER_CONFIG } from '@core/shared/constants';
+import { JWT_TOKEN_TYPE } from '@core/shared/enums';
+import { IJwtConfig, IJwtToken } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService as NestjsJwtService } from '@nestjs/jwt';
-import { PROVIDER_CONFIG } from '@shared/helpers';
-import { IJwtConfig } from './jwt.config';
-import { JWT_TOKEN_TYPE } from './jwt.enum';
-import { IJwtToken } from './jwt.interface';
 
 @Injectable()
 export class JwtService {
