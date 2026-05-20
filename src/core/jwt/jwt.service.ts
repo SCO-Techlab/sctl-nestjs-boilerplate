@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/logger';
 import { PROVIDER_CONFIG } from '@core/shared/constants';
 import { JWT_TOKEN_TYPE } from '@core/shared/enums';
 import { IJwtConfig, IJwtToken } from '@core/shared/interfaces';
@@ -10,6 +11,7 @@ export class JwtService {
   constructor(
     @Inject(PROVIDER_CONFIG) private options: IJwtConfig,
     private nestjsJwtService: NestjsJwtService,
+    private loggerService: LoggerService
   ) { }
 
   public createTokenResponse(accessToken: string, refreshToken?: string): IJwtToken {
@@ -32,7 +34,7 @@ export class JwtService {
 
       return accessToken ?? '';
     } catch (error) {
-      console.error(`[JwtService] createToken -> Error: ${error}`);
+      this.loggerService.error(`[JwtService] createToken -> Error: ${error}`);
       return '';
     }
   }
@@ -45,7 +47,7 @@ export class JwtService {
         audience: this.options.signOptions.audience as any,
       });
     } catch (error) {
-      console.error(`[JwtService] verifyToken -> Error: ${error}`);
+      this.loggerService.error(`[JwtService] verifyToken -> Error: ${error}`);
       return undefined;
     }
   }
@@ -66,7 +68,7 @@ export class JwtService {
 
       return refreshToken ?? '';
     } catch (error) {
-      console.error(`[JwtService] createRefreshToken -> Error: ${error}`);
+      this.loggerService.error(`[JwtService] createRefreshToken -> Error: ${error}`);
       return '';
     }
   }
@@ -79,7 +81,7 @@ export class JwtService {
         audience: this.options.refresh?.audience ?? this.options.signOptions.audience as any,
       });
     } catch (error) {
-      console.error(`[JwtService] verifyRefreshToken -> Error: ${error}`);
+      this.loggerService.error(`[JwtService] verifyRefreshToken -> Error: ${error}`);
       return undefined;
     }
   }

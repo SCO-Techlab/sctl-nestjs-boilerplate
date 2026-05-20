@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/logger';
 import { MAGIC_NUMBERS, PROVIDER_CONFIG } from '@core/shared/constants';
 import { IEmailerConfig, IEmailerMessage, IEmailerTemplate } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
@@ -12,7 +13,8 @@ export class EmailerService {
 
   constructor(
     @Inject(PROVIDER_CONFIG) private options: IEmailerConfig[],
-    private emailerRenderService: EmailerRenderService
+    private emailerRenderService: EmailerRenderService,
+    private loggerService: LoggerService
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -53,7 +55,7 @@ export class EmailerService {
       await transporter.sendMail(mailOptions);
       return true;
     } catch (err) {
-      console.error(`[EmailerService] sendMail (${name}) -> Error: ${err}`);
+      this.loggerService.error(`[EmailerService] sendMail (${name}) -> Error: ${err}`);
       return false;
     }
   }
@@ -79,7 +81,7 @@ export class EmailerService {
       };
       return await this.send(mailOptions, name);
     } catch (err) {
-      console.error(`[EmailerService] sendTemplate (${name}) -> Error: ${err}`);
+      this.loggerService.error(`[EmailerService] sendTemplate (${name}) -> Error: ${err}`);
       return false;
     }
   }
@@ -94,7 +96,7 @@ export class EmailerService {
       this.transporters.delete(name);
       return true;
     } catch (err) {
-      console.error(`[EmailerService] closeTransporter (${name}) -> Error: ${err}`);
+      this.loggerService.error(`[EmailerService] closeTransporter (${name}) -> Error: ${err}`);
       return false;
     }
   }
@@ -120,45 +122,45 @@ export class EmailerService {
       });
 
       this.transporters.set(config.name, transporter);
-      console.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
+      this.loggerService.log(`[EmailerService] createTransporter (${config.name}) -> Transporter successfully created`);
       return true;
     } catch (err) {
-      console.error(`[EmailerService] createTransporter (${config.name}) -> Error: ${err}`);
+      this.loggerService.error(`[EmailerService] createTransporter (${config.name}) -> Error: ${err}`);
       return false;
     }
   }
 
   private validateOptions(options: IEmailerConfig[]): boolean {
     if (!options || options.length === MAGIC_NUMBERS.N_0) {
-      console.error('[EmailerService] Invalid configuration: no configuration parameters provided');
+      this.loggerService.error('[EmailerService] Invalid configuration: no configuration parameters provided');
       return false;
     }
 
     const usedNames = new Set<string>();
     for (const config of options) {
       if (!config.name) {
-        console.error('[EmailerService] Invalid configuration: missing "name" parameter');
+        this.loggerService.error('[EmailerService] Invalid configuration: missing "name" parameter');
         return false;
       }
 
       if (usedNames.has(config.name)) {
-        console.error(`[EmailerService] Invalid configuration: duplicate configuration name '${config.name}'`);
+        this.loggerService.error(`[EmailerService] Invalid configuration: duplicate configuration name '${config.name}'`);
         return false;
       }
       usedNames.add(config.name);
 
       if (!config.sender) {
-        console.error(`[EmailerService] Invalid configuration: missing "sender" parameter for '${config.name}'`);
+        this.loggerService.error(`[EmailerService] Invalid configuration: missing "sender" parameter for '${config.name}'`);
         return false;
       }
 
       if (!config.authUser) {
-        console.error(`[EmailerService] Invalid configuration: missing "authUser" parameter for '${config.name}'`);
+        this.loggerService.error(`[EmailerService] Invalid configuration: missing "authUser" parameter for '${config.name}'`);
         return false;
       }
 
       if (!config.authPassword) {
-        console.error(`[EmailerService] Invalid configuration: missing "authPassword" parameter for '${config.name}'`);
+        this.loggerService.error(`[EmailerService] Invalid configuration: missing "authPassword" parameter for '${config.name}'`);
         return false;
       }
     }

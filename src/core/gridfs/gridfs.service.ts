@@ -1,3 +1,4 @@
+import { LoggerService } from "@core/logger";
 import { MAGIC_NUMBERS, PROVIDER_CONFIG } from "@core/shared/constants";
 import * as types from '@core/shared/interfaces';
 import { IGridfsDeleteResponse, IGridfsFile, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/shared/interfaces";
@@ -13,7 +14,8 @@ export class GridfsService {
   constructor(
     @Inject(PROVIDER_CONFIG) private config: types.IGridfsConfig,
     private readonly manager: GridfsManagerService,
-    private readonly utils: GridfsUtilsService
+    private readonly utils: GridfsUtilsService,
+    private readonly loggerSerice: LoggerService
   ) { }
 
   public async connectBuckets(connection: Connection): Promise<void> {
@@ -27,9 +29,9 @@ export class GridfsService {
         const bucket = new GridFSBucket(connection.db as any, { bucketName });
         this.manager.set(bucketConfig.name, bucket);
         await this.utils.createIndexes(bucketConfig, connection);
-        console.log(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Connected`);
+        this.loggerSerice.log(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Connected`);
       } catch (error) {
-        console.error(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Error: ${error}`);
+        this.loggerSerice.error(`[GridfsService] connectBuckets -> Bucket '${bucketConfig.name}' -> Error: ${error}`);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { JWT_TOKEN_TYPE } from "@core/shared/enums";
+import { JWT_TOKEN_TYPE } from "../../enums";
 
 export interface IJwtToken {
   accessToken: string;

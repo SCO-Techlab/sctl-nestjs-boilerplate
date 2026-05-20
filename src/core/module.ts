@@ -6,7 +6,8 @@ import { GridfsModule } from "./gridfs";
 import { JwtModule } from "./jwt";
 import { LoggerModule } from "./logger";
 import { MongodbModule } from "./mongodb";
-import { IEmailerConfig, IJwtConfig, IMongodbConfig } from "./shared";
+import { BUCKETS } from "./shared/constants";
+import { IEmailerConfig, IJwtConfig, IMongodbConfig } from "./shared/interfaces";
 
 
 @Module({
@@ -23,7 +24,7 @@ import { IEmailerConfig, IJwtConfig, IMongodbConfig } from "./shared";
     }),
     GridfsModule.register({
       buckets: [
-        { name: GRIDFS_BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'] }] }
+        { name: BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'] }] }
       ]
     }),
     JwtModule.registerAsync({
