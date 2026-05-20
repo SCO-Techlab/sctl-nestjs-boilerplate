@@ -1,4 +1,3 @@
-export * from './permissions.constants';
 export * from './permissions.controller';
 export * from './permissions.dto';
 export * from './permissions.module';
