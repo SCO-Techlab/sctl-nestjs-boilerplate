@@ -1,9 +1,9 @@
-import { ISession, SessionsService } from "@domains/sessions";
+import { SessionsService } from "@domains/sessions";
 import { UsersService } from "@domains/users";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { IAuthPayload, IUser } from "@shared/interfaces";
+import { IAuthPayload, ISession, IUser } from "@shared/interfaces";
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()

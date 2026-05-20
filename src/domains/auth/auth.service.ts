@@ -1,11 +1,13 @@
 import { EmailerService } from '@core/emailer';
-import { IJwtToken, JwtService } from '@core/jwt';
+import { JwtService } from '@core/jwt';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { IJwtToken } from '@core/shared/interfaces';
 import { RolesService } from '@domains/roles';
 import { SessionsService } from '@domains/sessions';
-import { UserPasswordUpdateDto, UsersService, UserUpdateDto } from '@domains/users';
+import { UsersService } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from '@shared/constants';
+import { TEMPLATES, TRANSLATES } from '@shared/constants';
 import { createJwtPayload, createRandomUUID, getFrontendUrl } from '@shared/helpers';
 import { IAuthPayload, IRole, ISession, IUser } from '@shared/interfaces';
 import { BcryptService } from '@shared/services';
@@ -164,7 +166,8 @@ export class AuthService {
       throw new ConflictException('User email is already confirmed');
     }
 
-    const userUpdateDto: UserUpdateDto = {
+    const userUpdateDto: any = {
+      ...existUser,
       emailConfirmed: true,
       emailConfirmedAt: new Date(),
       active: true
@@ -187,7 +190,8 @@ export class AuthService {
     existUser.pwdRecoveryToken = this.bcryptService.randomToken();
     existUser.pwdRecoveryDate = new Date();
 
-    const userUpdateDto: UserUpdateDto = {
+    const userUpdateDto: any = {
+      ...existUser,
       pwdRecoveryToken: existUser.pwdRecoveryToken,
       pwdRecoveryDate: existUser.pwdRecoveryDate,
     };
@@ -257,7 +261,8 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const userUpdatePasswordDto: UserPasswordUpdateDto = {
+    const userUpdatePasswordDto: any = {
+      ...existUser,
       password: passwordResetDto.password,
       newPassword: passwordResetDto.password,
     };
@@ -267,7 +272,8 @@ export class AuthService {
       throw new ConflictException('Error updating user password');
     }
 
-    const userUpdateDto: UserUpdateDto = {
+    const userUpdateDto: any = {
+      ...existUser,
       pwdRecoveryToken: null,
       pwdRecoveryDate: null,
     };
