@@ -1,8 +1,8 @@
-export * from './auth.interface';
-export * from './menu-front.interface';
-export * from './permissions.interface';
-export * from './roles.interface';
-export * from './sessions.interface';
+export * from './auth';
+export * from './menu-front';
+export * from './permissions';
+export * from './roles';
+export * from './sessions';
 export * from './translates.interface';
-export * from './users.interface';
+export * from './users';
 

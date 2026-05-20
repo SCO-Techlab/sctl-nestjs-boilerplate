@@ -1,6 +1,6 @@
-import { IMongodbDocument } from "@core/mongodb";
-import { IUser } from "@shared/interfaces";
+import { IMongodbDocument } from "@core/shared/interfaces";
 import { Types } from "mongoose";
+import { IUser } from "../users";
 
 export interface ISession extends IMongodbDocument {
   user: Types.ObjectId | IUser;

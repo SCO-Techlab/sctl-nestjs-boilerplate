@@ -1,6 +1,6 @@
-import { IMongodbDocument } from '@core/mongodb';
+import { IMongodbDocument } from '@core/shared/interfaces';
 import { Types } from 'mongoose';
-import { IPermission } from './permissions.interface';
+import { IPermission } from '../permissions';
 
 export interface IRole extends IMongodbDocument {
   name: string;

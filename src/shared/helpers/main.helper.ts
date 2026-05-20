@@ -1,4 +1,4 @@
-import { MAGIC_NUMBERS } from '@shared/constants';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import * as fs from 'fs';
 
 export const formatOrigin = (origin: string): string[] => {

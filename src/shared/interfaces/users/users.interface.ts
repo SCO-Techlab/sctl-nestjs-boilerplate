@@ -1,7 +1,6 @@
-import { IGridfsFile } from '@core/gridfs';
-import { IMongodbDocument } from '@core/mongodb';
+import { IGridfsFile, IMongodbDocument } from '@core/shared/interfaces';
 import { Types } from 'mongoose';
-import { IRole } from './roles.interface';
+import { IRole } from '../roles';
 
 export interface IUser extends IMongodbDocument {
   email: string;

@@ -1,6 +1,6 @@
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MAGIC_NUMBERS } from '@shared/constants';
 import { IPermission, IRequiredPermission, IRole, IUser } from '@shared/interfaces';
 
 @Injectable()

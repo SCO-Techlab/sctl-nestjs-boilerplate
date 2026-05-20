@@ -2,7 +2,7 @@ import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { SharedModule } from '@shared/modules';
+import { SharedModule } from '@shared/module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 

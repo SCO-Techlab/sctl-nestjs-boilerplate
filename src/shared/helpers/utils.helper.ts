@@ -1,4 +1,4 @@
-import { MAGIC_NUMBERS } from "@shared/constants";
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { randomUUID } from 'crypto';
 
 export const attempt = async <T>(fn: () => Promise<T>) => {
