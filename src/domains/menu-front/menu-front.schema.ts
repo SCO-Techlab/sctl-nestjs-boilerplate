@@ -1,7 +1,8 @@
-import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
-import { MAGIC_NUMBERS } from '@shared/constants';
+import { setIncrementalVersion } from '@core/mongodb';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { COLLECTIONS } from '@shared/constants';
+import { IMenuFront } from '@shared/interfaces';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { IMenuFront } from './menu-front.interface';
 
 export const MENU_FRONT_SCHEMA = new Schema<IMenuFront>(
   {
@@ -32,7 +33,7 @@ export const MENU_FRONT_SCHEMA = new Schema<IMenuFront>(
     },
     roles: {
       type: [Types.ObjectId],
-      ref: MONGODB_CONSTANTS.ROLES.MODEL,
+      ref: COLLECTIONS.ROLES.MODEL,
       autopopulate: true,
       required: false,
       default: null

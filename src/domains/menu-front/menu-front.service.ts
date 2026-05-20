@@ -1,12 +1,14 @@
-import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
-import { IRole, RolesService } from "@domains/roles";
+import { LoggerService } from "@core/logger";
+import { formatMongodbError, MongodbRepository } from "@core/mongodb";
+import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
+import { EntityQuery } from "@core/shared/types";
+import { RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
-import { IPaginationResponse } from "@shared/interfaces";
-import { EntityQuery } from "@shared/types";
+import { COLLECTIONS } from "@shared/constants";
+import { IMenuFront, IRole } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
 import { MenuFrontDto } from "./menu-front.dto";
-import { IMenuFront } from "./menu-front.interface";
 import { MENU_FRONT_SCHEMA } from "./menu-front.schema";
 
 @Injectable()
@@ -15,6 +17,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
   private MenuFrontModel: Model<IMenuFront>;
 
   constructor(
+    private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
     private rolesService: RolesService
   ) { }
@@ -32,7 +35,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
         ? { ...response, data: menu }
         : menu;
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'find');
+      throw formatMongodbError(error, 'MenuFrontService', 'find', this.loggerService);
     }
   }
 
@@ -41,7 +44,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       return await this.mongodbRepository.findOne<IMenuFront>(this.MenuFrontModel, record);
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'findOne');
+      throw formatMongodbError(error, 'MenuFrontService', 'findOne', this.loggerService);
     }
   }
 
@@ -60,7 +63,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       return await this.mongodbRepository.save<IMenuFront>(this.MenuFrontModel, value);
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'save');
+      throw formatMongodbError(error, 'MenuFrontService', 'save', this.loggerService);
     }
   }
 
@@ -86,7 +89,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'updateOne');
+      throw formatMongodbError(error, 'MenuFrontService', 'updateOne', this.loggerService);
     }
   }
 
@@ -94,7 +97,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       return await this.mongodbRepository.updateMany<IMenuFront>(this.MenuFrontModel, filter, update as Partial<IMenuFront>);
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'updateMany');
+      throw formatMongodbError(error, 'MenuFrontService', 'updateMany', this.loggerService);
     }
   }
 
@@ -108,7 +111,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'deleteOne');
+      throw formatMongodbError(error, 'MenuFrontService', 'deleteOne', this.loggerService);
     }
   }
 
@@ -116,19 +119,19 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       return await this.mongodbRepository.deleteMany(this.MenuFrontModel, filter);
     } catch (error) {
-      throw formatMongodbError(error, 'MenuFrontService', 'deleteMany');
+      throw formatMongodbError(error, 'MenuFrontService', 'deleteMany', this.loggerService);
     }
   }
 
   getModel(): Model<IMenuFront> | undefined {
     try {
       return this.mongodbRepository.getModel(
-        MONGODB_CONSTANTS.MENU_FRONT.MODEL,
+        COLLECTIONS.MENU_FRONT.MODEL,
         MENU_FRONT_SCHEMA,
-        MONGODB_CONSTANTS.MENU_FRONT.COLLECTION
+        COLLECTIONS.MENU_FRONT.COLLECTION
       );
     } catch (error) {
-      console.error(`[MenuFrontService] getModel -> Error: ${error}`);
+      this.loggerService.error(`[MenuFrontService] getModel -> Error: ${error}`);
       return undefined;
     }
   }
@@ -137,7 +140,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     try {
       this.mongodbRepository.setModelIndexes(this.MenuFrontModel);
     } catch (error) {
-      console.error(`[MenuFrontService] setModelIndexes -> Error: ${error}`);
+      this.loggerService.error(`[MenuFrontService] setModelIndexes -> Error: ${error}`);
     }
   }
 

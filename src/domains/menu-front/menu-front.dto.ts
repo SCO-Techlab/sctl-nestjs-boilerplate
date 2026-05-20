@@ -1,6 +1,6 @@
-import { MongodbDocumentDto } from '@core/mongodb';
+import { MongodbDocumentDto } from '@core/shared/dtos';
+import { IMenuFront } from '@shared/interfaces';
 import { IsArray, IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { IMenuFront } from './menu-front.interface';
 
 export class MenuFrontDto extends MongodbDocumentDto {
   @IsOptional()
