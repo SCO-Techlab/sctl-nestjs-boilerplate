@@ -4,7 +4,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { sortMenuRecursive } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { MenuFrontDto } from "./menu-front.dto";
 import { IMenuFront } from "./menu-front.interface";
@@ -25,9 +25,9 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
     await this.setModelIndexes();
   }
 
-  async find(entityQuery?: IEntityQuery<Partial<IMenuFront>>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
+  async find(entityQuery?: EntityQuery<Partial<IMenuFront>>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
     try {
-      const response: IMenuFront[] | IPaginationResponse<IMenuFront> = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as IEntityQuery<IMenuFront>) as IMenuFront[];
+      const response: IMenuFront[] | IPaginationResponse<IMenuFront> = await this.mongodbRepository.find<IMenuFront>(this.MenuFrontModel, entityQuery as EntityQuery<IMenuFront>) as IMenuFront[];
       const menu = sortMenuRecursive((response as any)?.data ?? response);
       return (response as any)?.data
         ? { ...response, data: menu }

@@ -19,7 +19,7 @@ export class MenuFrontController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.MENU_FRONT, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.IEntityQuery<IMenuFront>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
+  async find(@Query() query?: types.EntityQuery<IMenuFront>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
     return await this.menuFrontService.find(query);
   }
 

@@ -5,7 +5,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { IPaginationResponse } from "@shared/interfaces";
 import { BcryptService, SendTemplatesService } from "@shared/services";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
 import { IUser } from "./users.interface";
@@ -29,7 +29,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     await this.setModelIndexes();
   }
 
-  async find(entityQuery?: IEntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
+  async find(entityQuery?: EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
     try {
       return await this.mongodbRepository.find<IUser>(this.UserModel, entityQuery);
     } catch (error) {

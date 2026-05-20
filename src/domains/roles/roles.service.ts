@@ -3,7 +3,7 @@ import { IPermission, PermissionsService } from "@domains/permissions";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { IPaginationResponse } from "@shared/interfaces";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { RoleCreateDto, RoleUpdateDto } from "./roles.dto";
 import { IRole } from "./roles.interface";
@@ -24,7 +24,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     await this.setModelIndexes();
   }
 
-  async find(entityQuery?: IEntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
+  async find(entityQuery?: EntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
     try {
       return await this.mongodbRepository.find<IRole>(this.RoleModel, entityQuery);
     } catch (error) {

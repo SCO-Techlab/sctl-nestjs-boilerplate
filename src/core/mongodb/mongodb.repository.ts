@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { IPaginationResponse } from "@shared/interfaces";
 import { PaginationService } from "@shared/services";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter, Schema } from "mongoose";
 import { IMongodbRecord } from "./mongodb.interface";
 import { MongodbService } from "./mongodb.service";
@@ -39,8 +39,8 @@ export class MongodbRepository {
     }
   }
 
-  public async find<T>(Model: Model<T>, entityQuery?: IEntityQuery<T>): Promise<T[] | IPaginationResponse<T>> {
-    const query: IEntityQuery<T> = { ...(entityQuery || {}) } as IEntityQuery<T>;
+  public async find<T>(Model: Model<T>, entityQuery?: EntityQuery<T>): Promise<T[] | IPaginationResponse<T>> {
+    const query: EntityQuery<T> = { ...(entityQuery || {}) } as EntityQuery<T>;
     const { page, limit } = query;
 
     try {

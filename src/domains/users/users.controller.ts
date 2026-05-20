@@ -19,7 +19,7 @@ export class UsersController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.IEntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
+  async find(@Query() query?: types.EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
     return await this.usersService.find(query);
   }
 

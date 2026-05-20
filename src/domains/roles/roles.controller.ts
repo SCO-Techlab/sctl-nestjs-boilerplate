@@ -19,7 +19,7 @@ export class RolesController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.IEntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
+  async find(@Query() query?: types.EntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
     return await this.rolesService.find(query);
   }
 

@@ -6,7 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { parseDateUnits } from "@shared/helpers";
 import { IPaginationResponse } from "@shared/interfaces";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter, SortOrder } from "mongoose";
 import { ISession } from "./sessions.interface";
 import { SESSION_SCHEMA } from "./sessions.schema";
@@ -26,7 +26,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     await this.setModelIndexes();
   }
 
-  async find(entityQuery?: IEntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
+  async find(entityQuery?: EntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
     try {
       return await this.mongodbRepository.find<ISession>(this.SessionModel, entityQuery);
     } catch (error) {

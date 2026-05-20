@@ -20,7 +20,7 @@ export class PermissionsController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.IEntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
+  async find(@Query() query?: types.EntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
     return await this.permissionsService.find(query);
   }
 

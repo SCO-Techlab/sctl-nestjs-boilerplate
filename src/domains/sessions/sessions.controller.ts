@@ -20,7 +20,7 @@ export class SessionsController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.SESSIONS, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.IEntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
+  async find(@Query() query?: types.EntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
     return await this.sessionsService.find(query);
   }
 

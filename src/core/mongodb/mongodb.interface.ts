@@ -1,5 +1,5 @@
 import { IPaginationResponse } from "@shared/interfaces";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter, Schema } from "mongoose";
 
 export interface IMongodbDocument {
@@ -16,7 +16,7 @@ export interface IMongodbRecord {
 
 export interface IMongodbRepository<T> {
   onModuleInit(): Promise<void>;
-  find(entityQuery?: IEntityQuery<any>): Promise<any[] | IPaginationResponse<any>>;
+  find(entityQuery?: EntityQuery<any>): Promise<any[] | IPaginationResponse<any>>;
   findOne(value: any, property: string): Promise<any | undefined>;
   save(value: Partial<any>): Promise<any | undefined>;
   updateOne(_id: string, value: Partial<any>): Promise<any | undefined>;

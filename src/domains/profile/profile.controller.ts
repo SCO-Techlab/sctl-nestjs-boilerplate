@@ -21,7 +21,7 @@ export class ProfileController {
   @Put('update/user/info/:_id')
   @UseGuards(AuthGuard(), UserGuard)
   async updateUserInfo(
-    @User() requestUser: types.IRequestUser,
+    @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
     @Body() updateUserInfoDto: UpdateUserInfoDto
   ): Promise<IJwtToken> {
@@ -31,7 +31,7 @@ export class ProfileController {
   @Put('update/user/password/:_id')
   @UseGuards(AuthGuard(), UserGuard)
   async updateUserPassword(
-    @User() requestUser: types.IRequestUser,
+    @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
     @Body() updateUserPasswordDto: UpdateUserPasswordDto
   ): Promise<boolean> {
@@ -58,7 +58,7 @@ export class ProfileController {
   @UseGuards(AuthGuard(), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateUserAvatar(
-    @User() requestUser: types.IRequestUser,
+    @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IJwtToken> {
@@ -68,7 +68,7 @@ export class ProfileController {
   @Delete('delete/user/account/:_id')
   @UseGuards(AuthGuard(), UserGuard)
   async deleteUserAccount(
-    @User() requestUser: types.IRequestUser,
+    @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
   ): Promise<boolean> {
     return await this.profileService.deleteUserAccount(_id, requestUser as IUser);
@@ -77,7 +77,7 @@ export class ProfileController {
   @Get('get/user/menu-front/:_id')
   @UseGuards(AuthGuard(), UserGuard)
   async getUserMenuFront(
-    @User() requestUser: types.IRequestUser,
+    @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
   ): Promise<IMenuFront[]> {
     return await this.profileService.getUserMenuFront(_id, requestUser as IUser);

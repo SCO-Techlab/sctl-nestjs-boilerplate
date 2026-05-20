@@ -27,7 +27,7 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AuthGuard())
-  async logout(@User() requestUser: types.IRequestUser,): Promise<boolean> {
+  async logout(@User() requestUser: types.RequestUser,): Promise<boolean> {
     return await this.authService.logout(requestUser as IUser);
   }
 

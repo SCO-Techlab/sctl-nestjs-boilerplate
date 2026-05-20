@@ -1,7 +1,7 @@
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { IPaginationResponse } from "@shared/interfaces";
-import { IEntityQuery } from "@shared/types";
+import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { PermissionCreateDto, PermissionUpdateDto } from "./permissions.dto";
 import { IPermission } from "./permissions.interface";
@@ -21,7 +21,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     await this.setModelIndexes();
   }
 
-  async find(entityQuery?: IEntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
+  async find(entityQuery?: EntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
     try {
       return await this.mongodbRepository.find<IPermission>(this.PermissionModel, entityQuery);
     } catch (error) {
