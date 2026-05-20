@@ -1,10 +1,12 @@
-import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
+import { LoggerService } from "@core/logger";
+import { formatMongodbError, MongodbRepository } from "@core/mongodb";
+import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
+import { EntityQuery } from "@core/shared/types";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { IPaginationResponse } from "@shared/interfaces";
-import { EntityQuery } from "@shared/types";
+import { COLLECTIONS } from "@shared/constants";
+import { IPermission } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
 import { PermissionCreateDto, PermissionUpdateDto } from "./permissions.dto";
-import { IPermission } from "./permissions.interface";
 import { PERMISSIONS_SCHEMA } from "./permissions.schema";
 
 @Injectable()
@@ -13,6 +15,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
   private PermissionModel: Model<IPermission>;
 
   constructor(
+    private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository
   ) { }
 
@@ -25,7 +28,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       return await this.mongodbRepository.find<IPermission>(this.PermissionModel, entityQuery);
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'find');
+      throw formatMongodbError(error, 'PermissionsService', 'find', this.loggerService);
     }
   }
 
@@ -34,7 +37,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       return await this.mongodbRepository.findOne<IPermission>(this.PermissionModel, record);
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'findOne');
+      throw formatMongodbError(error, 'PermissionsService', 'findOne', this.loggerService);
     }
   }
 
@@ -47,7 +50,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       return await this.mongodbRepository.save<IPermission>(this.PermissionModel, value);
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'save');
+      throw formatMongodbError(error, 'PermissionsService', 'save', this.loggerService);
     }
   }
 
@@ -67,7 +70,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'updateOne');
+      throw formatMongodbError(error, 'PermissionsService', 'updateOne', this.loggerService);
     }
   }
 
@@ -75,7 +78,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       return await this.mongodbRepository.updateMany<IPermission>(this.PermissionModel, filter, update as Partial<IPermission>);
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'updateMany');
+      throw formatMongodbError(error, 'PermissionsService', 'updateMany', this.loggerService);
     }
   }
 
@@ -89,7 +92,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'deleteOne');
+      throw formatMongodbError(error, 'PermissionsService', 'deleteOne', this.loggerService);
     }
   }
 
@@ -97,19 +100,19 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       return await this.mongodbRepository.deleteMany(this.PermissionModel, filter);
     } catch (error) {
-      throw formatMongodbError(error, 'PermissionsService', 'deleteMany');
+      throw formatMongodbError(error, 'PermissionsService', 'deleteMany', this.loggerService);
     }
   }
 
   getModel(): Model<IPermission> | undefined {
     try {
       return this.mongodbRepository.getModel(
-        MONGODB_CONSTANTS.PERMISSIONS.MODEL,
+        COLLECTIONS.PERMISSIONS.MODEL,
         PERMISSIONS_SCHEMA,
-        MONGODB_CONSTANTS.PERMISSIONS.COLLECTION
+        COLLECTIONS.PERMISSIONS.COLLECTION
       );
     } catch (error) {
-      console.error(`[PermissionsService] getModel -> Error: ${error}`);
+      this.loggerService.error(`[PermissionsService] getModel -> Error: ${error}`);
       return undefined;
     }
   }
@@ -118,7 +121,7 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
     try {
       this.mongodbRepository.setModelIndexes(this.PermissionModel);
     } catch (error) {
-      console.error(`[PermissionsService] setModelIndexes -> Error: ${error}`);
+      this.loggerService.error(`[PermissionsService] setModelIndexes -> Error: ${error}`);
     }
   }
 }

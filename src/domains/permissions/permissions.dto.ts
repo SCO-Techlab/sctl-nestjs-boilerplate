@@ -1,6 +1,6 @@
-import { MongodbDocumentDto } from '@core/mongodb';
+import { MongodbDocumentDto } from '@core/shared/dtos';
+import { PERMISSION_TYPE } from '@shared/enums';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { PERMISSION_TYPE } from './permissions.enum';
 
 export class PermissionCreateDto extends MongodbDocumentDto {
   @IsNotEmpty()

@@ -1,8 +1,8 @@
 import { setIncrementalVersion } from '@core/mongodb';
-import { MAGIC_NUMBERS } from '@shared/constants';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { PERMISSION_TYPE } from '@shared/enums';
+import { IPermission } from '@shared/interfaces';
 import { IndexDirection, Schema } from 'mongoose';
-import { PERMISSION_TYPE } from './permissions.enum';
-import { IPermission } from './permissions.interface';
 
 export const PERMISSIONS_SCHEMA = new Schema<IPermission>(
   {

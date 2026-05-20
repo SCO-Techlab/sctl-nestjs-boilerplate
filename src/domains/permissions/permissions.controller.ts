@@ -1,15 +1,14 @@
-import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/mongodb';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/shared/dtos';
+import { IPaginationResponse } from '@core/shared/interfaces';
+import * as types from '@core/shared/types';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { APP_CONTROLLERS } from '@shared/constants';
+import { APP_CONTROLLERS, PERMISSIONS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
+import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse } from '@shared/interfaces';
-import * as types from '@shared/types';
-import { PERMISSIONS } from './permissions.constants';
+import { IPermission } from '@shared/interfaces';
 import { PermissionCreateDto, PermissionUpdateDto } from './permissions.dto';
-import { PERMISSION_TYPE } from './permissions.enum';
-import { IPermission } from './permissions.interface';
 import { PermissionsService } from './permissions.service';
 
 @Controller(APP_CONTROLLERS.PERMISSIONS)
