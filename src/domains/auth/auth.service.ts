@@ -2,7 +2,7 @@ import { EmailerService } from '@core/emailer';
 import { JwtService } from '@core/jwt';
 import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { IJwtToken } from '@core/shared/interfaces';
-import { RolesService } from '@domains/roles';
+import { RolesRepository } from '@domains/roles';
 import { SessionsService } from '@domains/sessions';
 import { UsersService } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -21,7 +21,7 @@ export class AuthService {
     private usersService: UsersService,
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
-    private rolesService: RolesService,
+    private rolesRepository: RolesRepository,
     private sessionsService: SessionsService,
     private emailerService: EmailerService
   ) { }
@@ -127,7 +127,7 @@ export class AuthService {
       throw new ConflictException('User with userName already exists');
     }
 
-    const existRole: IRole = await this.rolesService.findOne(register.role, 'name') as IRole;
+    const existRole: IRole = await this.rolesRepository.findOne(register.role, 'name') as IRole;
     if (!existRole) {
       throw new ConflictException('Role not found');
     }

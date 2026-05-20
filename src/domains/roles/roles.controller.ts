@@ -9,32 +9,32 @@ import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
 import { IRole } from '@shared/interfaces';
 import { RoleCreateDto, RoleUpdateDto } from './roles.dto';
-import { RolesService } from './roles.service';
+import { RolesRepository } from './roles.repository';
 
 @Controller(APP_CONTROLLERS.ROLES)
 export class RolesController {
 
-  constructor(private readonly rolesService: RolesService) { }
+  constructor(private readonly repository: RolesRepository) { }
 
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.READ })
   async find(@Query() query?: types.EntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
-    return await this.rolesService.find(query);
+    return await this.repository.find(query);
   }
 
   @Get(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.READ })
   async findOne(@Param('_id') _id: string): Promise<IRole | undefined> {
-    return await this.rolesService.findOne(_id);
+    return await this.repository.findOne(_id);
   }
 
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.CREATE })
   async save(@Body() role: RoleCreateDto): Promise<IRole | undefined> {
-    return await this.rolesService.save(role);
+    return await this.repository.save(await this.repository.dtoToEntity(role) as IRole);
   }
 
   @Put(':_id')
@@ -44,7 +44,7 @@ export class RolesController {
     @Param('_id') _id: string,
     @Body() role: RoleUpdateDto
   ): Promise<IRole> {
-    return await this.rolesService.updateOne(_id, role);
+    return await this.repository.updateOne(_id, await this.repository.dtoToEntity(role) as IRole);
   }
 
   @Put('update/bulk')
@@ -52,14 +52,14 @@ export class RolesController {
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.UPDATE_BULK })
   async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<RoleUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
-    return await this.rolesService.updateMany(filter, bulkUpdate.data);
+    return await this.repository.updateMany(filter, await this.repository.dtoToEntity(bulkUpdate.data) as IRole);
   }
 
   @Delete(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.DELETE })
   async deleteOne(@Param('_id') _id: string): Promise<boolean> {
-    return await this.rolesService.deleteOne(_id);
+    return await this.repository.deleteOne(_id);
   }
 
   @Delete('delete/bulk')
@@ -67,6 +67,6 @@ export class RolesController {
   @Permissions({ name: PERMISSIONS.ROLES, type: PERMISSION_TYPE.DELETE_BULK })
   async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
     const filter = { _id: { $in: bulkDelete._ids } };
-    return await this.rolesService.deleteMany(filter);
+    return await this.repository.deleteMany(filter);
   }
 }

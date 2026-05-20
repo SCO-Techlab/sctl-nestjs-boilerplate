@@ -5,7 +5,7 @@ import { MongodbRepository, formatMongodbError } from "@core/mongodb";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
 import { IGridfsFile, IGridfsGetFileOptions, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
 import { EntityQuery } from "@core/shared/types";
-import { RolesService } from "@domains/roles";
+import { RolesRepository } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { COLLECTIONS, TEMPLATES, TRANSLATES } from "@shared/constants";
@@ -25,7 +25,7 @@ export class UsersService implements IMongodbRepository<IUser> {
     private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
     private gridfsService: GridfsService,
-    private rolesService: RolesService,
+    private rolesRepository: RolesRepository,
     private bcryptService: BcryptService,
     private emailerService: EmailerService,
     private configService: ConfigService
@@ -221,7 +221,7 @@ export class UsersService implements IMongodbRepository<IUser> {
       return undefined;
     }
 
-    const dbRole = await this.rolesService.findOne(roleId, '_id');
+    const dbRole = await this.rolesRepository.findOne(roleId, '_id');
     if (!dbRole) {
       throw new NotFoundException(`Role not found`);
     }

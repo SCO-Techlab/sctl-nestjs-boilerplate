@@ -3,7 +3,7 @@ import { PermissionsModule } from '@domains/permissions';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { RolesController } from './roles.controller';
-import { RolesService } from './roles.service';
+import { RolesRepository } from './roles.repository';
 
 const MODULE = {
   imports: [
@@ -14,10 +14,10 @@ const MODULE = {
     RolesController
   ],
   providers: [
-    RolesService
+    RolesRepository
   ],
   exports: [
-    RolesService
+    RolesRepository
   ]
 };
 

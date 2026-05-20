@@ -3,7 +3,7 @@ import { formatMongodbError, MongodbRepository } from "@core/mongodb";
 import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
 import { EntityQuery } from "@core/shared/types";
-import { RolesService } from "@domains/roles";
+import { RolesRepository } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { COLLECTIONS } from "@shared/constants";
 import { IMenuFront, IRole } from "@shared/interfaces";
@@ -19,7 +19,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
   constructor(
     private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
-    private rolesService: RolesService
+    private rolesRepository: RolesRepository
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -152,7 +152,7 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
       return undefined;
     }
 
-    const dbRoles = await this.rolesService.find({ _id: { $in: ids } } as any) as IRole[];
+    const dbRoles = await this.rolesRepository.find({ _id: { $in: ids } } as any) as IRole[];
     if (!dbRoles || dbRoles.length === MAGIC_NUMBERS.N_0) {
       throw new BadRequestException(`One or more roles do not exist`);
     }
