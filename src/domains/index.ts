@@ -1,5 +1,5 @@
 export * from './auth';
-export * from './modules';
+export * from './module';
 export * from './permissions';
 export * from './profile';
 export * from './roles';
