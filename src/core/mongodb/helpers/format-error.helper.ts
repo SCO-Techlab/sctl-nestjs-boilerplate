@@ -1,12 +1,17 @@
+import { LoggerService } from "@core/logger";
 import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { BadRequestException, ConflictException, HttpException, InternalServerErrorException } from "@nestjs/common";
 
-export const formatMongodbError = (error: any, service: string, method: string): any => {
+export const formatMongodbError = (error: any, service: string, method: string, logger?: LoggerService): any => {
   if (error instanceof HttpException) {
     return error;
   }
 
-  console.error(`[${service}] ${method}: ${error}`);
+  if (logger) {
+    logger.error(`[${service}] ${method}: ${error}`);
+  } else {
+    console.error(`[${service}] ${method}: ${error}`);
+  }
 
   if (error?.code === MAGIC_NUMBERS.N_11000 && !error?.codeName) {
     return new ConflictException(formatDuplicatedKeyError(error));
