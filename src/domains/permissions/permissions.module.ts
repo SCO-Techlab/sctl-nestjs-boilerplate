@@ -2,7 +2,7 @@ import { JWT_TOKEN_TYPE } from '@core/shared/enums';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { PermissionsController } from './permissions.controller';
-import { PermissionsService } from './permissions.service';
+import { PermissionsRepository } from './permissions.repository';
 
 const MODULE = {
   imports: [
@@ -12,10 +12,10 @@ const MODULE = {
     PermissionsController
   ],
   providers: [
-    PermissionsService
+    PermissionsRepository
   ],
   exports: [
-    PermissionsService
+    PermissionsRepository
   ]
 };
 

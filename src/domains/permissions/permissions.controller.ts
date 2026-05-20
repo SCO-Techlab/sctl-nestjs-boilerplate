@@ -9,32 +9,32 @@ import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
 import { IPermission } from '@shared/interfaces';
 import { PermissionCreateDto, PermissionUpdateDto } from './permissions.dto';
-import { PermissionsService } from './permissions.service';
+import { PermissionsRepository } from './permissions.repository';
 
 @Controller(APP_CONTROLLERS.PERMISSIONS)
 export class PermissionsController {
 
-  constructor(private permissionsService: PermissionsService) { }
+  constructor(private repository: PermissionsRepository) { }
 
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.READ })
   async find(@Query() query?: types.EntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
-    return await this.permissionsService.find(query);
+    return await this.repository.find(query);
   }
 
   @Get(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.READ })
   async findOne(@Param('_id') _id: string): Promise<IPermission | undefined> {
-    return await this.permissionsService.findOne(_id);
+    return await this.repository.findOne(_id);
   }
 
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.CREATE })
   async save(@Body() permission: PermissionCreateDto): Promise<IPermission | undefined> {
-    return await this.permissionsService.save(permission);
+    return await this.repository.save(permission);
   }
 
   @Put(':_id')
@@ -44,7 +44,7 @@ export class PermissionsController {
     @Param('_id') _id: string,
     @Body() permission: PermissionUpdateDto
   ): Promise<IPermission | undefined> {
-    return await this.permissionsService.updateOne(_id, permission);
+    return await this.repository.updateOne(_id, permission);
   }
 
   @Put('update/bulk')
@@ -52,14 +52,14 @@ export class PermissionsController {
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.UPDATE_BULK })
   async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionUpdateDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
-    return await this.permissionsService.updateMany(filter, bulkUpdate.data);
+    return await this.repository.updateMany(filter, bulkUpdate.data);
   }
 
   @Delete(':_id')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.DELETE })
   async deleteOne(@Param('_id') _id: string): Promise<boolean> {
-    return await this.permissionsService.deleteOne(_id);
+    return await this.repository.deleteOne(_id);
   }
 
   @Delete('delete/bulk')
@@ -67,6 +67,6 @@ export class PermissionsController {
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.DELETE_BULK })
   async deleteMany(@Body() bulkDelete: MongodbBulkDeleteDto): Promise<number> {
     const filter = { _id: { $in: bulkDelete._ids } };
-    return await this.permissionsService.deleteMany(filter);
+    return await this.repository.deleteMany(filter);
   }
 }

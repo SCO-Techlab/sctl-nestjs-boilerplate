@@ -3,7 +3,7 @@ import { formatMongodbError, MongodbRepository } from "@core/mongodb";
 import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
 import { EntityQuery } from "@core/shared/types";
-import { PermissionsService } from "@domains/permissions";
+import { PermissionsRepository } from "@domains/permissions";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { COLLECTIONS } from "@shared/constants";
 import { IPermission, IRole } from "@shared/interfaces";
@@ -19,7 +19,7 @@ export class RolesService implements IMongodbRepository<IRole> {
   constructor(
     private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
-    private permissionsService: PermissionsService
+    private permissionsRepository: PermissionsRepository
   ) { }
 
   async onModuleInit(): Promise<void> {
@@ -121,7 +121,7 @@ export class RolesService implements IMongodbRepository<IRole> {
 
   private async resolvePermissions(permissionsIds: string[]): Promise<IPermission[]> {
     const _ids = [...new Set(permissionsIds.map(_id => _id))];
-    const permissions = await this.permissionsService.find({ _id: { $in: _ids } } as any) as IPermission[];
+    const permissions = await this.permissionsRepository.find({ _id: { $in: _ids } } as any) as IPermission[];
 
     if (permissions.length !== _ids.length) {
       throw new BadRequestException('One or more permissions do not exist');
