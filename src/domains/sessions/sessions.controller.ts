@@ -5,9 +5,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse } from '@shared/interfaces';
+import { IPaginationResponse, ISession } from '@shared/interfaces';
 import * as types from '@shared/types';
-import { ISession } from './sessions.interface';
 import { SessionsService } from './sessions.service';
 
 @Controller(APP_CONTROLLERS.SESSIONS)

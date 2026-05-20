@@ -1,12 +1,12 @@
 import { EmailerService } from "@core/emailer";
 import { GRIDFS_BUCKETS, GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
-import { IRole, RolesService } from "@domains/roles";
+import { RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS, TEMPLATES, TRANSLATES } from "@shared/constants";
 import { getFrontendUrl } from "@shared/helpers";
-import { IPaginationResponse, IUser } from "@shared/interfaces";
+import { IPaginationResponse, IRole, IUser } from "@shared/interfaces";
 import { BcryptService } from "@shared/services";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";

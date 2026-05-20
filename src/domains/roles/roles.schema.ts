@@ -1,7 +1,7 @@
 import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
 import { MAGIC_NUMBERS } from '@shared/constants';
+import { IRole } from '@shared/interfaces';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { IRole } from './roles.interface';
 
 export const ROLES_SCHEMA = new Schema<IRole>(
   {

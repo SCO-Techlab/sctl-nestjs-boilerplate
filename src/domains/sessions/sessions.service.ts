@@ -4,10 +4,9 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MAGIC_NUMBERS } from "@shared/constants";
 import { parseDateUnits } from "@shared/helpers";
-import { IPaginationResponse, IUser } from "@shared/interfaces";
+import { IPaginationResponse, ISession, IUser } from "@shared/interfaces";
 import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter, SortOrder } from "mongoose";
-import { ISession } from "./sessions.interface";
 import { SESSION_SCHEMA } from "./sessions.schema";
 
 @Injectable()

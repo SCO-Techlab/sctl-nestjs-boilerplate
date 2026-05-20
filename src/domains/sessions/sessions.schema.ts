@@ -1,7 +1,7 @@
 import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
 import { MAGIC_NUMBERS } from '@shared/constants';
+import { ISession } from '@shared/interfaces';
 import { IndexDirection, Schema, Types } from 'mongoose';
-import { ISession } from './sessions.interface';
 
 const SCHEMA_DEFINITION = {
   user: {
