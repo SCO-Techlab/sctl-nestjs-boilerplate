@@ -1,4 +1,4 @@
-import { Model, QueryFilter, Schema } from "mongoose";
+import { QueryFilter } from "mongoose";
 import { EntityQuery } from "../../types";
 import { IPaginationResponse } from "../pagination.interface";
 
@@ -23,6 +23,4 @@ export interface IMongodbRepository<T> {
   updateMany(filter: QueryFilter<any>, update: Partial<any>): Promise<number>;
   deleteOne(_id: string): Promise<boolean>;
   deleteMany(filter: QueryFilter<any>): Promise<number>;
-  getModel(model: string, schema: Schema<T>, collection: string): Model<T> | undefined;
-  setModelIndexes(): Promise<void>;
 }

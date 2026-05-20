@@ -20,8 +20,12 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    this.PermissionModel = this.getModel() as Model<IPermission>;
-    await this.setModelIndexes();
+    try {
+      this.PermissionModel = this.mongodbRepository.getModel(COLLECTIONS.PERMISSIONS.MODEL, PERMISSIONS_SCHEMA, COLLECTIONS.PERMISSIONS.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this.PermissionModel);
+    } catch (error) {
+      this.loggerService.error(`[PermissionsService] onModuleInit -> Error: ${error}`);
+    }
   }
 
   async find(entityQuery?: EntityQuery<IPermission>): Promise<IPermission[] | IPaginationResponse<IPermission>> {
@@ -101,27 +105,6 @@ export class PermissionsService implements IMongodbRepository<IPermission> {
       return await this.mongodbRepository.deleteMany(this.PermissionModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'PermissionsService', 'deleteMany', this.loggerService);
-    }
-  }
-
-  getModel(): Model<IPermission> | undefined {
-    try {
-      return this.mongodbRepository.getModel(
-        COLLECTIONS.PERMISSIONS.MODEL,
-        PERMISSIONS_SCHEMA,
-        COLLECTIONS.PERMISSIONS.COLLECTION
-      );
-    } catch (error) {
-      this.loggerService.error(`[PermissionsService] getModel -> Error: ${error}`);
-      return undefined;
-    }
-  }
-
-  async setModelIndexes(): Promise<void> {
-    try {
-      this.mongodbRepository.setModelIndexes(this.PermissionModel);
-    } catch (error) {
-      this.loggerService.error(`[PermissionsService] setModelIndexes -> Error: ${error}`);
     }
   }
 }

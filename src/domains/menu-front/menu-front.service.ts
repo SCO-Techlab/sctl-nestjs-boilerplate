@@ -23,8 +23,12 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    this.MenuFrontModel = this.getModel() as Model<IMenuFront>;
-    await this.setModelIndexes();
+    try {
+      this.MenuFrontModel = this.mongodbRepository.getModel(COLLECTIONS.MENU_FRONT.MODEL, MENU_FRONT_SCHEMA, COLLECTIONS.MENU_FRONT.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this.MenuFrontModel);
+    } catch (error) {
+      this.loggerService.error(`[MenuFrontService] onModuleInit -> Error: ${error}`);
+    }
   }
 
   async find(entityQuery?: EntityQuery<Partial<IMenuFront>>): Promise<IMenuFront[] | IPaginationResponse<IMenuFront>> {
@@ -120,27 +124,6 @@ export class MenuFrontService implements IMongodbRepository<IMenuFront> {
       return await this.mongodbRepository.deleteMany(this.MenuFrontModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'MenuFrontService', 'deleteMany', this.loggerService);
-    }
-  }
-
-  getModel(): Model<IMenuFront> | undefined {
-    try {
-      return this.mongodbRepository.getModel(
-        COLLECTIONS.MENU_FRONT.MODEL,
-        MENU_FRONT_SCHEMA,
-        COLLECTIONS.MENU_FRONT.COLLECTION
-      );
-    } catch (error) {
-      this.loggerService.error(`[MenuFrontService] getModel -> Error: ${error}`);
-      return undefined;
-    }
-  }
-
-  async setModelIndexes(): Promise<void> {
-    try {
-      this.mongodbRepository.setModelIndexes(this.MenuFrontModel);
-    } catch (error) {
-      this.loggerService.error(`[MenuFrontService] setModelIndexes -> Error: ${error}`);
     }
   }
 

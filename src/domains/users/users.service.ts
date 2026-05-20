@@ -32,8 +32,12 @@ export class UsersService implements IMongodbRepository<IUser> {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    this.UserModel = this.getModel() as Model<IUser>;
-    await this.setModelIndexes();
+    try {
+      this.UserModel = this.mongodbRepository.getModel(COLLECTIONS.USERS.MODEL, USERS_SCHEMA, COLLECTIONS.USERS.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this.UserModel);
+    } catch (error) {
+      this.loggerService.error(`[UsersService] onModuleInit -> Error: ${error}`);
+    }
   }
 
   async find(entityQuery?: EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
@@ -152,27 +156,6 @@ export class UsersService implements IMongodbRepository<IUser> {
       return await this.mongodbRepository.deleteMany(this.UserModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'UsersService', 'deleteMany', this.loggerService);
-    }
-  }
-
-  getModel(): Model<IUser> | undefined {
-    try {
-      return this.mongodbRepository.getModel(
-        COLLECTIONS.USERS.MODEL,
-        USERS_SCHEMA,
-        COLLECTIONS.USERS.COLLECTION
-      );
-    } catch (error) {
-      this.loggerService.error(`[UsersService] getModel -> Error: ${error}`);
-      return undefined;
-    }
-  }
-
-  async setModelIndexes(): Promise<void> {
-    try {
-      this.mongodbRepository.setModelIndexes(this.UserModel);
-    } catch (error) {
-      this.loggerService.error(`[UsersService] setModelIndexes -> Error: ${error}`);
     }
   }
 

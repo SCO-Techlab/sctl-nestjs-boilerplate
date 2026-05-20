@@ -23,8 +23,12 @@ export class RolesService implements IMongodbRepository<IRole> {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    this.RoleModel = this.getModel() as Model<IRole>;
-    await this.setModelIndexes();
+    try {
+      this.RoleModel = this.mongodbRepository.getModel(COLLECTIONS.ROLES.MODEL, ROLES_SCHEMA, COLLECTIONS.ROLES.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this.RoleModel);
+    } catch (error) {
+      this.loggerService.error(`[RolesService] onModuleInit -> Error: ${error}`);
+    }
   }
 
   async find(entityQuery?: EntityQuery<IRole>): Promise<IRole[] | IPaginationResponse<IRole>> {
@@ -112,27 +116,6 @@ export class RolesService implements IMongodbRepository<IRole> {
       return await this.mongodbRepository.deleteMany(this.RoleModel, filter);
     } catch (error) {
       throw formatMongodbError(error, 'RolesService', 'deleteMany', this.loggerService);
-    }
-  }
-
-  getModel(): Model<IRole> | undefined {
-    try {
-      return this.mongodbRepository.getModel(
-        COLLECTIONS.ROLES.MODEL,
-        ROLES_SCHEMA,
-        COLLECTIONS.ROLES.COLLECTION
-      );
-    } catch (error) {
-      this.loggerService.error(`[RolesService] getModel -> Error: ${error}`);
-      return undefined;
-    }
-  }
-
-  async setModelIndexes(): Promise<void> {
-    try {
-      this.mongodbRepository.setModelIndexes(this.RoleModel);
-    } catch (error) {
-      this.loggerService.error(`[RolesService] setModelIndexes -> Error: ${error}`);
     }
   }
 

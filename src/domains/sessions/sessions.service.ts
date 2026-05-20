@@ -23,8 +23,12 @@ export class SessionsService implements IMongodbRepository<ISession> {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    this.SessionModel = this.getModel() as Model<ISession>;
-    await this.setModelIndexes();
+    try {
+      this.SessionModel = this.mongodbRepository.getModel(COLLECTIONS.SESSIONS.MODEL, SESSION_SCHEMA, COLLECTIONS.SESSIONS.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this.SessionModel);
+    } catch (error) {
+      this.loggerService.error(`[SessionsService] onModuleInit -> Error: ${error}`);
+    }
   }
 
   async find(entityQuery?: EntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
@@ -208,26 +212,5 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
   refreshSessionIsExpired(session: ISession): boolean {
     return !session.refreshExpiresAt || session.refreshExpiresAt < new Date();
-  }
-
-  getModel(): Model<ISession> | undefined {
-    try {
-      return this.mongodbRepository.getModel(
-        COLLECTIONS.SESSIONS.MODEL,
-        SESSION_SCHEMA,
-        COLLECTIONS.SESSIONS.COLLECTION
-      );
-    } catch (error) {
-      this.loggerService.error(`[SessionsService] getModel -> Error: ${error}`);
-      return undefined;
-    }
-  }
-
-  async setModelIndexes(): Promise<void> {
-    try {
-      this.mongodbRepository.setModelIndexes(this.SessionModel);
-    } catch (error) {
-      this.loggerService.error(`[SessionsService] setModelIndexes -> Error: ${error}`);
-    }
   }
 }
