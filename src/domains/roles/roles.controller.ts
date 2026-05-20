@@ -1,12 +1,13 @@
-import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/mongodb';
-import { PERMISSION_TYPE, PERMISSIONS } from '@domains/permissions';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/shared/dtos';
+import { IPaginationResponse } from '@core/shared/interfaces';
+import * as types from '@core/shared/types';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { APP_CONTROLLERS } from '@shared/constants';
+import { APP_CONTROLLERS, PERMISSIONS } from '@shared/constants';
 import { Permissions } from '@shared/decorators';
+import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse, IRole } from '@shared/interfaces';
-import * as types from '@shared/types';
+import { IRole } from '@shared/interfaces';
 import { RoleCreateDto, RoleUpdateDto } from './roles.dto';
 import { RolesService } from './roles.service';
 

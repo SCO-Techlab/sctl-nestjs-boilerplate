@@ -1,4 +1,4 @@
-import { MongodbDocumentDto } from '@core/mongodb';
+import { MongodbDocumentDto } from '@core/shared/dtos';
 import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, } from 'class-validator';
 
 export class RoleCreateDto extends MongodbDocumentDto {

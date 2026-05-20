@@ -1,9 +1,12 @@
-import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/mongodb";
+import { LoggerService } from "@core/logger";
+import { formatMongodbError, MongodbRepository } from "@core/mongodb";
+import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
+import { EntityQuery } from "@core/shared/types";
 import { PermissionsService } from "@domains/permissions";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { MAGIC_NUMBERS } from "@shared/constants";
-import { IPaginationResponse, IPermission, IRole } from "@shared/interfaces";
-import { EntityQuery } from "@shared/types";
+import { COLLECTIONS } from "@shared/constants";
+import { IPermission, IRole } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
 import { RoleCreateDto, RoleUpdateDto } from "./roles.dto";
 import { ROLES_SCHEMA } from "./roles.schema";
@@ -14,6 +17,7 @@ export class RolesService implements IMongodbRepository<IRole> {
   private RoleModel: Model<IRole>;
 
   constructor(
+    private loggerService: LoggerService,
     private mongodbRepository: MongodbRepository,
     private permissionsService: PermissionsService
   ) { }
@@ -27,7 +31,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       return await this.mongodbRepository.find<IRole>(this.RoleModel, entityQuery);
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'find');
+      throw formatMongodbError(error, 'RolesService', 'find', this.loggerService);
     }
   }
 
@@ -36,7 +40,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       return await this.mongodbRepository.findOne<IRole>(this.RoleModel, record);
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'findOne');
+      throw formatMongodbError(error, 'RolesService', 'findOne', this.loggerService);
     }
   }
 
@@ -53,7 +57,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       return await this.mongodbRepository.save<IRole>(this.RoleModel, value);
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'save');
+      throw formatMongodbError(error, 'RolesService', 'save', this.loggerService);
     }
   }
 
@@ -77,7 +81,7 @@ export class RolesService implements IMongodbRepository<IRole> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'updateOne');
+      throw formatMongodbError(error, 'RolesService', 'updateOne', this.loggerService);
     }
   }
 
@@ -85,7 +89,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       return await this.mongodbRepository.updateMany<IRole>(this.RoleModel, filter, update as Partial<IRole>);
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'updateMany');
+      throw formatMongodbError(error, 'RolesService', 'updateMany', this.loggerService);
     }
   }
 
@@ -99,7 +103,7 @@ export class RolesService implements IMongodbRepository<IRole> {
 
       return result;
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'deleteOne');
+      throw formatMongodbError(error, 'RolesService', 'deleteOne', this.loggerService);
     }
   }
 
@@ -107,19 +111,19 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       return await this.mongodbRepository.deleteMany(this.RoleModel, filter);
     } catch (error) {
-      throw formatMongodbError(error, 'RolesService', 'deleteMany');
+      throw formatMongodbError(error, 'RolesService', 'deleteMany', this.loggerService);
     }
   }
 
   getModel(): Model<IRole> | undefined {
     try {
       return this.mongodbRepository.getModel(
-        MONGODB_CONSTANTS.ROLES.MODEL,
+        COLLECTIONS.ROLES.MODEL,
         ROLES_SCHEMA,
-        MONGODB_CONSTANTS.ROLES.COLLECTION
+        COLLECTIONS.ROLES.COLLECTION
       );
     } catch (error) {
-      console.error(`[RolesService] getModel -> Error: ${error}`);
+      this.loggerService.error(`[RolesService] getModel -> Error: ${error}`);
       return undefined;
     }
   }
@@ -128,7 +132,7 @@ export class RolesService implements IMongodbRepository<IRole> {
     try {
       this.mongodbRepository.setModelIndexes(this.RoleModel);
     } catch (error) {
-      console.error(`[RolesService] setModelIndexes -> Error: ${error}`);
+      this.loggerService.error(`[RolesService] setModelIndexes -> Error: ${error}`);
     }
   }
 
