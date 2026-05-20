@@ -1,4 +1,4 @@
-import { JWT_TOKEN_TYPE } from "@core/jwt";
+import { JWT_TOKEN_TYPE } from "@core/shared/enums";
 import { MenuFrontModule } from "@domains/menu-front";
 import { SessionsModule } from "@domains/sessions";
 import { UsersModule } from "@domains/users";
