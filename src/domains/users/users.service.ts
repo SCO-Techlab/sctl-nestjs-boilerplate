@@ -1,15 +1,16 @@
-import { EmailerService } from "@core/modules/emailer";
-import { GRIDFS_BUCKETS, GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/modules/gridfs";
-import { formatMongodbError, IMongodbRecord, IMongodbRepository, MONGODB_CONSTANTS, MongodbRepository } from "@core/modules/mongodb";
-import { MAGIC_NUMBERS } from "@core/shared/constants";
+import { EmailerService } from "@core/emailer";
+import { GridfsService } from "@core/gridfs";
+import { MongodbRepository, formatMongodbError } from "@core/mongodb";
+import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
+import { IGridfsFile, IGridfsGetFileOptions, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
+import { EntityQuery } from "@core/shared/types";
 import { RolesService } from "@domains/roles";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { TEMPLATES, TRANSLATES } from "@shared/constants";
+import { COLLECTIONS, TEMPLATES, TRANSLATES } from "@shared/constants";
 import { getFrontendUrl } from "@shared/helpers";
-import { IPaginationResponse, IRole, IUser } from "@shared/interfaces";
+import { IRole, IUser } from "@shared/interfaces";
 import { BcryptService } from "@shared/services";
-import { EntityQuery } from "@shared/types";
 import { Model, QueryFilter } from "mongoose";
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
 import { USERS_SCHEMA } from "./users.schema";
@@ -155,9 +156,9 @@ export class UsersService implements IMongodbRepository<IUser> {
   getModel(): Model<IUser> | undefined {
     try {
       return this.mongodbRepository.getModel(
-        MONGODB_CONSTANTS.USERS.MODEL,
+        COLLECTIONS.USERS.MODEL,
         USERS_SCHEMA,
-        MONGODB_CONSTANTS.USERS.COLLECTION
+        COLLECTIONS.USERS.COLLECTION
       );
     } catch (error) {
       console.error(`[UsersService] getModel -> Error: ${error}`);
@@ -218,9 +219,9 @@ export class UsersService implements IMongodbRepository<IUser> {
 
     try {
       const getPptions: IGridfsGetFileOptions = { filter: { 'metadata.email': existUser?.email } };
-      const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(GRIDFS_BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
+      const currentAvatar: IGridfsFile = (await this.gridfsService.getFiles(BUCKETS.AVATARS, getPptions))[MAGIC_NUMBERS.N_0];
       if (currentAvatar) {
-        await this.gridfsService.deleteFiles(GRIDFS_BUCKETS.AVATARS, [currentAvatar._id as string]);
+        await this.gridfsService.deleteFiles(BUCKETS.AVATARS, [currentAvatar._id as string]);
       }
 
       await this.UserModel.updateOne({ _id }, { $unset: { avatar: '' } }).exec();

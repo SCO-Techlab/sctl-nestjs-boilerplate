@@ -1,12 +1,13 @@
-import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/mongodb';
-import { PERMISSION_TYPE, PERMISSIONS } from '@domains/permissions';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/shared/dtos';
+import { IPaginationResponse } from '@core/shared/interfaces';
+import * as coreTypes from '@core/shared/types';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { APP_CONTROLLERS } from '@shared/constants';
+import { APP_CONTROLLERS, PERMISSIONS } from '@shared/constants';
 import { Lang, Permissions } from '@shared/decorators';
+import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
-import { IPaginationResponse, IUser } from '@shared/interfaces';
-import * as types from '@shared/types';
+import { IUser } from '@shared/interfaces';
 import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from './users.dto';
 import { UsersService } from './users.service';
 
@@ -18,7 +19,7 @@ export class UsersController {
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.READ })
-  async find(@Query() query?: types.EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
+  async find(@Query() query?: coreTypes.EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
     return await this.usersService.find(query);
   }
 

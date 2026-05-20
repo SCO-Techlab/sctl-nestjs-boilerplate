@@ -1,4 +1,4 @@
-import { JWT_TOKEN_TYPE } from '@core/jwt';
+import { JWT_TOKEN_TYPE } from '@core/shared/enums';
 import { RolesModule } from '@domains/roles';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';

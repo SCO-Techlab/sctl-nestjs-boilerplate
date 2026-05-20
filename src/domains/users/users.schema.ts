@@ -1,5 +1,6 @@
-import { MONGODB_CONSTANTS, setIncrementalVersion } from '@core/mongodb';
-import { MAGIC_NUMBERS } from '@shared/constants';
+import { setIncrementalVersion } from '@core/mongodb/helpers';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
+import { COLLECTIONS } from '@shared/constants';
 import { IUser } from '@shared/interfaces';
 import * as bcrypt from 'bcrypt';
 import { IndexDirection, Schema, Types } from 'mongoose';
@@ -43,7 +44,7 @@ export const USERS_SCHEMA = new Schema<IUser>(
     },
     role: {
       type: Types.ObjectId,
-      ref: MONGODB_CONSTANTS.ROLES.MODEL,
+      ref: COLLECTIONS.ROLES.MODEL,
       autopopulate: true,
       required: true
     },
