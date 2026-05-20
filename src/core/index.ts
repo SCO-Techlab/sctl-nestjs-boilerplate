@@ -1,8 +1,8 @@
-export * from './env';
-export * from './interceptors';
-export * from './middlewares';
+export * from './emailer';
+export * from './gridfs';
+export * from './jwt';
+export * from './logger';
 export * from './module';
-export * from './modules';
-export * from './pipes';
+export * from './mongodb';
 export * from './shared';
 

@@ -1,9 +1,9 @@
-import { GridfsService } from '@core/gridfs';
-import { LoggerService } from '@core/logger';
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { Inject, Injectable } from '@nestjs/common';
-import { MAGIC_NUMBERS } from '@shared/constants';
 import { PROVIDER_CONFIG } from '@shared/helpers';
 import { Connection, createConnection, Model, Schema } from 'mongoose';
+import { GridfsService } from '../gridfs';
+import { LoggerService } from '../logger';
 import { IMongodbConfig } from './mongodb.config';
 
 @Injectable()

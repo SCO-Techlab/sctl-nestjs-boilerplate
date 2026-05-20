@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { registerAs } from '@nestjs/config';
-import { MAGIC_NUMBERS } from '@shared/constants';
 
 export const MONGODB_ENV = registerAs('mongodb', () => ({
   name: process.env.MONGODB_NAME || 'default',

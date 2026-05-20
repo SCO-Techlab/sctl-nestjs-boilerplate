@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
-import { DEFAULT_LANG, MAGIC_NUMBERS, TRANSLATES } from "@shared/constants";
 import { Observable } from "rxjs";
 
 @Injectable()
@@ -7,8 +7,12 @@ export class LanguageInterceptor implements NestInterceptor {
 
   private readonly acceptLangHeader = `accept-language`;
   private configLangHeader: string = '';
+  private defaultLang: string;
+  private translates: any;
 
-  constructor(langHeader: string = '') {
+  constructor(defaultLang: string, translates: any, langHeader: string = '') {
+    this.defaultLang = defaultLang;
+    this.translates = translates;
     this.configLangHeader = langHeader
       ? langHeader.toLowerCase()
       : this.configLangHeader;
@@ -21,12 +25,12 @@ export class LanguageInterceptor implements NestInterceptor {
       (request.headers[this.configLangHeader] as string) ||
       (request.query.lang as string) ||
       this.parseAcceptLanguage(request.headers[this.acceptLangHeader]) ||
-      DEFAULT_LANG;
+      this.defaultLang;
 
-    const langShort = langRaw?.split('-')[MAGIC_NUMBERS.N_0].toLowerCase() ?? DEFAULT_LANG;
-    const availableLangs: string[] = Object.keys(TRANSLATES) || [];
+    const langShort = langRaw?.split('-')[MAGIC_NUMBERS.N_0].toLowerCase() ?? this.defaultLang;
+    const availableLangs: string[] = Object.keys(this.translates) || [];
 
-    request.lang = availableLangs.includes(langShort) ? langShort : DEFAULT_LANG;
+    request.lang = availableLangs.includes(langShort) ? langShort : this.defaultLang;
 
     return next.handle();
   }

@@ -1,8 +1,8 @@
+import { DATE_PATTERNS, MAGIC_NUMBERS } from '@core/shared/constants';
+import { LogLevel } from '@core/shared/types';
 import { Injectable } from '@nestjs/common';
-import { DATE_PATTERNS, MAGIC_NUMBERS } from '@shared/constants';
 import { createLogger, format, Logger, transports } from 'winston';
 import 'winston-daily-rotate-file';
-import { LogLevel } from './logger.types';
 
 @Injectable()
 export class LoggerService {

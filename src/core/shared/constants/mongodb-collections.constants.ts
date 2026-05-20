@@ -1,4 +1,4 @@
-export const MONGODB_CONSTANTS = {
+export const MONGODB_COLLECTIONS_CONSTANTS = {
   PERMISSIONS: {
     MODEL: 'Permissions',
     COLLECTION: 'permissions'

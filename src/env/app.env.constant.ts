@@ -1,5 +1,5 @@
+import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { registerAs } from '@nestjs/config';
-import { MAGIC_NUMBERS } from '@shared/constants';
 
 export const APP_ENV = registerAs('app', () => ({
   environment: process.env.ENVIRONMENT ?? 'development',
