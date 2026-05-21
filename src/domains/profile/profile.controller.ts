@@ -15,7 +15,7 @@ import { ProfileService } from './profile.service';
 @Controller(APP_CONTROLLERS.PROFILE)
 export class ProfileController {
 
-  constructor(private profileService: ProfileService) { }
+  constructor(private readonly profileService: ProfileService) { }
 
   @Put('update/user/info/:_id')
   @UseGuards(AuthGuard(), UserGuard)

@@ -10,10 +10,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class AuthStrategy extends PassportStrategy(Strategy) {
 
   constructor(
-    private usersRepository: UsersRepository,
-    private sessionsService: SessionsService,
-    private sessionsRepository: SessionsRepository,
-    private configSerive: ConfigService
+    private readonly usersRepository: UsersRepository,
+    private readonly sessionsService: SessionsService,
+    private readonly sessionsRepository: SessionsRepository,
+    private readonly configSerive: ConfigService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

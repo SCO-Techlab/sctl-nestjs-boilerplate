@@ -15,15 +15,15 @@ import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDt
 export class AuthService {
 
   constructor(
-    private jwtService: JwtService,
-    private usersRepository: UsersRepository,
-    private usersService: UsersService,
-    private bcryptService: BcryptService,
-    private configSerive: ConfigService,
-    private rolesRepository: RolesRepository,
-    private sessionsService: SessionsService,
-    private sessionsRepository: SessionsRepository,
-    private templatesService: TemplatesService,
+    private readonly jwtService: JwtService,
+    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
+    private readonly bcryptService: BcryptService,
+    private readonly configSerive: ConfigService,
+    private readonly rolesRepository: RolesRepository,
+    private readonly sessionsService: SessionsService,
+    private readonly sessionsRepository: SessionsRepository,
+    private readonly templatesService: TemplatesService,
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {

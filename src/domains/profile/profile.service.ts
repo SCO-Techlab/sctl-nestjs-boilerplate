@@ -16,13 +16,13 @@ import { UpdateUserInfoDto } from "./profile.dto";
 export class ProfileService {
 
   constructor(
-    private usersRepository: UsersRepository,
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private gridfsService: GridfsService,
-    private sessionsService: SessionsService,
-    private sessionsRepository: SessionsRepository,
-    private menuFrontRepository: MenuFrontRepository
+    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly gridfsService: GridfsService,
+    private readonly sessionsService: SessionsService,
+    private readonly sessionsRepository: SessionsRepository,
+    private readonly menuFrontRepository: MenuFrontRepository
   ) { }
 
   async updateUserInfo(_id: string, update: UpdateUserInfoDto, requestUser: IUser): Promise<IJwtToken> {

@@ -11,9 +11,7 @@ import { AuthService } from './auth.service';
 @Controller(APP_CONTROLLERS.AUTH)
 export class AuthController {
 
-  constructor(
-    private readonly authService: AuthService
-  ) { }
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   async login(@Body() login: AuthLoginDto): Promise<IJwtToken> {
