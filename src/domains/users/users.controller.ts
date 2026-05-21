@@ -5,10 +5,11 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } fro
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS, PERMISSIONS } from '@shared/constants';
 import { Lang, Permissions } from '@shared/decorators';
+import { UpdatePasswordDto } from '@shared/dtos';
 import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
 import { IUser } from '@shared/interfaces';
-import { UserDto, UserPasswordUpdateDto } from './users.dto';
+import { UserDto } from './users.dto';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
@@ -66,7 +67,7 @@ export class UsersController {
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE })
   async updatePassword(
     @Param('_id') _id: string,
-    @Body() user: UserPasswordUpdateDto
+    @Body() user: UpdatePasswordDto
   ): Promise<boolean> {
     return await this.service.updatePassword(_id, user.password, user.newPassword, false);
   }

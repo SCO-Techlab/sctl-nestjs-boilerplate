@@ -4,11 +4,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { APP_CONTROLLERS } from '@shared/constants';
 import { User } from '@shared/decorators';
+import { UpdatePasswordDto } from '@shared/dtos';
 import { UserGuard } from '@shared/guards';
 import { IMenuFront, IUser } from '@shared/interfaces';
 import * as types from '@shared/types';
 import express from 'express';
-import { UpdateUserInfoDto, UpdateUserPasswordDto } from './profile.dto';
+import { UpdateUserInfoDto } from './profile.dto';
 import { ProfileService } from './profile.service';
 
 @Controller(APP_CONTROLLERS.PROFILE)
@@ -31,9 +32,9 @@ export class ProfileController {
   async updateUserPassword(
     @User() requestUser: types.RequestUser,
     @Param('_id') _id: string,
-    @Body() updateUserPasswordDto: UpdateUserPasswordDto
+    @Body() updatePasswordDto: UpdatePasswordDto
   ): Promise<boolean> {
-    return await this.profileService.updateUserPassword(_id, updateUserPasswordDto, requestUser as IUser);
+    return await this.profileService.updateUserPassword(_id, updatePasswordDto, requestUser as IUser);
   }
 
   @Get('get/user/avatar/:_id/:_avatarId')

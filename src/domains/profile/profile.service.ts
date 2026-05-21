@@ -7,9 +7,10 @@ import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { UsersRepository, UsersService } from "@domains/users";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES } from "@shared/constants";
+import { UpdatePasswordDto } from "@shared/dtos";
 import { createJwtPayload, createRandomUUID, formatObjectId } from "@shared/helpers";
 import { IMenuFront, IUser } from "@shared/interfaces";
-import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
+import { UpdateUserInfoDto } from "./profile.dto";
 
 @Injectable()
 export class ProfileService {
@@ -48,7 +49,7 @@ export class ProfileService {
     return this.jwtService.createTokenResponse(accessToken);
   }
 
-  async updateUserPassword(_id: string, update: UpdateUserPasswordDto, requestUser: IUser): Promise<boolean> {
+  async updateUserPassword(_id: string, update: UpdatePasswordDto, requestUser: IUser): Promise<boolean> {
     await this.validateUserRequest(_id, requestUser);
 
     const updatedPassword: boolean = await this.usersService.updatePassword(_id, update.password, update.newPassword, true);

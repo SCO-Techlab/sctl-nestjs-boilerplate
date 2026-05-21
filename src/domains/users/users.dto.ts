@@ -60,19 +60,3 @@ export class UserDto extends MongodbDocumentDto {
   @IsMongoId()
   avatar?: string;
 }
-
-export class UserPasswordUpdateDto {
-  @IsNotEmpty()
-  @IsString()
-  @Matches(REGEX_PATTERNS.PASSWORD)
-  @MinLength(MAGIC_NUMBERS.N_8)
-  @MaxLength(MAGIC_NUMBERS.N_64)
-  password: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Matches(REGEX_PATTERNS.PASSWORD)
-  @MinLength(MAGIC_NUMBERS.N_8)
-  @MaxLength(MAGIC_NUMBERS.N_64)
-  newPassword: string;
-}
