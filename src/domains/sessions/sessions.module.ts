@@ -2,6 +2,7 @@ import { JWT_TOKEN_TYPE } from '@core/shared/enums';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SessionsController } from './sessions.controller';
+import { SessionsRepository } from './sessions.repository';
 import { SessionsService } from './sessions.service';
 
 const MODULE = {
@@ -12,10 +13,12 @@ const MODULE = {
     SessionsController
   ],
   providers: [
+    SessionsRepository,
     SessionsService,
   ],
   exports: [
-    SessionsService
+    SessionsRepository,
+    SessionsService,
   ]
 };
 

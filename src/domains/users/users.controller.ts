@@ -8,7 +8,7 @@ import { Lang, Permissions } from '@shared/decorators';
 import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
 import { IUser } from '@shared/interfaces';
-import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from './users.dto';
+import { UserDto, UserPasswordUpdateDto } from './users.dto';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
@@ -47,7 +47,7 @@ export class UsersController {
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.CREATE })
-  async save(@Body() user: UserCreateDto): Promise<IUser | undefined> {
+  async save(@Body() user: UserDto): Promise<IUser | undefined> {
     return await this.repository.save(await this.repository.dtoToEntity(user) as IUser);
   }
 
@@ -56,7 +56,7 @@ export class UsersController {
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE })
   async updateOne(
     @Param('_id') _id: string,
-    @Body() user: UserUpdateDto
+    @Body() user: UserDto
   ): Promise<IUser> {
     return await this.repository.updateOne(_id, await this.repository.dtoToEntity(user) as IUser);
   }
@@ -81,9 +81,9 @@ export class UsersController {
   @Put('update/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.USERS, type: PERMISSION_TYPE.UPDATE_BULK })
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<UserUpdateDto>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<UserDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
-    return await this.repository.updateMany(filter, await this.repository.dtoToEntity(bulkUpdate.data) as IUser);
+    return await this.repository.updateMany(filter, await this.repository.dtoToEntity(bulkUpdate.data as UserDto) as IUser);
   }
 
   @Delete(':_id')

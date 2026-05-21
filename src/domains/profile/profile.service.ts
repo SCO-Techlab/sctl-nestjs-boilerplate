@@ -2,8 +2,8 @@ import { GridfsService } from "@core/gridfs";
 import { JwtService } from "@core/jwt";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
 import { IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse, IJwtToken } from "@core/shared/interfaces";
-import { MenuFrontService } from "@domains/menu-front";
-import { SessionsService } from "@domains/sessions";
+import { MenuFrontRepository } from "@domains/menu-front";
+import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { UsersRepository, UsersService } from "@domains/users";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES } from "@shared/constants";
@@ -20,7 +20,8 @@ export class ProfileService {
     private jwtService: JwtService,
     private gridfsService: GridfsService,
     private sessionsService: SessionsService,
-    private menuFrontService: MenuFrontService
+    private sessionsRepository: SessionsRepository,
+    private menuFrontRepository: MenuFrontRepository
   ) { }
 
   async updateUserInfo(_id: string, update: UpdateUserInfoDto, requestUser: IUser): Promise<IJwtToken> {
@@ -114,14 +115,14 @@ export class ProfileService {
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
     await this.usersService.deleteUserAvatar(_id);
-    await this.sessionsService.deleteMany({ user: existUser._id });
+    await this.sessionsRepository.deleteMany({ user: existUser._id });
     return await this.usersRepository.deleteOne(_id);
   }
 
   async getUserMenuFront(_id: string, requestUser: IUser): Promise<IMenuFront[]> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
 
-    const menuFront: IMenuFront[] = await this.menuFrontService
+    const menuFront: IMenuFront[] = await this.menuFrontRepository
       .find({
         $or: [
           { roles: existUser.role },
@@ -134,7 +135,7 @@ export class ProfileService {
       return [];
     }
 
-    return this.menuFrontService.sortMenuRecursive(menuFront);
+    return menuFront;
   }
 
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {

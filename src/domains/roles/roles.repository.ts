@@ -7,6 +7,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { COLLECTIONS } from "@shared/constants";
 import { IPermission, IRole } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
+import { RoleDto } from "./roles.dto";
 import { ROLES_SCHEMA } from "./roles.schema";
 
 @Injectable()
@@ -98,10 +99,17 @@ export class RolesRepository implements IMongodbRepository<IRole> {
     }
   }
 
-  async dtoToEntity(dto: any): Promise<IRole | undefined> {
+  async dtoToEntity(dto: RoleDto): Promise<IRole | undefined> {
     const keys: string[] = Object.keys(dto ?? {});
     if (!keys?.length) {
       return undefined;
+    }
+
+    if (dto?._id) {
+      const existRecord = await this.findOne(dto._id, '_id');
+      if (existRecord) {
+        return existRecord;
+      }
     }
 
     const permissions: IPermission[] = [];

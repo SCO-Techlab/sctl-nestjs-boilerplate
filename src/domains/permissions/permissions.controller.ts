@@ -8,7 +8,7 @@ import { Permissions } from '@shared/decorators';
 import { PERMISSION_TYPE } from '@shared/enums';
 import { PermissionsGuard } from '@shared/guards';
 import { IPermission } from '@shared/interfaces';
-import { PermissionCreateDto, PermissionUpdateDto } from './permissions.dto';
+import { PermissionDto } from './permissions.dto';
 import { PermissionsRepository } from './permissions.repository';
 
 @Controller(APP_CONTROLLERS.PERMISSIONS)
@@ -33,7 +33,7 @@ export class PermissionsController {
   @Post()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.CREATE })
-  async save(@Body() permission: PermissionCreateDto): Promise<IPermission | undefined> {
+  async save(@Body() permission: PermissionDto): Promise<IPermission | undefined> {
     return await this.repository.save(permission);
   }
 
@@ -42,7 +42,7 @@ export class PermissionsController {
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.UPDATE })
   async updateOne(
     @Param('_id') _id: string,
-    @Body() permission: PermissionUpdateDto
+    @Body() permission: PermissionDto
   ): Promise<IPermission | undefined> {
     return await this.repository.updateOne(_id, permission);
   }
@@ -50,7 +50,7 @@ export class PermissionsController {
   @Put('update/bulk')
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions({ name: PERMISSIONS.PERMISSIONS, type: PERMISSION_TYPE.UPDATE_BULK })
-  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionUpdateDto>): Promise<number> {
+  async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<PermissionDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.repository.updateMany(filter, bulkUpdate.data);
   }

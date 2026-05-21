@@ -2,7 +2,7 @@ import { JwtService } from '@core/jwt';
 import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { IJwtToken } from '@core/shared/interfaces';
 import { RolesRepository } from '@domains/roles';
-import { SessionsService } from '@domains/sessions';
+import { SessionsRepository, SessionsService } from '@domains/sessions';
 import { UsersRepository, UsersService } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -22,6 +22,7 @@ export class AuthService {
     private configSerive: ConfigService,
     private rolesRepository: RolesRepository,
     private sessionsService: SessionsService,
+    private sessionsRepository: SessionsRepository,
     private templatesService: TemplatesService,
   ) { }
 
@@ -82,7 +83,7 @@ export class AuthService {
     if (this.sessionsService.refreshSessionIsExpired(activeSession)) {
       activeSession.isRevoked = true;
       activeSession.revokedAt = new Date();
-      await this.sessionsService.updateOne(activeSession._id as string, activeSession);
+      await this.sessionsRepository.updateOne(activeSession._id as string, activeSession);
       throw new UnauthorizedException();
     }
 
@@ -108,7 +109,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const result: number = await this.sessionsService.updateMany(
+    const result: number = await this.sessionsRepository.updateMany(
       { user: user._id, isRevoked: false, isAccessRevoked: false },
       { isAccessRevoked: true, revokedAt: new Date() }
     );

@@ -3,7 +3,7 @@ import { RolesModule } from '@domains/roles';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { MenuFrontController } from './menu-front.controller';
-import { MenuFrontService } from './menu-front.service';
+import { MenuFrontRepository } from './menu-front.repository';
 
 const MODULE = {
   imports: [
@@ -14,10 +14,10 @@ const MODULE = {
     MenuFrontController
   ],
   providers: [
-    MenuFrontService
+    MenuFrontRepository,
   ],
   exports: [
-    MenuFrontService
+    MenuFrontRepository,
   ]
 };
 

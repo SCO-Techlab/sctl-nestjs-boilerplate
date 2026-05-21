@@ -23,4 +23,5 @@ export interface IMongodbRepository<T> {
   updateMany(filter: QueryFilter<any>, update: Partial<any>): Promise<number>;
   deleteOne(_id: string): Promise<boolean>;
   deleteMany(filter: QueryFilter<any>): Promise<number>;
+  dtoToEntity(dto: any): Promise<T | undefined>;
 }

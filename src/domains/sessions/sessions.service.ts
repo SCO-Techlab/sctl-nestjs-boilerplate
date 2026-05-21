@@ -1,135 +1,42 @@
 import { LoggerService } from "@core/logger";
-import { formatMongodbError, MongodbRepository } from "@core/mongodb";
+import { formatMongodbError } from "@core/mongodb";
 import { MAGIC_NUMBERS } from "@core/shared/constants";
-import { IJwtConfig, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
-import { EntityQuery } from "@core/shared/types";
+import { IJwtConfig } from "@core/shared/interfaces";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { COLLECTIONS } from "@shared/constants";
 import { parseDateUnits } from "@shared/helpers";
 import { ISession, IUser } from "@shared/interfaces";
-import { Model, QueryFilter, SortOrder } from "mongoose";
-import { SESSION_SCHEMA } from "./sessions.schema";
+import { SortOrder } from "mongoose";
+import { SessionsRepository } from "./sessions.repository";
 
 @Injectable()
-export class SessionsService implements IMongodbRepository<ISession> {
-
-  private SessionModel: Model<ISession>;
+export class SessionsService {
 
   constructor(
-    private loggerService: LoggerService,
-    private mongodbRepository: MongodbRepository,
-    private configService: ConfigService
+    private readonly loggerService: LoggerService,
+    private readonly configService: ConfigService,
+    private readonly repository: SessionsRepository,
   ) { }
 
-  async onModuleInit(): Promise<void> {
-    try {
-      this.SessionModel = this.mongodbRepository.getModel(COLLECTIONS.SESSIONS.MODEL, SESSION_SCHEMA, COLLECTIONS.SESSIONS.COLLECTION);
-      await this.mongodbRepository.setModelIndexes(this.SessionModel);
-    } catch (error) {
-      this.loggerService.error(`[SessionsService] onModuleInit -> Error: ${error}`);
+  async revoke(_id: string): Promise<ISession> {
+    const value: ISession = await this.repository.findOne(_id) as ISession;
+    if (!value) {
+      throw new NotFoundException(`Session with id ${_id} not found`);
     }
-  }
 
-  async find(entityQuery?: EntityQuery<ISession>): Promise<ISession[] | IPaginationResponse<ISession>> {
-    try {
-      return await this.mongodbRepository.find<ISession>(this.SessionModel, entityQuery);
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'find', this.loggerService);
+    value.isRevoked = true;
+    value.revokedAt = new Date();
+    const updatedValue: ISession = await this.repository.updateOne(_id, value);
+    if (!updatedValue) {
+      throw new NotFoundException(`Session with id ${_id} not found for revocation`);
     }
-  }
 
-  async findOne(value: any, property: string = '_id'): Promise<ISession | undefined> {
-    const record: IMongodbRecord = { property, value };
-    try {
-      return await this.mongodbRepository.findOne<ISession>(this.SessionModel, record);
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'findOne', this.loggerService);
-    }
-  }
-
-  async save(session: ISession): Promise<ISession | undefined> {
-    const value: Partial<ISession> = {
-      user: session.user,
-      accessJti: session.accessJti,
-      accessExpiresAt: session.accessExpiresAt,
-      refreshJti: session.refreshJti ?? undefined,
-      refreshExpiresAt: session.refreshExpiresAt ?? undefined,
-      isRevoked: session.isRevoked ?? false,
-      isAccessRevoked: session.isAccessRevoked ?? false,
-      isRefreshRevoked: session.isRefreshRevoked ?? false,
-      revokedAt: session.revokedAt ?? undefined,
-    };
-
-    try {
-      return await this.mongodbRepository.save<ISession>(this.SessionModel, value);
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'save', this.loggerService);
-    }
-  }
-
-  async updateOne(_id: string, session: ISession): Promise<ISession> {
-    const record: IMongodbRecord = { property: '_id', value: _id };
-
-    const value: Partial<ISession> = {
-      user: session.user,
-      accessJti: session.accessJti,
-      accessExpiresAt: session.accessExpiresAt,
-      refreshJti: session.refreshJti,
-      refreshExpiresAt: session.refreshExpiresAt,
-      isRevoked: session.isRevoked,
-      isAccessRevoked: session.isAccessRevoked ?? false,
-      isRefreshRevoked: session.isRefreshRevoked ?? false,
-      revokedAt: session.revokedAt,
-    };
-
-    try {
-      const result: ISession = await this.mongodbRepository
-        .updateOne<ISession>(this.SessionModel, record, value) as ISession;
-      if (!result) {
-        throw new NotFoundException(`Session not found`);
-      }
-
-      return result;
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'updateOne', this.loggerService);
-    }
-  }
-
-  async updateMany(filter: QueryFilter<ISession>, update: Partial<ISession>): Promise<number> {
-    try {
-      return await this.mongodbRepository
-        .updateMany<ISession>(this.SessionModel, filter, update as Partial<ISession>);
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'updateMany', this.loggerService);
-    }
-  }
-
-  async deleteOne(_id: string): Promise<boolean> {
-    const record: IMongodbRecord = { property: '_id', value: _id };
-    try {
-      const result: boolean = await this.mongodbRepository.deleteOne<ISession>(this.SessionModel, record);
-      if (!result) {
-        throw new NotFoundException(`Session not found`);
-      }
-
-      return result;
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'deleteOne', this.loggerService);
-    }
-  }
-
-  async deleteMany(filter: QueryFilter<ISession>): Promise<number> {
-    try {
-      return await this.mongodbRepository.deleteMany(this.SessionModel, filter);
-    } catch (error) {
-      throw formatMongodbError(error, 'SessionsService', 'deleteMany', this.loggerService);
-    }
+    return updatedValue;
   }
 
   async findLastActiveUserSession(userId: string): Promise<ISession | undefined> {
     try {
-      return await this.SessionModel
+      return await this.repository.Model
         .findOne({ user: userId, isRevoked: false })
         .sort({ createdAt: MAGIC_NUMBERS.N_MINUS_1 as SortOrder })
         .exec() ?? undefined;
@@ -140,7 +47,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
   async findActiveSessionByRefreshJti(userId: string, refreshJti: string): Promise<ISession | undefined> {
     try {
-      return await this.SessionModel
+      return await this.repository.Model
         .findOne({ user: userId, refreshJti, isRevoked: false, isRefreshRevoked: false })
         .exec() ?? undefined;
     } catch (error) {
@@ -150,7 +57,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
 
   async findActiveSessionByAccessJti(userId: string, accessJti: string): Promise<ISession | undefined> {
     try {
-      return await this.SessionModel
+      return await this.repository.Model
         .findOne({ user: userId, accessJti, isRevoked: false, isAccessRevoked: false })
         .exec() ?? undefined;
     } catch (error) {
@@ -161,7 +68,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
   async updateUserSession(user: IUser, accessJti: string, refreshJti?: string): Promise<void> {
     const jwtConfig: IJwtConfig = this.configService.get('jwt') as IJwtConfig;
 
-    await this.updateMany(
+    await this.repository.updateMany(
       { user: user._id, isRevoked: false },
       {
         isRevoked: true,
@@ -176,7 +83,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
       ? new Date(Date.now() + parseDateUnits(jwtConfig?.refresh?.expiresIn as string))
       : undefined;
 
-    await this.save({
+    await this.repository.save({
       user,
       accessJti,
       accessExpiresAt,
@@ -190,7 +97,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
   }
 
   async rotateSession(_id: string, accessJti: string, refreshJti: string): Promise<ISession> {
-    const session: ISession = await this.findOne(_id) as ISession;
+    const session: ISession = await this.repository.findOne(_id) as ISession;
     if (!session) {
       throw new NotFoundException('Session not found');
     }
@@ -203,7 +110,7 @@ export class SessionsService implements IMongodbRepository<ISession> {
     session.isAccessRevoked = false;
     session.isRefreshRevoked = false;
 
-    return await this.updateOne(_id, session);
+    return await this.repository.updateOne(_id, session);
   }
 
   sessionIsExpired(session: ISession): boolean {

@@ -6,6 +6,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { COLLECTIONS } from "@shared/constants";
 import { IPermission } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
+import { PermissionDto } from "./permissions.dto";
 import { PERMISSIONS_SCHEMA } from "./permissions.schema";
 
 @Injectable()
@@ -107,10 +108,17 @@ export class PermissionsRepository implements IMongodbRepository<IPermission> {
     }
   }
 
-  async dtoToEntity(dto: any): Promise<IPermission | undefined> {
+  async dtoToEntity(dto: PermissionDto): Promise<IPermission | undefined> {
     const keys: string[] = Object.keys(dto ?? {});
     if (!keys?.length) {
       return undefined;
+    }
+
+    if (dto?._id) {
+      const existRecord = await this.findOne(dto._id, '_id');
+      if (existRecord) {
+        return existRecord;
+      }
     }
 
     const entity: IPermission = {

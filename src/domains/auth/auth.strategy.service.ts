@@ -1,4 +1,4 @@
-import { SessionsService } from "@domains/sessions";
+import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { UsersRepository } from "@domains/users";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -12,6 +12,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
   constructor(
     private usersRepository: UsersRepository,
     private sessionsService: SessionsService,
+    private sessionsRepository: SessionsRepository,
     private configSerive: ConfigService
   ) {
     super({
@@ -38,7 +39,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     if (this.sessionsService.sessionIsExpired(activeSession)) {
       activeSession.isRevoked = true;
       activeSession.revokedAt = new Date();
-      await this.sessionsService.updateOne(activeSession._id as string, activeSession);
+      await this.sessionsRepository.updateOne(activeSession._id as string, activeSession);
       throw new UnauthorizedException();
     }
 

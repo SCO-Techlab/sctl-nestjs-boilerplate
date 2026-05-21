@@ -7,6 +7,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { COLLECTIONS } from "@shared/constants";
 import { IRole, IUser } from "@shared/interfaces";
 import { Model, QueryFilter } from "mongoose";
+import { UserDto } from "./users.dto";
 import { USERS_SCHEMA } from "./users.schema";
 
 @Injectable()
@@ -116,10 +117,17 @@ export class UsersRepository implements IMongodbRepository<IUser> {
     }
   }
 
-  async dtoToEntity(dto: any): Promise<IUser | undefined> {
+  async dtoToEntity(dto: UserDto): Promise<IUser | undefined> {
     const keys: string[] = Object.keys(dto ?? {});
     if (!keys?.length) {
       return undefined;
+    }
+
+    if (dto?._id) {
+      const existRecord = await this.findOne(dto._id, '_id');
+      if (existRecord) {
+        return existRecord;
+      }
     }
 
     let role: IRole | undefined = undefined;
