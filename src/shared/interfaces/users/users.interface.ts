@@ -10,7 +10,7 @@ export interface IUser extends IMongodbDocument {
   active: boolean;
   emailConfirmed?: boolean;
   emailConfirmedAt?: Date;
-  role: Types.ObjectId[] | IRole;
+  role: Types.ObjectId | IRole;
   pwdRecoveryToken?: string;
   pwdRecoveryDate?: Date;
   avatar?: Types.ObjectId | IGridfsFile;

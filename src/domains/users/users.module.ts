@@ -4,6 +4,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SharedModule } from '@shared/module';
 import { UsersController } from './users.controller';
+import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
 const MODULE = {
@@ -16,10 +17,12 @@ const MODULE = {
     UsersController
   ],
   providers: [
+    UsersRepository,
     UsersService,
   ],
   exports: [
-    UsersService
+    UsersRepository,
+    UsersService,
   ]
 };
 

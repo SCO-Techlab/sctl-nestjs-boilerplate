@@ -3,7 +3,7 @@ import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { IJwtToken } from '@core/shared/interfaces';
 import { RolesRepository } from '@domains/roles';
 import { SessionsService } from '@domains/sessions';
-import { UsersService } from '@domains/users';
+import { UsersRepository, UsersService } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createJwtPayload, createRandomUUID } from '@shared/helpers';
@@ -16,6 +16,7 @@ export class AuthService {
 
   constructor(
     private jwtService: JwtService,
+    private usersRepository: UsersRepository,
     private usersService: UsersService,
     private bcryptService: BcryptService,
     private configSerive: ConfigService,
@@ -25,7 +26,7 @@ export class AuthService {
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
-    const existUser: IUser = await this.usersService.findOne(login.email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(login.email, 'email') as IUser;
     if (!existUser) {
       throw new UnauthorizedException();
     }
@@ -66,7 +67,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const existUser: IUser = await this.usersService.findOne(decodedRefresh.user.email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(decodedRefresh.user.email, 'email') as IUser;
     if (!existUser) {
       throw new UnauthorizedException();
     }
@@ -115,12 +116,12 @@ export class AuthService {
   }
 
   public async register(register: AuthRegisterDto, lang: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(register.email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(register.email, 'email') as IUser;
     if (existUser) {
       throw new ConflictException('User with email already exists');
     }
 
-    const existUserName: IUser = await this.usersService.findOne(register.userName, 'userName') as IUser;
+    const existUserName: IUser = await this.usersRepository.findOne(register.userName, 'userName') as IUser;
     if (existUserName) {
       throw new ConflictException('User with userName already exists');
     }
@@ -130,7 +131,7 @@ export class AuthService {
       throw new ConflictException('Role not found');
     }
 
-    const createdUser: IUser = await this.usersService.save({ ...register, role: existRole._id as string }) as IUser;
+    const createdUser: IUser = await this.usersRepository.save({ ...register, role: existRole }) as IUser;
     if (!createdUser) {
       throw new ConflictException('Error creating user');
     }
@@ -146,7 +147,7 @@ export class AuthService {
   }
 
   public async findUser(email: string): Promise<IUser> {
-    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(email, 'email') as IUser;
     if (!existUser) {
       throw new NotFoundException(`User with email '${email}' does not exist`);
     }
@@ -155,7 +156,7 @@ export class AuthService {
   }
 
   public async confirmUserEmaiil(email: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(email, 'email') as IUser;
     if (!existUser) {
       throw new NotFoundException(`User with email '${email}' does not exist`);
     }
@@ -171,7 +172,7 @@ export class AuthService {
       active: true
     };
 
-    const updatedUser: IUser = await this.usersService.updateOne(existUser._id as string, userUpdateDto);
+    const updatedUser: IUser = await this.usersRepository.updateOne(existUser._id as string, userUpdateDto);
     if (!updatedUser) {
       throw new ConflictException('Error confirming user email');
     }
@@ -180,7 +181,7 @@ export class AuthService {
   }
 
   public async forgotPassword(email: string, lang: string): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(email, 'email') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(email, 'email') as IUser;
     if (!existUser) {
       throw new NotFoundException('User not found');
     }
@@ -194,7 +195,7 @@ export class AuthService {
       pwdRecoveryDate: existUser.pwdRecoveryDate,
     };
 
-    const updatedUser: IUser = await this.usersService.updateOne(existUser._id as string, userUpdateDto);
+    const updatedUser: IUser = await this.usersRepository.updateOne(existUser._id as string, userUpdateDto);
     if (!updatedUser) {
       throw new ConflictException('Error updating user');
     }
@@ -208,7 +209,7 @@ export class AuthService {
   }
 
   public async recoverPasswordFind(pwdRecoveryToken: string): Promise<IUser> {
-    const existUser: IUser = await this.usersService.findOne(pwdRecoveryToken, 'pwdRecoveryToken') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(pwdRecoveryToken, 'pwdRecoveryToken') as IUser;
     if (!existUser) {
       throw new UnauthorizedException();
     }
@@ -223,18 +224,12 @@ export class AuthService {
   }
 
   public async recoverPasswordReset(passwordResetDto: AuthResetPasswordDto): Promise<boolean> {
-    const existUser: IUser = await this.usersService.findOne(passwordResetDto.userId, '_id') as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(passwordResetDto.userId, '_id') as IUser;
     if (!existUser) {
       throw new UnauthorizedException();
     }
 
-    const userUpdatePasswordDto: any = {
-      ...existUser,
-      password: passwordResetDto.password,
-      newPassword: passwordResetDto.password,
-    };
-
-    const updatedPassword = await this.usersService.updatePassword(existUser._id as string, userUpdatePasswordDto, false);
+    const updatedPassword = await this.usersService.updatePassword(existUser._id as string, passwordResetDto.password, passwordResetDto.password, false);
     if (!updatedPassword) {
       throw new ConflictException('Error updating user password');
     }
@@ -244,7 +239,7 @@ export class AuthService {
       pwdRecoveryToken: null,
       pwdRecoveryDate: null,
     };
-    const updatedUser: IUser = await this.usersService.updateOne(existUser._id as string, userUpdateDto);
+    const updatedUser: IUser = await this.usersRepository.updateOne(existUser._id as string, userUpdateDto);
     if (!updatedUser) {
       throw new ConflictException('Error updating user');
     }

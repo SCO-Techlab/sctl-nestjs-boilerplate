@@ -1,5 +1,5 @@
 import { SessionsService } from "@domains/sessions";
-import { UsersService } from "@domains/users";
+import { UsersRepository } from "@domains/users";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
@@ -10,7 +10,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class AuthStrategy extends PassportStrategy(Strategy) {
 
   constructor(
-    private usersService: UsersService,
+    private usersRepository: UsersRepository,
     private sessionsService: SessionsService,
     private configSerive: ConfigService
   ) {
@@ -25,7 +25,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const user: IUser = await this.usersService.findOne(payload.user.email, 'email') as IUser;
+    const user: IUser = await this.usersRepository.findOne(payload.user.email, 'email') as IUser;
     if (!user || !user.active) {
       throw new UnauthorizedException();
     }

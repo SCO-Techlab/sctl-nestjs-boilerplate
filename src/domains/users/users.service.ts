@@ -1,162 +1,26 @@
 import { GridfsService } from "@core/gridfs";
 import { LoggerService } from "@core/logger";
-import { MongodbRepository, formatMongodbError } from "@core/mongodb";
+import { formatMongodbError } from "@core/mongodb";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
-import { IGridfsFile, IGridfsGetFileOptions, IMongodbRecord, IMongodbRepository, IPaginationResponse } from "@core/shared/interfaces";
-import { EntityQuery } from "@core/shared/types";
-import { RolesRepository } from "@domains/roles";
+import { IGridfsFile, IGridfsGetFileOptions } from "@core/shared/interfaces";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { COLLECTIONS } from "@shared/constants";
-import { IRole, IUser } from "@shared/interfaces";
+import { IUser } from "@shared/interfaces";
 import { BcryptService, TemplatesService } from "@shared/services";
-import { Model, QueryFilter } from "mongoose";
-import { UserCreateDto, UserPasswordUpdateDto, UserUpdateDto } from "./users.dto";
-import { USERS_SCHEMA } from "./users.schema";
+import { UsersRepository } from "./users.repository";
 
 @Injectable()
-export class UsersService implements IMongodbRepository<IUser> {
-
-  private UserModel: Model<IUser>;
+export class UsersService {
 
   constructor(
-    private loggerService: LoggerService,
-    private mongodbRepository: MongodbRepository,
-    private gridfsService: GridfsService,
-    private rolesRepository: RolesRepository,
-    private bcryptService: BcryptService,
-    private templatesService: TemplatesService,
+    private readonly loggerService: LoggerService,
+    private readonly repository: UsersRepository,
+    private readonly templatesService: TemplatesService,
+    private readonly gridfsService: GridfsService,
+    private readonly bcryptService: BcryptService
   ) { }
 
-  async onModuleInit(): Promise<void> {
-    try {
-      this.UserModel = this.mongodbRepository.getModel(COLLECTIONS.USERS.MODEL, USERS_SCHEMA, COLLECTIONS.USERS.COLLECTION);
-      await this.mongodbRepository.setModelIndexes(this.UserModel);
-    } catch (error) {
-      this.loggerService.error(`[UsersService] onModuleInit -> Error: ${error}`);
-    }
-  }
-
-  async find(entityQuery?: EntityQuery<IUser>): Promise<IUser[] | IPaginationResponse<IUser>> {
-    try {
-      return await this.mongodbRepository.find<IUser>(this.UserModel, entityQuery);
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'find', this.loggerService);
-    }
-  }
-
-  async findOne(value: any, property: string = '_id'): Promise<IUser | undefined> {
-    const record: IMongodbRecord = { property, value };
-    try {
-      return await this.mongodbRepository.findOne<IUser>(this.UserModel, record);
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'findOne', this.loggerService);
-    }
-  }
-
-  async save(user: UserCreateDto): Promise<IUser | undefined> {
-    const role = await this.resolveRole(user.role);
-
-    const value: Partial<IUser> = {
-      ...user,
-      role
-    };
-
-    try {
-      return await this.mongodbRepository.save<IUser>(this.UserModel, value);
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'save', this.loggerService);
-    }
-  }
-
-  async updateOne(_id: string, user: UserUpdateDto): Promise<IUser> {
-    const record: IMongodbRecord = { property: '_id', value: _id };
-
-    const value = {
-      email: user.email,
-      userName: user.userName,
-      personalName: user.personalName,
-      active: user.active,
-      emailConfirmed: user.emailConfirmed,
-      emailConfirmedAt: user.emailConfirmed ? user.emailConfirmedAt : null,
-      pwdRecoveryToken: user.pwdRecoveryToken,
-      pwdRecoveryDate: user.pwdRecoveryDate,
-      avatar: user.avatar
-    } as Partial<IUser>;
-    if (user.role) {
-      value.role = await this.resolveRole(user.role);
-    }
-
-    try {
-      const result: IUser = await this.mongodbRepository.updateOne<IUser>(this.UserModel, record, value) as IUser;
-      if (!result) {
-        throw new NotFoundException(`User not found`);
-      }
-
-      return result;
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateOne', this.loggerService);
-    }
-  }
-
-  async updatePassword(_id: string, dto: UserPasswordUpdateDto, validateCurrentPassword: boolean = true): Promise<boolean> {
-    const user = await this.findOne(_id);
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-
-    if (validateCurrentPassword) {
-      const isValid = await this.bcryptService.compare(dto.password ?? '', user.password);
-      if (!isValid) {
-        throw new BadRequestException('Invalid current password');
-      }
-    }
-
-    const newPassword = await this.bcryptService.hash(dto.newPassword ?? '');
-
-    try {
-      await this.UserModel.updateOne(
-        { _id },
-        { $set: { password: newPassword } }
-      );
-
-      return true;
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updatePassword', this.loggerService);
-    }
-  }
-
-  async updateMany(filter: QueryFilter<IUser>, update: Partial<UserUpdateDto>): Promise<number> {
-    try {
-      return await this.mongodbRepository.updateMany<IUser>(this.UserModel, filter, update as Partial<IUser>);
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'updateMany', this.loggerService);
-    }
-  }
-
-  async deleteOne(_id: string): Promise<boolean> {
-    const record: IMongodbRecord = { property: '_id', value: _id };
-    try {
-      const result: boolean = await this.mongodbRepository.deleteOne<IUser>(this.UserModel, record);
-      if (!result) {
-        throw new NotFoundException(`User not found`);
-      }
-
-      return result;
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteOne', this.loggerService);
-    }
-  }
-
-  async deleteMany(filter: QueryFilter<IUser>): Promise<number> {
-    try {
-      return await this.mongodbRepository.deleteMany(this.UserModel, filter);
-    } catch (error) {
-      throw formatMongodbError(error, 'UsersService', 'deleteMany', this.loggerService);
-    }
-  }
-
   async sendWelcomeEmail(_id: string, lang: string): Promise<boolean> {
-    const existUser: IUser = await this.findOne(_id) as IUser;
+    const existUser: IUser = await this.repository.findOne(_id) as IUser;
     if (!existUser) {
       throw new NotFoundException(`User not found`);
     }
@@ -165,7 +29,7 @@ export class UsersService implements IMongodbRepository<IUser> {
   }
 
   async deleteUserAvatar(_id: string): Promise<boolean> {
-    const existUser: IUser = await this.findOne(_id) as IUser;
+    const existUser: IUser = await this.repository.findOne(_id) as IUser;
     if (!existUser) {
       throw new NotFoundException(`User not found`);
     }
@@ -177,23 +41,36 @@ export class UsersService implements IMongodbRepository<IUser> {
         await this.gridfsService.deleteFiles(BUCKETS.AVATARS, [currentAvatar._id as string]);
       }
 
-      await this.UserModel.updateOne({ _id }, { $unset: { avatar: '' } }).exec();
+      await this.repository.Model.updateOne({ _id }, { $unset: { avatar: '' } }).exec();
       return true;
     } catch {
       return false;
     }
   }
 
-  private async resolveRole(roleId: string): Promise<IRole | undefined> {
-    if (!roleId) {
-      return undefined;
+  async updatePassword(_id: string, password: string, newPassword: string, validateCurrentPassword: boolean = true): Promise<boolean> {
+    const user = await this.repository.findOne(_id);
+    if (!user) {
+      throw new NotFoundException(`User not found`);
     }
 
-    const dbRole = await this.rolesRepository.findOne(roleId, '_id');
-    if (!dbRole) {
-      throw new NotFoundException(`Role not found`);
+    if (validateCurrentPassword) {
+      const isValid = await this.bcryptService.compare(password ?? '', user.password);
+      if (!isValid) {
+        throw new BadRequestException('Invalid current password');
+      }
     }
 
-    return dbRole;
+    const newPassHash = await this.bcryptService.hash(newPassword ?? '');
+    try {
+      await this.repository.Model.updateOne(
+        { _id },
+        { $set: { password: newPassHash } }
+      );
+
+      return true;
+    } catch (error) {
+      throw formatMongodbError(error, 'UsersService', 'updatePassword', this.loggerService);
+    }
   }
 }

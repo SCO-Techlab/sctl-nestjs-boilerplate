@@ -4,7 +4,7 @@ import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
 import { IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse, IJwtToken } from "@core/shared/interfaces";
 import { MenuFrontService } from "@domains/menu-front";
 import { SessionsService } from "@domains/sessions";
-import { UsersService } from "@domains/users";
+import { UsersRepository, UsersService } from "@domains/users";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FILE_SIZES } from "@shared/constants";
 import { createJwtPayload, createRandomUUID, formatObjectId } from "@shared/helpers";
@@ -15,7 +15,8 @@ import { UpdateUserInfoDto, UpdateUserPasswordDto } from "./profile.dto";
 export class ProfileService {
 
   constructor(
-    private userService: UsersService,
+    private usersRepository: UsersRepository,
+    private usersService: UsersService,
     private jwtService: JwtService,
     private gridfsService: GridfsService,
     private sessionsService: SessionsService,
@@ -31,7 +32,7 @@ export class ProfileService {
       personalName: update.personalName,
     };
 
-    const updatedUser: IUser = await this.userService.updateOne(_id, updateUserInfo) as IUser;
+    const updatedUser: IUser = await this.usersRepository.updateOne(_id, updateUserInfo) as IUser;
     if (!updatedUser) {
       throw new NotFoundException('Error updating user');
     }
@@ -49,7 +50,7 @@ export class ProfileService {
   async updateUserPassword(_id: string, update: UpdateUserPasswordDto, requestUser: IUser): Promise<boolean> {
     await this.validateUserRequest(_id, requestUser);
 
-    const updatedPassword: boolean = await this.userService.updatePassword(_id, update, true);
+    const updatedPassword: boolean = await this.usersService.updatePassword(_id, update.password, update.newPassword, true);
     if (!updatedPassword) {
       throw new NotFoundException('Error updating user password');
     }
@@ -58,7 +59,7 @@ export class ProfileService {
   }
 
   async getUserAvatar(_id: string, avatarId: string): Promise<IGridfsFileStream> {
-    const existUser: IUser = await this.userService.findOne(_id) as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(_id) as IUser;
     if (!existUser) {
       throw new NotFoundException('User not found');
     }
@@ -88,14 +89,14 @@ export class ProfileService {
       throw new BadRequestException('File size too large (max 1MB)');
     }
 
-    await this.userService.deleteUserAvatar(_id);
+    await this.usersService.deleteUserAvatar(_id);
     const avatarMetadata: IGridfsFileMetadata = { mimetype: file.mimetype, email: existUser.email };
     const uploadResponse: IGridfsUploadResponse = (await this.gridfsService.uploadFiles(BUCKETS.AVATARS, [file], avatarMetadata))[MAGIC_NUMBERS.N_0];
     if (!uploadResponse.id) {
       throw new ConflictException('Error uploading user avatar');
     }
 
-    const updatedUser: IUser = await this.userService.updateOne(_id, { avatar: uploadResponse.id }) as IUser;
+    const updatedUser: IUser = await this.usersRepository.updateOne(_id, { avatar: uploadResponse.id }) as IUser;
     if (!updatedUser) {
       throw new NotFoundException('Error updating user');
     }
@@ -112,9 +113,9 @@ export class ProfileService {
 
   async deleteUserAccount(_id: string, requestUser: IUser): Promise<boolean> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
-    await this.userService.deleteUserAvatar(_id);
+    await this.usersService.deleteUserAvatar(_id);
     await this.sessionsService.deleteMany({ user: existUser._id });
-    return await this.userService.deleteOne(_id);
+    return await this.usersRepository.deleteOne(_id);
   }
 
   async getUserMenuFront(_id: string, requestUser: IUser): Promise<IMenuFront[]> {
@@ -141,7 +142,7 @@ export class ProfileService {
       throw new UnauthorizedException();
     }
 
-    const existUser: IUser = await this.userService.findOne(_id) as IUser;
+    const existUser: IUser = await this.usersRepository.findOne(_id) as IUser;
     if (!existUser) {
       throw new NotFoundException('User not found');
     }
