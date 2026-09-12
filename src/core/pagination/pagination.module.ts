@@ -1,18 +1,16 @@
 import { DynamicModule, Module } from '@nestjs/common';
+import { PaginationService } from './pagination.service';
 
 @Module({})
 export class PaginationModule {
   static register(): DynamicModule {
     return {
       module: PaginationModule,
-      imports: [
-
-      ],
       providers: [
-
+        PaginationService
       ],
       exports: [
-
+        PaginationService
       ],
       global: true,
     };
@@ -21,14 +19,11 @@ export class PaginationModule {
   public static registerAsync(): DynamicModule {
     return {
       module: PaginationModule,
-      imports: [
-
-      ],
       providers: [
-
+        PaginationService
       ],
       exports: [
-
+        PaginationService
       ],
       global: true,
     };
