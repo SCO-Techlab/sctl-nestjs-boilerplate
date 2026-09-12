@@ -3,11 +3,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EmailerModule, IEmailerConfig } from "./emailer";
 import { GridfsModule } from "./gridfs";
-import { JwtModule } from "./jwt";
+import { IJwtConfig, JwtModule } from "./jwt";
 import { LoggerModule } from "./logger";
 import { IMongodbConfig, MongodbModule } from "./mongodb";
 import { BUCKETS } from "./shared/constants";
-import { IJwtConfig } from "./shared/interfaces";
 
 
 @Module({

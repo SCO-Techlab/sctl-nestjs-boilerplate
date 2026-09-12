@@ -1,7 +1,7 @@
 import { GridfsService } from "@core/gridfs";
-import { JwtService } from "@core/jwt";
+import { IJwtToken, JwtService } from "@core/jwt";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
-import { IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse, IJwtToken } from "@core/shared/interfaces";
+import { IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/shared/interfaces";
 import { MenuFrontRepository } from "@domains/menu-front";
 import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { UsersRepository, UsersService } from "@domains/users";

@@ -1,6 +1,5 @@
-import { JwtService } from '@core/jwt';
+import { IJwtToken, JwtService } from '@core/jwt';
 import { MAGIC_NUMBERS } from '@core/shared/constants';
-import { IJwtToken } from '@core/shared/interfaces';
 import { RolesRepository } from '@domains/roles';
 import { SessionsRepository, SessionsService } from '@domains/sessions';
 import { UsersRepository, UsersService } from '@domains/users';

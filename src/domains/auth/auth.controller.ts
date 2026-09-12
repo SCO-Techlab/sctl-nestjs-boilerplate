@@ -1,4 +1,4 @@
-import { IJwtToken } from '@core/shared/interfaces';
+import { IJwtToken } from '@core/jwt';
 import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { APP_CONTROLLERS } from '@shared/constants';

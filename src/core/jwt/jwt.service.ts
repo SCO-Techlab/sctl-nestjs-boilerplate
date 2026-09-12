@@ -1,9 +1,9 @@
 import { LoggerService } from '@core/logger';
 import { PROVIDER_CONFIG } from '@core/shared/constants';
-import { IJwtConfig, IJwtToken } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService as NestjsJwtService } from '@nestjs/jwt';
 import { JWT_TOKEN_TYPE } from './jwt.enum';
+import { IJwtConfig, IJwtToken } from './jwt.interface';
 
 @Injectable()
 export class JwtService {

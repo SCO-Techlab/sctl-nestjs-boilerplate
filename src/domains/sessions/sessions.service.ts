@@ -1,6 +1,6 @@
+import { IJwtConfig } from "@core/jwt";
 import { LoggerService } from "@core/logger";
 import { formatMongodbError } from "@core/mongodb";
-import { IJwtConfig } from "@core/shared/interfaces";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { parseDateUnits } from "@shared/helpers";
