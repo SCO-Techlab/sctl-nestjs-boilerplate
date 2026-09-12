@@ -6,6 +6,6 @@ export * from './logger';
 export * from './middlewares';
 export * from './module';
 export * from './mongodb';
-export * from './pipes';
 export * from './shared';
+export * from './single-error-validation';
 

@@ -1,6 +1,6 @@
 import { LanguageInterceptor } from '@core/interceptors';
 import { LoggerService } from '@core/logger';
-import { SingleErrorValidationPipe } from '@core/pipes';
+import { SingleErrorValidationPipe } from '@core/single-error-validation';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DEFAULT_LANG, TRANSLATES } from '@shared/constants';
