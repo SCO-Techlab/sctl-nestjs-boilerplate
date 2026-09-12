@@ -1,4 +1,4 @@
-import { JWT_TOKEN_TYPE } from '@core/shared/enums';
+import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { SessionsModule } from '@domains/sessions';
 import { UsersModule } from '@domains/users';
