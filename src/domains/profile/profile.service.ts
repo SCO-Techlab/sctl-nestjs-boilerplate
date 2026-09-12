@@ -1,7 +1,6 @@
-import { GridfsService } from "@core/gridfs";
+import { GridfsService, IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/gridfs";
 import { IJwtToken, JwtService } from "@core/jwt";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
-import { IGridfsFile, IGridfsFileMetadata, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/shared/interfaces";
 import { MenuFrontRepository } from "@domains/menu-front";
 import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { UsersRepository, UsersService } from "@domains/users";

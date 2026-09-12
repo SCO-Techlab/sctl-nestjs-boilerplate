@@ -1,8 +1,7 @@
-import { GridfsService } from "@core/gridfs";
+import { GridfsService, IGridfsFile, IGridfsGetFileOptions } from "@core/gridfs";
 import { LoggerService } from "@core/logger";
 import { formatMongodbError } from "@core/mongodb";
 import { BUCKETS, MAGIC_NUMBERS } from "@core/shared/constants";
-import { IGridfsFile, IGridfsGetFileOptions } from "@core/shared/interfaces";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { IUser } from "@shared/interfaces";
 import { BcryptService, TemplatesService } from "@shared/services";

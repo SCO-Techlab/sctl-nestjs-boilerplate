@@ -1,10 +1,9 @@
 import { LoggerService } from "@core/logger";
 import { MAGIC_NUMBERS, PROVIDER_CONFIG } from "@core/shared/constants";
-import * as types from '@core/shared/interfaces';
-import { IGridfsDeleteResponse, IGridfsFile, IGridfsFileStream, IGridfsGetFileOptions, IGridfsUploadResponse } from "@core/shared/interfaces";
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { GridFSBucket, ObjectId } from "mongodb";
 import { Connection } from "mongoose";
+import * as gridfsInterface from "./gridfs.interface";
 import { GridfsManagerService } from "./gridfs.manager";
 import { GridfsUtilsService } from "./gridfs.utils.service";
 
@@ -12,7 +11,7 @@ import { GridfsUtilsService } from "./gridfs.utils.service";
 export class GridfsService {
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private config: types.IGridfsConfig,
+    @Inject(PROVIDER_CONFIG) private config: gridfsInterface.IGridfsConfig,
     private readonly manager: GridfsManagerService,
     private readonly utils: GridfsUtilsService,
     private readonly loggerSerice: LoggerService
@@ -36,7 +35,7 @@ export class GridfsService {
     }
   }
 
-  public getFileStream(bucketName: string, file: IGridfsFile): IGridfsFileStream {
+  public getFileStream(bucketName: string, file: gridfsInterface.IGridfsFile): gridfsInterface.IGridfsFileStream {
     if (!file?._id) {
       throw new BadRequestException(`[Gridfs] File required`);
     }
@@ -50,7 +49,7 @@ export class GridfsService {
     return { file, stream };
   }
 
-  public async uploadFiles(bucketName: string, files: Express.Multer.File[], metadata?: any): Promise<IGridfsUploadResponse[]> {
+  public async uploadFiles(bucketName: string, files: Express.Multer.File[], metadata?: any): Promise<gridfsInterface.IGridfsUploadResponse[]> {
     const bucket = this.manager.get(bucketName);
     if (!bucket) {
       throw new NotFoundException(`[Gridfs] Bucket '${bucketName}' not found`);
@@ -60,7 +59,7 @@ export class GridfsService {
       throw new BadRequestException(`[Gridfs] Files required`);
     }
 
-    const uploaded: IGridfsUploadResponse[] = [];
+    const uploaded: gridfsInterface.IGridfsUploadResponse[] = [];
     for (const file of files) {
       const fileMetadata = {
         ...(metadata ?? {}),
@@ -88,7 +87,7 @@ export class GridfsService {
     return uploaded;
   }
 
-  public async getFiles(bucketName: string, options: IGridfsGetFileOptions = {}): Promise<IGridfsFile[]> {
+  public async getFiles(bucketName: string, options: gridfsInterface.IGridfsGetFileOptions = {}): Promise<gridfsInterface.IGridfsFile[]> {
     const bucket = this.manager.get(bucketName);
     if (!bucket) {
       throw new NotFoundException(`[Gridfs] Bucket '${bucketName}' not found`);
@@ -108,13 +107,13 @@ export class GridfsService {
     return result;
   }
 
-  public async deleteFiles(bucketName: string, ids: string[]): Promise<IGridfsDeleteResponse> {
+  public async deleteFiles(bucketName: string, ids: string[]): Promise<gridfsInterface.IGridfsDeleteResponse> {
     const bucket = this.manager.get(bucketName);
     if (!bucket) {
       throw new NotFoundException(`[Gridfs] Bucket '${bucketName}' not found`);
     }
 
-    const response: IGridfsDeleteResponse = { deletedIds: [] };
+    const response: gridfsInterface.IGridfsDeleteResponse = { deletedIds: [] };
     for (const id of ids) {
       try {
         await bucket.delete(new ObjectId(id));
