@@ -1,9 +1,9 @@
-import { IEmailerRenderOptions } from '@core/shared/interfaces';
 import { Injectable } from '@nestjs/common';
 import { readFileSync, readdirSync } from 'fs';
 import * as Handlebars from 'handlebars';
 import * as juice from 'juice';
 import { join } from 'path';
+import { IEmailerRenderOptions } from './emailer.interface';
 
 @Injectable()
 export class EmailerRenderService {

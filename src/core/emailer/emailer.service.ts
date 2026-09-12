@@ -1,10 +1,10 @@
 import { LoggerService } from '@core/logger';
 import { MAGIC_NUMBERS, PROVIDER_CONFIG } from '@core/shared/constants';
-import { IEmailerConfig, IEmailerMessage, IEmailerTemplate } from '@core/shared/interfaces';
 import { Inject, Injectable } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { take, timer } from 'rxjs';
 import { EmailerRenderService } from './emailer-render.service';
+import { IEmailerConfig, IEmailerMessage, IEmailerTemplate } from './emailer.interface';
 
 @Injectable()
 export class EmailerService {

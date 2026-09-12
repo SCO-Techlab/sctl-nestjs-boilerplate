@@ -1,7 +1,8 @@
 import { createAsyncConfigProvider, createConfigProvider } from '@core/shared/helpers';
-import { IEmailerConfig, IModuleAsyncConfig } from '@core/shared/interfaces';
+import { IModuleAsyncConfig } from '@core/shared/interfaces';
 import { DynamicModule, Module } from '@nestjs/common';
 import { EmailerRenderService } from './emailer-render.service';
+import { IEmailerConfig } from './emailer.interface';
 import { EmailerService } from './emailer.service';
 
 @Module({})
