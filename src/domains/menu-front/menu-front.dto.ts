@@ -1,4 +1,4 @@
-import { MongodbDocumentDto } from '@core/shared/dtos';
+import { MongodbDocumentDto } from '@core/mongodb';
 import { IMenuFront } from '@shared/interfaces';
 import { IsArray, IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 

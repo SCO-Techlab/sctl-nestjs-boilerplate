@@ -1,5 +1,5 @@
+import { MongodbDocumentDto } from '@core/mongodb';
 import { MAGIC_NUMBERS } from '@core/shared/constants';
-import { MongodbDocumentDto } from '@core/shared/dtos';
 import { REGEX_PATTERNS } from '@shared/constants';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';

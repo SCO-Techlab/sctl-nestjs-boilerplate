@@ -1,4 +1,4 @@
-import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/shared/dtos';
+import { MongodbBulkDeleteDto, MongodbBulkUpdateDto } from '@core/mongodb';
 import { IPaginationResponse } from '@core/shared/interfaces';
 import * as coreTypes from '@core/shared/types';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
