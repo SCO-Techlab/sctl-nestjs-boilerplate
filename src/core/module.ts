@@ -6,6 +6,7 @@ import { BUCKETS, GridfsModule } from "./gridfs";
 import { IJwtConfig, JwtModule } from "./jwt";
 import { LoggerModule } from "./logger";
 import { IMongodbConfig, MongodbModule } from "./mongodb";
+import { PaginationModule } from "./pagination";
 
 
 @Module({
@@ -41,6 +42,7 @@ import { IMongodbConfig, MongodbModule } from "./mongodb";
       },
       inject: [ConfigService],
     }),
+    PaginationModule.register(),
   ]
 })
 export class CoreModule { }
