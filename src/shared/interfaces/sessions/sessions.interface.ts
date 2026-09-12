@@ -1,4 +1,4 @@
-import { IMongodbDocument } from "@core/shared/interfaces";
+import { IMongodbDocument } from "@core/mongodb";
 import { Types } from "mongoose";
 import { IUser } from "../users";
 

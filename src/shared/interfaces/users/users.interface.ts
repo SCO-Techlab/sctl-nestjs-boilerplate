@@ -1,4 +1,5 @@
-import { IGridfsFile, IMongodbDocument } from '@core/shared/interfaces';
+import { IMongodbDocument } from '@core/mongodb';
+import { IGridfsFile } from '@core/shared/interfaces';
 import { Types } from 'mongoose';
 import { IRole } from '../roles';
 

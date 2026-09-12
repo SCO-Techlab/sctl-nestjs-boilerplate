@@ -1,7 +1,8 @@
 import { createAsyncConfigProvider, createConfigProvider } from '@core/shared/helpers';
-import { IModuleAsyncConfig, IMongodbConfig } from '@core/shared/interfaces';
+import { IModuleAsyncConfig } from '@core/shared/interfaces';
 import { PaginationService } from '@core/shared/services';
 import { DynamicModule, Module } from '@nestjs/common';
+import { IMongodbConfig } from './mongodb.interface';
 import { MongodbRepository } from './mongodb.repository';
 import { MongodbService } from './mongodb.service';
 

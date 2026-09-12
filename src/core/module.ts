@@ -5,9 +5,9 @@ import { EmailerModule, IEmailerConfig } from "./emailer";
 import { GridfsModule } from "./gridfs";
 import { JwtModule } from "./jwt";
 import { LoggerModule } from "./logger";
-import { MongodbModule } from "./mongodb";
+import { IMongodbConfig, MongodbModule } from "./mongodb";
 import { BUCKETS } from "./shared/constants";
-import { IJwtConfig, IMongodbConfig } from "./shared/interfaces";
+import { IJwtConfig } from "./shared/interfaces";
 
 
 @Module({
