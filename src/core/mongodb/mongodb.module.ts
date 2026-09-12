@@ -1,6 +1,6 @@
+import { PaginationService } from '@core/pagination';
 import { createAsyncConfigProvider, createConfigProvider } from '@core/shared/helpers';
 import { IModuleAsyncConfig } from '@core/shared/interfaces';
-import { PaginationService } from '@core/shared/services';
 import { DynamicModule, Module } from '@nestjs/common';
 import { IMongodbConfig } from './mongodb.interface';
 import { MongodbRepository } from './mongodb.repository';

@@ -1,4 +1,4 @@
-import { PaginationService } from "@core/shared/services";
+import { PaginationService } from "@core/pagination";
 import { Module } from "@nestjs/common";
 import { BcryptService, TemplatesService } from "@shared/services";
 

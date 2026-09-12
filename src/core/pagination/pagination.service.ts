@@ -1,6 +1,7 @@
+import { MAGIC_NUMBERS } from "@core/shared";
 import { Injectable } from "@nestjs/common";
-import { DEFAULT_PAGE_LIMIT, MAGIC_NUMBERS } from "../constants";
-import { IPaginationParams, IPaginationQuery } from "../interfaces";
+import { DEFAULT_PAGE_LIMIT } from "./pagination.constants";
+import { IPaginationParams, IPaginationQuery } from "./pagination.interface";
 
 @Injectable()
 export class PaginationService {

@@ -1,5 +1,5 @@
 import { MongodbBulkDeleteDto } from '@core/mongodb';
-import { IPaginationResponse } from '@core/shared/interfaces';
+import { IPaginationResponse } from '@core/pagination';
 import * as types from '@core/shared/types';
 import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';

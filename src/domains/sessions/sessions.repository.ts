@@ -1,6 +1,6 @@
 import { LoggerService } from "@core/logger";
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MongodbRepository } from "@core/mongodb";
-import { IPaginationResponse } from "@core/shared";
+import { IPaginationResponse } from "@core/pagination";
 import { EntityQuery } from "@core/shared/types";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { COLLECTIONS } from "@shared/constants";

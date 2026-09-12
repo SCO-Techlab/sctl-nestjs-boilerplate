@@ -1,4 +1,5 @@
-import { EntityQuery, IPaginationResponse } from "@core/shared";
+import { IPaginationResponse } from "@core/pagination";
+import { EntityQuery } from "@core/shared";
 import { QueryFilter } from "mongoose";
 
 export interface IMongodbConfig {

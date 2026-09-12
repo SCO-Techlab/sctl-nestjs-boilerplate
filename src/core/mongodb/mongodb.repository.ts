@@ -1,6 +1,5 @@
+import { IPaginationResponse, PaginationService } from "@core/pagination";
 import { MAGIC_NUMBERS } from "@core/shared/constants";
-import { IPaginationResponse } from "@core/shared/interfaces";
-import { PaginationService } from "@core/shared/services";
 import { EntityQuery } from "@core/shared/types";
 import { Injectable } from "@nestjs/common";
 import { Model, QueryFilter, Schema } from "mongoose";
