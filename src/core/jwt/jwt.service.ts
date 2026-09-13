@@ -9,9 +9,9 @@ import { IJwtConfig, IJwtToken } from './jwt.interface';
 export class JwtService {
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private options: IJwtConfig,
-    private nestjsJwtService: NestjsJwtService,
-    private loggerService: LoggerService
+    @Inject(PROVIDER_CONFIG) private readonly options: IJwtConfig,
+    private readonly nestjsJwtService: NestjsJwtService,
+    private readonly loggerService: LoggerService
   ) { }
 
   public createTokenResponse(accessToken: string, refreshToken?: string): IJwtToken {

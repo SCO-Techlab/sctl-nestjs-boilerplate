@@ -12,9 +12,9 @@ export class MongodbService {
   private _hasSkippedInitialConnection: Map<string, boolean> = new Map<string, boolean>();
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private options: IMongodbConfig[],
-    private loggerService: LoggerService,
-    private gridfsService: GridfsService
+    @Inject(PROVIDER_CONFIG) private readonly options: IMongodbConfig[],
+    private readonly loggerService: LoggerService,
+    private readonly gridfsService: GridfsService
   ) {
     this.initService();
   }

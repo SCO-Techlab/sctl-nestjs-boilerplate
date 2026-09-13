@@ -1,4 +1,3 @@
-import { PaginationService } from '@core/pagination';
 import { createAsyncConfigProvider, createConfigProvider } from '@core/shared/helpers';
 import { IModuleAsyncConfig } from '@core/shared/interfaces';
 import { DynamicModule, Module } from '@nestjs/common';
@@ -14,8 +13,7 @@ export class MongodbModule {
       providers: [
         ...createConfigProvider(options),
         MongodbService,
-        MongodbRepository,
-        PaginationService
+        MongodbRepository
       ],
       exports: [
         MongodbService,
@@ -31,8 +29,7 @@ export class MongodbModule {
       providers: [
         ...createAsyncConfigProvider(options),
         MongodbService,
-        MongodbRepository,
-        PaginationService
+        MongodbRepository
       ],
       exports: [
         MongodbService,

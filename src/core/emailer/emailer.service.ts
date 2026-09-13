@@ -12,9 +12,9 @@ export class EmailerService {
   private transporters: Map<string, Transporter> = new Map<string, Transporter>();
 
   constructor(
-    @Inject(PROVIDER_CONFIG) private options: IEmailerConfig[],
-    private emailerRenderService: EmailerRenderService,
-    private loggerService: LoggerService
+    @Inject(PROVIDER_CONFIG) private readonly options: IEmailerConfig[],
+    private readonly emailerRenderService: EmailerRenderService,
+    private readonly loggerService: LoggerService
   ) { }
 
   async onModuleInit(): Promise<void> {

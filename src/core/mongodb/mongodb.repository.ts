@@ -10,8 +10,8 @@ import { MongodbService } from "./mongodb.service";
 export class MongodbRepository {
 
   constructor(
-    private mongodbService: MongodbService,
-    private paginationService: PaginationService
+    private readonly mongodbService: MongodbService,
+    private readonly paginationService: PaginationService
   ) { }
 
   public getModel<T>(model: string, schema: Schema<T>, collection: string): Model<T> {
