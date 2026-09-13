@@ -1,4 +1,3 @@
-
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EmailerModule, IEmailerConfig } from "./emailer";
@@ -7,7 +6,6 @@ import { IJwtConfig, JwtModule } from "./jwt";
 import { LoggerModule } from "./logger";
 import { IMongodbConfig, MongodbModule } from "./mongodb";
 import { PaginationModule } from "./pagination";
-
 
 @Module({
   imports: [
