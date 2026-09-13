@@ -111,6 +111,15 @@ module.exports = [
         roles: [
           'superadmin'
         ]
+      },
+       {
+        label: 'LAYOUT.MENU.SUPERADMINISTRATOR.ITEMS.TENANTS',
+        icon: 'pi pi-building',
+        routerLink: '/administrator/tenants',
+        order: 5,
+        roles: [
+          'superadmin'
+        ]
       }
     ],
     roles: [ROLES_MIGRATION.find(role => role.name === 'SUPERADMIN').name],

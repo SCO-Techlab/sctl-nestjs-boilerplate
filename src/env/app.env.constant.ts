@@ -13,4 +13,5 @@ export const APP_ENV = registerAs('app', () => ({
   appName: process.env.APP_NAME ?? 'Sctl Nestjs Boilerplate',
   langHeader: process.env.LANG_HEADER ?? '',
   certificatesPath: process.env.CERTIFICATES_PATH ?? '',
+  multitenancyEnabled: process.env.MULTITENANCY_ENABLED === 'true',
 }));

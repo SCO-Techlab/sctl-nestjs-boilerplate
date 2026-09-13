@@ -6,4 +6,5 @@ export const APP_CONTROLLERS = {
   PROFILE: 'profile',
   MENU_FRONT: 'menu-front',
   SESSIONS: 'sessions',
+  TENANTS: 'tenants'
 }

@@ -18,5 +18,9 @@ export const COLLECTIONS = {
   MENU_FRONT: {
     MODEL: 'MenuFront',
     COLLECTION: 'menu-front'
+  },
+  TENANTS: {
+    MODEL: 'Tenants',
+    COLLECTION: 'tenants'
   }
 }

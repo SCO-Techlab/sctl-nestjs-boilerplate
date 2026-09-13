@@ -4,5 +4,6 @@ export * from './permissions';
 export * from './profile';
 export * from './roles';
 export * from './sessions';
+export * from './tenants';
 export * from './users';
 

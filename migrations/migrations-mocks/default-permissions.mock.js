@@ -39,4 +39,11 @@ module.exports = [
   { name: 'SESSIONS', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
   { name: 'SESSIONS', type: 'DELETE', ...DEFAULT_PERMISSION },
   { name: 'SESSIONS', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
+
+  { name: 'TENANTS', type: 'CREATE', ...DEFAULT_PERMISSION },
+  { name: 'TENANTS', type: 'READ', ...DEFAULT_PERMISSION },
+  { name: 'TENANTS', type: 'UPDATE', ...DEFAULT_PERMISSION },
+  { name: 'TENANTS', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
+  { name: 'TENANTS', type: 'DELETE', ...DEFAULT_PERMISSION },
+  { name: 'TENANTS', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
 ];
