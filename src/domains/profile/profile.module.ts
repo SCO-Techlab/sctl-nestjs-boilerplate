@@ -1,6 +1,7 @@
 import { JWT_TOKEN_TYPE } from "@core/jwt";
 import { MenuFrontModule } from "@domains/menu-front";
 import { SessionsModule } from "@domains/sessions";
+import { TenantsModule } from "@domains/tenants";
 import { UsersModule } from "@domains/users";
 import { DynamicModule, Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
@@ -12,7 +13,8 @@ const MODULE = {
     PassportModule.register({ defaultStrategy: JWT_TOKEN_TYPE.JWT }),
     UsersModule,
     SessionsModule,
-    MenuFrontModule
+    MenuFrontModule,
+    TenantsModule
   ],
   controllers: [
     ProfileController

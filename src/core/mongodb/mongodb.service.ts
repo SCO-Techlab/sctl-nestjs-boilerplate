@@ -134,13 +134,13 @@ export class MongodbService {
   }
 
   private createConnectionUrl(config: IMongodbConfig): string {
-    const { user, pass, host, port, database, authSource } = config;
+    const { user, password, host, port, database, authSource } = config;
 
-    const credentials = user && pass
-      ? `${encodeURIComponent(user)}:${encodeURIComponent(pass)}@`
+    const credentials = user && password
+      ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}@`
       : '';
 
-    const auth = user && pass
+    const auth = user && password
       ? `?authSource=${authSource ?? 'admin'}`
       : '';
 

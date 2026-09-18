@@ -4,6 +4,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TenantsController } from './tenants.controller';
 import { TenantsRepository } from './tenants.repository';
+import { TenantsService } from './tenants.service';
 
 const MODULE = {
   imports: [
@@ -14,10 +15,12 @@ const MODULE = {
     TenantsController
   ],
   providers: [
-    TenantsRepository
+    TenantsRepository,
+    TenantsService
   ],
   exports: [
-    TenantsRepository
+    TenantsRepository,
+    TenantsService
   ]
 };
 

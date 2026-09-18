@@ -30,6 +30,11 @@ export const TENANTS_SCHEMA = new Schema<ITenant>(
       autopopulate: true,
       required: false,
       default: []
+    },
+    avatar: {
+      type: Types.ObjectId,
+      required: false,
+      default: null
     }
   },
   {

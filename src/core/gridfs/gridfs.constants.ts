@@ -1,3 +1,4 @@
 export const BUCKETS = {
-  AVATARS: 'avatars'
+  AVATARS: 'avatars',
+  TENANTS_AVATARS: 'tenants-avatars'
 };

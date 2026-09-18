@@ -11,11 +11,15 @@ import { ITenant } from '@shared/interfaces';
 import { TenantDto } from './tenants.dto';
 import { TenantsGuard } from './tenants.guard';
 import { TenantsRepository } from './tenants.repository';
+import { TenantsService } from './tenants.service';
 
 @Controller(APP_CONTROLLERS.TENANTS)
 export class TenantsController {
 
-  constructor(private readonly repository: TenantsRepository) { }
+  constructor(
+    private readonly repository: TenantsRepository,
+    private readonly service: TenantsService,
+  ) { }
 
   @Get()
   @UseGuards(AuthGuard(), PermissionsGuard, TenantsGuard)
@@ -54,6 +58,13 @@ export class TenantsController {
   async updateMany(@Body() bulkUpdate: MongodbBulkUpdateDto<TenantDto>): Promise<number> {
     const filter = { _id: { $in: bulkUpdate._ids } };
     return await this.repository.updateMany(filter, await this.repository.dtoToEntity(bulkUpdate.data as TenantDto) as ITenant);
+  }
+
+  @Put('delete/avatar/:_id')
+  @UseGuards(AuthGuard(), PermissionsGuard, TenantsGuard)
+  @Permissions({ name: PERMISSIONS.TENANTS, type: PERMISSION_TYPE.UPDATE })
+  async deleteTenantAvatar(@Param('_id') _id: string): Promise<boolean> {
+    return await this.service.deleteTenantAvatar(_id);
   }
 
   @Delete(':_id')

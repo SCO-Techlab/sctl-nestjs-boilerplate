@@ -22,4 +22,9 @@ export class TenantDto extends MongodbDocumentDto {
   @IsArray()
   @IsMongoId({ each: true })
   members?: string[];
+
+  @IsOptional()
+  @IsString()
+  @IsMongoId()
+  avatar?: string;
 }

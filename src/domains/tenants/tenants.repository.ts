@@ -1,6 +1,7 @@
 import { LoggerService } from "@core/logger";
 import { formatMongodbError, IMongodbRecord, IMongodbRepository, MongodbRepository } from "@core/mongodb";
 import { IPaginationResponse } from "@core/pagination";
+import { MAGIC_NUMBERS } from "@core/shared/constants";
 import { EntityQuery } from "@core/shared/types";
 import { UsersRepository } from "@domains/users";
 import { Injectable, NotFoundException } from "@nestjs/common";
@@ -13,7 +14,11 @@ import { TENANTS_SCHEMA } from "./tenants.schema";
 @Injectable()
 export class TenantsRepository implements IMongodbRepository<ITenant> {
 
-  private Model: Model<ITenant>;
+  public get Model(): Model<ITenant> {
+    return this._Model;
+  }
+
+  private _Model: Model<ITenant>;
 
   constructor(
     private readonly loggerService: LoggerService,
@@ -23,8 +28,8 @@ export class TenantsRepository implements IMongodbRepository<ITenant> {
 
   async onModuleInit(): Promise<void> {
     try {
-      this.Model = this.mongodbRepository.getModel(COLLECTIONS.TENANTS.MODEL, TENANTS_SCHEMA, COLLECTIONS.TENANTS.COLLECTION);
-      await this.mongodbRepository.setModelIndexes(this.Model);
+      this._Model = this.mongodbRepository.getModel(COLLECTIONS.TENANTS.MODEL, TENANTS_SCHEMA, COLLECTIONS.TENANTS.COLLECTION);
+      await this.mongodbRepository.setModelIndexes(this._Model);
     } catch (error) {
       this.loggerService.error(`[TenantsRepository] onModuleInit -> Error: ${error}`);
     }
@@ -99,6 +104,15 @@ export class TenantsRepository implements IMongodbRepository<ITenant> {
     }
   }
 
+  async deleteAvatar(_id: string): Promise<boolean> {
+    try {
+      const result = await this.Model.updateOne({ _id }, { $unset: { avatar: '' } }).exec();
+      return (result?.modifiedCount ?? MAGIC_NUMBERS.N_0) > MAGIC_NUMBERS.N_0 || (result?.matchedCount ?? MAGIC_NUMBERS.N_0) > MAGIC_NUMBERS.N_0;
+    } catch (error) {
+      throw formatMongodbError(error, 'TenantsRepository', 'deleteAvatar', this.loggerService);
+    }
+  }
+
   async dtoToEntity(dto: TenantDto): Promise<ITenant | undefined> {
     const keys: string[] = Object.keys(dto ?? {});
     if (!keys?.length) {
@@ -135,6 +149,7 @@ export class TenantsRepository implements IMongodbRepository<ITenant> {
       owner: owner as IUser,
       description: dto?.description ?? undefined,
       members,
+      avatar: dto?.avatar ?? undefined,
       createdAt: dto?.createdAt ?? undefined,
       updatedAt: dto?.updatedAt ?? undefined,
       __v: dto?.__v ?? undefined

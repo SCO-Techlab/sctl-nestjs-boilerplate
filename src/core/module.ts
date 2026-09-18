@@ -21,7 +21,8 @@ import { PaginationModule } from "./pagination";
     }),
     GridfsModule.register({
       buckets: [
-        { name: BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'] }] }
+        { name: BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'] }] },
+        { name: BUCKETS.TENANTS_AVATARS, indexes: [{ filename: false, metadata: ['tenantId'] }] }
       ]
     }),
     JwtModule.registerAsync({

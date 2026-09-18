@@ -8,7 +8,7 @@ export interface IMongodbConfig {
   port: number;
   database: string;
   user?: string;
-  pass?: string;
+  password?: string;
   authSource?: string;
   avoidConnection?: boolean;
 }
