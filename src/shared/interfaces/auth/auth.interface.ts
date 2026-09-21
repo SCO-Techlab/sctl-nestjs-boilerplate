@@ -1,3 +1,4 @@
+import { ITenant } from "../tenants";
 import { IUser } from "../users";
 
 export interface IAuthPayload {
@@ -5,4 +6,5 @@ export interface IAuthPayload {
   jti: string;
   isRefreshToken: boolean;
   user: IUser;
+  tenants: ITenant[];
 }

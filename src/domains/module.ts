@@ -2,6 +2,7 @@ import { AuthModule } from "@domains/auth";
 import { MenuFrontModule } from "@domains/menu-front";
 import { PermissionsModule } from "@domains/permissions";
 import { ProfileModule } from "@domains/profile";
+import { ResidencesModule } from "@domains/residences";
 import { RolesModule } from "@domains/roles";
 import { SessionsModule } from "@domains/sessions";
 import { TenantsModule } from '@domains/tenants';
@@ -17,7 +18,8 @@ import { Module } from "@nestjs/common";
     UsersModule,
     ProfileModule,
     MenuFrontModule,
-    TenantsModule
+    TenantsModule,
+    ResidencesModule
   ],
 })
 export class DomainsModule { }

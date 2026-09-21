@@ -6,10 +6,11 @@ import { SessionsRepository, SessionsService } from "@domains/sessions";
 import { TenantsRepository, TenantsService } from "@domains/tenants";
 import { UsersRepository, UsersService } from "@domains/users";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { FILE_SIZES } from "@shared/constants";
 import { UpdatePasswordDto } from "@shared/dtos";
 import { createJwtPayload, createRandomUUID, formatObjectId } from "@shared/helpers";
-import { IMenuFront, ITenant, IUser } from "@shared/interfaces";
+import { IAuthPayload, IMenuFront, ITenant, IUser } from "@shared/interfaces";
 import { UpdateUserInfoDto, UpdateUserTenantDto } from "./profile.dto";
 
 @Injectable()
@@ -24,7 +25,8 @@ export class ProfileService {
     private readonly sessionsRepository: SessionsRepository,
     private readonly menuFrontRepository: MenuFrontRepository,
     private readonly tenantsRepository: TenantsRepository,
-    private readonly tenantsService: TenantsService
+    private readonly tenantsService: TenantsService,
+    private readonly configService: ConfigService,
   ) { }
 
   async updateUserInfo(_id: string, update: UpdateUserInfoDto, requestUser: IUser): Promise<IJwtToken> {
@@ -41,7 +43,9 @@ export class ProfileService {
       throw new NotFoundException('Error updating user');
     }
 
-    const accessToken: string = this.jwtService.createToken(createJwtPayload(updatedUser, createRandomUUID(), false));
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(updatedUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
@@ -105,7 +109,9 @@ export class ProfileService {
       throw new NotFoundException('Error updating user');
     }
 
-    const accessToken: string = this.jwtService.createToken(createJwtPayload(updatedUser, createRandomUUID(), false));
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(updatedUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
@@ -127,7 +133,9 @@ export class ProfileService {
       throw new NotFoundException('User not found');
     }
 
-    const accessToken: string = this.jwtService.createToken(createJwtPayload(updatedUser, createRandomUUID(), false));
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(updatedUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
@@ -163,25 +171,7 @@ export class ProfileService {
     return menuFront;
   }
 
-  public async getUserTenants(_id: string, requestUser: IUser): Promise<ITenant[]> {
-    const existUser: IUser = await this.validateUserRequest(_id, requestUser);
-
-    const tenants: ITenant[] = await this.tenantsRepository.find({
-      isActive: true,
-      $or: [
-        { owner: existUser._id },
-        { members: existUser._id },
-      ],
-    } as any) as ITenant[];
-
-    if (!tenants || tenants.length === MAGIC_NUMBERS.N_0) {
-      return [];
-    }
-
-    return tenants;
-  }
-
-  public async updateUserTenant(_id: string, updateUserTenantDto: UpdateUserTenantDto, requestUser: IUser): Promise<ITenant> {
+  public async updateUserTenant(_id: string, updateUserTenantDto: UpdateUserTenantDto, requestUser: IUser): Promise<IJwtToken> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
     const existTenant: ITenant = await this.tenantsRepository.findOne(updateUserTenantDto?._id) as ITenant;
     if (!existTenant) {
@@ -208,7 +198,21 @@ export class ProfileService {
       members: members?.length > MAGIC_NUMBERS.N_0 ? members : existTenant.members,
     };
 
-    return await this.tenantsRepository.updateOne(existTenant._id as string, updateTenant) as ITenant;
+    const updatedTenant = await this.tenantsRepository.updateOne(existTenant._id as string, updateTenant) as ITenant;
+    if (!updatedTenant) {
+      throw new NotFoundException('Error updating tenant');
+    }
+
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(existUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
+    if (!tokenJti) {
+      throw new UnauthorizedException();
+    }
+
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
+    return this.jwtService.createTokenResponse(accessToken);
   }
 
   async getTenantAvatar(_id: string, tenantId: string, avatarId: string): Promise<IGridfsFileStream> {
@@ -237,7 +241,7 @@ export class ProfileService {
     return gridfsFileStream;
   }
 
-  async updateTenantAvatar(_id: string, tenantId: string, file: Express.Multer.File, requestUser: IUser): Promise<ITenant> {
+  async updateTenantAvatar(_id: string, tenantId: string, file: Express.Multer.File, requestUser: IUser): Promise<IJwtToken> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
 
     const existTenant: ITenant = await this.tenantsRepository.findOne(tenantId) as ITenant;
@@ -270,10 +274,19 @@ export class ProfileService {
       throw new NotFoundException('Error updating tenant');
     }
 
-    return updatedTenant;
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(existUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
+    if (!tokenJti) {
+      throw new UnauthorizedException();
+    }
+
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
+    return this.jwtService.createTokenResponse(accessToken);
   }
 
-  async deleteTenantAvatar(_id: string, tenantId: string, requestUser: IUser): Promise<ITenant> {
+  async deleteTenantAvatar(_id: string, tenantId: string, requestUser: IUser): Promise<IJwtToken> {
     const existUser: IUser = await this.validateUserRequest(_id, requestUser);
 
     const existTenant: ITenant = await this.tenantsRepository.findOne(tenantId) as ITenant;
@@ -292,7 +305,20 @@ export class ProfileService {
 
 
     const updatedTenant: ITenant = await this.tenantsRepository.findOne(tenantId) as ITenant;
-    return updatedTenant;
+    if (!updatedTenant) {
+      throw new NotFoundException('Error updating tenant');
+    }
+
+    const tenants: ITenant[] = await this.getPayloadTenants(_id);
+    const payload: IAuthPayload = createJwtPayload(existUser, tenants, createRandomUUID(), false);
+    const accessToken: string = this.jwtService.createToken(payload);
+    const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
+    if (!tokenJti) {
+      throw new UnauthorizedException();
+    }
+
+    await this.sessionsService.updateUserSession(existUser, tokenJti);
+    return this.jwtService.createTokenResponse(accessToken);
   }
 
   private async validateUserRequest(_id: string, requestUser: IUser): Promise<IUser> {
@@ -306,5 +332,13 @@ export class ProfileService {
     }
 
     return existUser;
+  }
+
+  private async getPayloadTenants(_id: string) {
+    const tenants: ITenant[] = this.configService.get('app').multitenancyEnabled
+      ? await this.tenantsService.getUserTenants(_id as string)
+      : [];
+
+    return tenants;
   }
 }

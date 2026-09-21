@@ -12,6 +12,36 @@ export class TenantsService {
     private readonly gridfsService: GridfsService,
   ) { }
 
+  public async tenantAvailableByUser(_id: string, _userId: string): Promise<boolean> {
+    const userTenants: ITenant[] = await this.getUserTenants(_userId);
+    if (!userTenants || userTenants.length === MAGIC_NUMBERS.N_0) {
+      return false;
+    }
+
+    const existTenant: ITenant = await this.repository.findOne(_id) as ITenant;
+    if (!existTenant) {
+      return false;
+    }
+
+    return userTenants.find(tenant => tenant._id === existTenant._id) !== undefined;
+  }
+
+  public async getUserTenants(_id: string): Promise<ITenant[]> {
+    const tenants: ITenant[] = await this.repository.find({
+      isActive: true,
+      $or: [
+        { owner: _id },
+        { members: _id },
+      ],
+    } as any) as ITenant[];
+
+    if (!tenants || tenants.length === MAGIC_NUMBERS.N_0) {
+      return [];
+    }
+
+    return tenants;
+  }
+
   async deleteTenantAvatar(_id: string): Promise<boolean> {
     const existTenant: ITenant = await this.repository.findOne(_id) as ITenant;
     if (!existTenant) {

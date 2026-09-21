@@ -11,4 +11,5 @@ export interface IAppConfig {
   langHeader: string;
   certificatesPath: string;
   multitenancyEnabled: boolean;
+  multitenancyHeader: string;
 }

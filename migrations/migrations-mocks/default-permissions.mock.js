@@ -46,4 +46,11 @@ module.exports = [
   { name: 'TENANTS', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
   { name: 'TENANTS', type: 'DELETE', ...DEFAULT_PERMISSION },
   { name: 'TENANTS', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
+
+  { name: 'RESIDENCES', type: 'CREATE', ...DEFAULT_PERMISSION },
+  { name: 'RESIDENCES', type: 'READ', ...DEFAULT_PERMISSION },
+  { name: 'RESIDENCES', type: 'UPDATE', ...DEFAULT_PERMISSION },
+  { name: 'RESIDENCES', type: 'UPDATE_BULK', ...DEFAULT_PERMISSION },
+  { name: 'RESIDENCES', type: 'DELETE', ...DEFAULT_PERMISSION },
+  { name: 'RESIDENCES', type: 'DELETE_BULK', ...DEFAULT_PERMISSION },
 ];

@@ -14,4 +14,5 @@ export const APP_ENV = registerAs('app', () => ({
   langHeader: process.env.LANG_HEADER ?? '',
   certificatesPath: process.env.CERTIFICATES_PATH ?? '',
   multitenancyEnabled: process.env.MULTITENANCY_ENABLED === 'true',
+  multitenancyHeader: process.env.MULTITENANCY_HEADER ?? '',
 }));

@@ -7,7 +7,7 @@ import { APP_CONTROLLERS } from '@shared/constants';
 import { User } from '@shared/decorators';
 import { UpdatePasswordDto } from '@shared/dtos';
 import { UserGuard } from '@shared/guards';
-import { IMenuFront, ITenant, IUser } from '@shared/interfaces';
+import { IMenuFront, IUser } from '@shared/interfaces';
 import * as types from '@shared/types';
 import express from 'express';
 import { UpdateUserInfoDto, UpdateUserTenantDto } from './profile.dto';
@@ -18,33 +18,33 @@ export class ProfileController {
 
   constructor(private readonly profileService: ProfileService) { }
 
-  @Put('update/user/info/:_id')
+  @Put('update/user/info/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   async updateUserInfo(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
     @Body() updateUserInfoDto: UpdateUserInfoDto
   ): Promise<IJwtToken> {
-    return await this.profileService.updateUserInfo(_id, updateUserInfoDto, requestUser as IUser);
+    return await this.profileService.updateUserInfo(userId, updateUserInfoDto, requestUser as IUser);
   }
 
-  @Put('update/user/password/:_id')
+  @Put('update/user/password/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   async updateUserPassword(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
     @Body() updatePasswordDto: UpdatePasswordDto
   ): Promise<boolean> {
-    return await this.profileService.updateUserPassword(_id, updatePasswordDto, requestUser as IUser);
+    return await this.profileService.updateUserPassword(userId, updatePasswordDto, requestUser as IUser);
   }
 
-  @Get('get/user/avatar/:_id/:_avatarId')
+  @Get('get/user/avatar/:userId/:avatarId')
   async getUserAvatar(
-    @Param('_id') _id: string,
-    @Param('_avatarId') _avatarId: string,
+    @Param('userId') userId: string,
+    @Param('avatarId') avatarId: string,
     @Res() res: express.Response
   ) {
-    const gridfsFileStream: IGridfsFileStream = await this.profileService.getUserAvatar(_id, _avatarId);
+    const gridfsFileStream: IGridfsFileStream = await this.profileService.getUserAvatar(userId, avatarId);
 
     res.set({
       'Content-Type': gridfsFileStream.file.metadata?.mimetype,
@@ -54,14 +54,14 @@ export class ProfileController {
     gridfsFileStream.stream.pipe(res);
   }
 
-  @Get('get/tenant/avatar/:_id/:_tenantId/:_avatarId')
+  @Get('get/tenant/avatar/:userId/:tenantId/:avatarId')
   async getTenantAvatar(
-    @Param('_id') _id: string,
-    @Param('_tenantId') _tenantId: string,
-    @Param('_avatarId') _avatarId: string,
+    @Param('userId') userId: string,
+    @Param('tenantId') tenantId: string,
+    @Param('avatarId') avatarId: string,
     @Res() res: express.Response
   ) {
-    const gridfsFileStream: IGridfsFileStream = await this.profileService.getTenantAvatar(_id, _tenantId, _avatarId);
+    const gridfsFileStream: IGridfsFileStream = await this.profileService.getTenantAvatar(userId, tenantId, avatarId);
 
     res.set({
       'Content-Type': gridfsFileStream.file.metadata?.mimetype,
@@ -71,83 +71,74 @@ export class ProfileController {
     gridfsFileStream.stream.pipe(res);
   }
 
-  @Put('update/user/avatar/:_id')
+  @Put('update/user/avatar/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateUserAvatar(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IJwtToken> {
-    return await this.profileService.updateUserAvatar(_id, file, requestUser as IUser);
+    return await this.profileService.updateUserAvatar(userId, file, requestUser as IUser);
   }
 
-  @Put('update/tenant/avatar/:_id/:_tenantId')
+  @Put('update/tenant/avatar/:userId/:tenantId')
   @UseGuards(AuthGuard(), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateTenantAvatar(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
-    @Param('_tenantId') _tenantId: string,
+    @Param('userId') userId: string,
+    @Param('tenantId') tenantId: string,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<ITenant> {
-    return await this.profileService.updateTenantAvatar(_id, _tenantId, file, requestUser as IUser);
+  ): Promise<IJwtToken> {
+    return await this.profileService.updateTenantAvatar(userId, tenantId, file, requestUser as IUser);
   }
 
-  @Delete('delete/user/avatar/:_id')
+  @Delete('delete/user/avatar/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   async deleteUserAvatar(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
   ): Promise<IJwtToken> {
-    return await this.profileService.deleteUserAvatar(_id, requestUser as IUser);
+    return await this.profileService.deleteUserAvatar(userId, requestUser as IUser);
   }
 
-  @Delete('delete/tenant/avatar/:_id/:_tenantId')
+  @Delete('delete/tenant/avatar/:userId/:tenantId')
   @UseGuards(AuthGuard(), UserGuard)
   async deleteTenantAvatar(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
-    @Param('_tenantId') _tenantId: string,
-  ): Promise<ITenant> {
-    return await this.profileService.deleteTenantAvatar(_id, _tenantId, requestUser as IUser);
+    @Param('userId') userId: string,
+    @Param('tenantId') tenantId: string,
+  ): Promise<IJwtToken> {
+    return await this.profileService.deleteTenantAvatar(userId, tenantId, requestUser as IUser);
   }
 
-  @Delete('delete/user/account/:_id')
+  @Delete('delete/user/account/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   async deleteUserAccount(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
   ): Promise<boolean> {
-    return await this.profileService.deleteUserAccount(_id, requestUser as IUser);
+    return await this.profileService.deleteUserAccount(userId, requestUser as IUser);
   }
 
-  @Get('get/user/menu-front/:_id')
+  @Get('get/user/menu-front/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   async getUserMenuFront(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
   ): Promise<IMenuFront[]> {
-    return await this.profileService.getUserMenuFront(_id, requestUser as IUser);
+    return await this.profileService.getUserMenuFront(userId, requestUser as IUser);
   }
 
-  @Get('get/user/tenants/:_id')
-  @UseGuards(AuthGuard(), UserGuard)
-  async getUserTenants(
-    @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
-  ): Promise<ITenant[]> {
-    return await this.profileService.getUserTenants(_id, requestUser as IUser);
-  }
-
-  @Put('update/user/tenant/:_id')
+  @Put('update/user/tenant/:userId')
   @UseGuards(AuthGuard(), UserGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateUserTenant(
     @User() requestUser: types.RequestUser,
-    @Param('_id') _id: string,
+    @Param('userId') userId: string,
     @Body() updateUserTenantDto: UpdateUserTenantDto
-  ): Promise<ITenant> {
-    return await this.profileService.updateUserTenant(_id, updateUserTenantDto, requestUser as IUser);
+  ): Promise<IJwtToken> {
+    return await this.profileService.updateUserTenant(userId, updateUserTenantDto, requestUser as IUser);
   }
 }

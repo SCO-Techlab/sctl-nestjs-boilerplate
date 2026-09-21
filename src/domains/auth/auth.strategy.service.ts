@@ -13,11 +13,11 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     private readonly usersRepository: UsersRepository,
     private readonly sessionsService: SessionsService,
     private readonly sessionsRepository: SessionsRepository,
-    private readonly configSerive: ConfigService
+    private readonly configService: ConfigService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configSerive.get('jwt').secret,
+      secretOrKey: configService.get('jwt').secret,
     });
   }
 

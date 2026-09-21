@@ -1,5 +1,6 @@
 export * from './emailer';
 export * from './gridfs';
+export * from './guards';
 export * from './interceptors';
 export * from './jwt';
 export * from './logger';

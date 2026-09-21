@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { Reflector } from "@nestjs/core";
 
 @Injectable()
-export class TenantsGuard implements CanActivate {
+export class MultitenancyEnabledGuard implements CanActivate {
 
   constructor(
     private readonly reflector: Reflector,

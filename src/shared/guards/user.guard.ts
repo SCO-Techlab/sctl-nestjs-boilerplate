@@ -5,6 +5,7 @@ import { IUser } from '@shared/interfaces';
 
 @Injectable()
 export class UserGuard implements CanActivate {
+
   constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
@@ -15,7 +16,7 @@ export class UserGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const userId: string = request?.params?._id;
+    const userId: string = request?.params?.userId;
     if (!userId) {
       throw new ForbiddenException();
     }

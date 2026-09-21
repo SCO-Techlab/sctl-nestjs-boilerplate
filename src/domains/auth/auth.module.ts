@@ -1,6 +1,7 @@
 import { JWT_TOKEN_TYPE } from '@core/jwt';
 import { RolesModule } from '@domains/roles';
 import { SessionsModule } from '@domains/sessions';
+import { TenantsModule } from '@domains/tenants';
 import { UsersModule } from '@domains/users';
 import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
@@ -16,6 +17,7 @@ const MODULE = {
     SessionsModule,
     UsersModule,
     RolesModule,
+    TenantsModule,
   ],
   controllers: [
     AuthController

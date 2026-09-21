@@ -2,11 +2,12 @@ import { IJwtToken, JwtService } from '@core/jwt';
 import { MAGIC_NUMBERS } from '@core/shared/constants';
 import { RolesRepository } from '@domains/roles';
 import { SessionsRepository, SessionsService } from '@domains/sessions';
+import { TenantsService } from '@domains/tenants';
 import { UsersRepository, UsersService } from '@domains/users';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createJwtPayload, createRandomUUID } from '@shared/helpers';
-import { IAuthPayload, IRole, ISession, IUser } from '@shared/interfaces';
+import { IAuthPayload, IRole, ISession, ITenant, IUser } from '@shared/interfaces';
 import { BcryptService, TemplatesService } from '@shared/services';
 import { AuthLoginDto, AuthRefreshLoginDto, AuthRegisterDto, AuthResetPasswordDto } from './auth.dto';
 
@@ -18,11 +19,12 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly usersService: UsersService,
     private readonly bcryptService: BcryptService,
-    private readonly configSerive: ConfigService,
+    private readonly configService: ConfigService,
     private readonly rolesRepository: RolesRepository,
     private readonly sessionsService: SessionsService,
     private readonly sessionsRepository: SessionsRepository,
     private readonly templatesService: TemplatesService,
+    private readonly tenantsService: TenantsService
   ) { }
 
   public async login(login: AuthLoginDto): Promise<IJwtToken> {
@@ -41,7 +43,9 @@ export class AuthService {
     }
 
     const accessJti: string = createRandomUUID();
-    const accessToken: string = this.jwtService.createToken(createJwtPayload(existUser, accessJti, false));
+    const tenants: ITenant[] = await this.getPayloadTenants(existUser._id as string);
+    const payload: IAuthPayload = createJwtPayload(existUser, tenants, accessJti, false);
+    const accessToken: string = this.jwtService.createToken(payload);
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
@@ -51,7 +55,8 @@ export class AuthService {
     let refreshTokenJti = '';
     if (login.rememberMe) {
       refreshTokenJti = createRandomUUID();
-      refreshToken = this.jwtService.createRefreshToken(createJwtPayload(existUser, refreshTokenJti, true));
+      const payloadRefreshToken: IAuthPayload = createJwtPayload(existUser, tenants, refreshTokenJti, true);
+      refreshToken = this.jwtService.createRefreshToken(payloadRefreshToken);
       if (!refreshToken) {
         throw new UnauthorizedException();
       }
@@ -87,14 +92,17 @@ export class AuthService {
     }
 
     const accessJti: string = createRandomUUID();
-    const accessToken: string = this.jwtService.createToken(createJwtPayload(existUser, accessJti, false));
+    const tenants: ITenant[] = await this.getPayloadTenants(existUser._id as string);
+    const payload: IAuthPayload = createJwtPayload(existUser, tenants, accessJti, false);
+    const accessToken: string = this.jwtService.createToken(payload);
     const tokenJti: string = this.jwtService.getJtiFromToken(accessToken);
     if (!tokenJti) {
       throw new UnauthorizedException();
     }
 
     const refreshTokenJti: string = createRandomUUID();
-    const refreshToken: string = this.jwtService.createRefreshToken(createJwtPayload(existUser, refreshTokenJti, true));
+    const payloadRefreshToken: IAuthPayload = createJwtPayload(existUser, tenants, refreshTokenJti, true);
+    const refreshToken: string = this.jwtService.createRefreshToken(payloadRefreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException();
     }
@@ -214,7 +222,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const minutes: number = this.configSerive.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30;
+    const minutes: number = this.configService.get('app').pwdRecoveryExpiration ?? MAGIC_NUMBERS.N_30;
     const expirationTime = minutes * MAGIC_NUMBERS.N_60 * MAGIC_NUMBERS.N_1000;
     if (existUser.pwdRecoveryDate && (Date.now() - existUser.pwdRecoveryDate.getTime()) > expirationTime) {
       throw new UnauthorizedException('Password recovery token is expired');
@@ -245,5 +253,13 @@ export class AuthService {
     }
 
     return true;
+  }
+
+  private async getPayloadTenants(_id: string) {
+    const tenants: ITenant[] = this.configService.get('app').multitenancyEnabled
+      ? await this.tenantsService.getUserTenants(_id as string)
+      : [];
+
+    return tenants;
   }
 }
