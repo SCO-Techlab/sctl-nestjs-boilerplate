@@ -20,7 +20,23 @@ export const RESIDENCES_SCHEMA = new Schema<IResidence>(
       type: String,
       required: true,
     },
+    flat: {
+      type: String,
+      required: false,
+    },
     door: {
+      type: String,
+      required: false,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
       type: String,
       required: true,
     },
@@ -40,10 +56,13 @@ export const RESIDENCES_SCHEMA = new Schema<IResidence>(
 
 RESIDENCES_SCHEMA.index(
   {
-    tenantId: MAGIC_NUMBERS.N_1 as IndexDirection,
+    tenant: MAGIC_NUMBERS.N_1 as IndexDirection,
     street: MAGIC_NUMBERS.N_1 as IndexDirection,
     number: MAGIC_NUMBERS.N_1 as IndexDirection,
-    door: MAGIC_NUMBERS.N_1 as IndexDirection
+    door: MAGIC_NUMBERS.N_1 as IndexDirection,
+    city: MAGIC_NUMBERS.N_1 as IndexDirection,
+    province: MAGIC_NUMBERS.N_1 as IndexDirection,
+    postalCode: MAGIC_NUMBERS.N_1 as IndexDirection,
   },
   { unique: true }
 );

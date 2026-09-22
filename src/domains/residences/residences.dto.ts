@@ -14,9 +14,25 @@ export class ResidenceDto extends MongodbDocumentDto {
   @IsString()
   number: string;
 
+  @IsOptional()
+  @IsString()
+  flat?: string;
+
+  @IsOptional()
+  @IsString()
+  door?: string;
+
   @IsNotEmpty()
   @IsString()
-  door: string;
+  city: string;
+
+  @IsNotEmpty()
+  @IsString()
+  province: string;
+
+  @IsNotEmpty()
+  @IsString()
+  postalCode: string;
 
   @IsOptional()
   @IsString()
