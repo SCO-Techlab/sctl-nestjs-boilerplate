@@ -23,7 +23,8 @@ import { PaginationModule } from "./pagination";
       buckets: [
         { name: BUCKETS.AVATARS, indexes: [{ filename: false, metadata: ['email'], unique: true }] },
         { name: BUCKETS.TENANTS_AVATARS, indexes: [{ filename: false, metadata: ['tenantId'], unique: true }] },
-        { name: BUCKETS.RESIDENCES_IMAGES, indexes: [{ filename: false, metadata: ['tenantId', 'residenceId'], unique: false }] }
+        { name: BUCKETS.RESIDENCES_IMAGES, indexes: [{ filename: false, metadata: ['tenantId', 'residenceId'], unique: false }] },
+        { name: BUCKETS.ROOMS_IMAGES, indexes: [{ filename: false, metadata: ['tenantId', 'roomId'], unique: false }] }
       ]
     }),
     JwtModule.registerAsync({

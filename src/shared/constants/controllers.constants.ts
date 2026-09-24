@@ -7,5 +7,6 @@ export const APP_CONTROLLERS = {
   MENU_FRONT: 'menu-front',
   SESSIONS: 'sessions',
   TENANTS: 'tenants',
-  RESIDENCES: 'residences'
+  RESIDENCES: 'residences',
+  ROOMS: 'rooms'
 }

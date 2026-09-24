@@ -29,7 +29,12 @@ export const createJwtPayload = (user: IUser, tenants: ITenant[], jti: string, r
       _id: tenant._id,
       name: tenant.name,
       isActive: tenant.isActive,
-      owner: tenant.owner,
+      owner: {
+        _id: (tenant.owner as IUser)._id,
+        email: (tenant.owner as IUser).email,
+        userName: (tenant.owner as IUser).userName,
+        personalName: (tenant.owner as IUser).personalName,
+      } as any,
       description: tenant.description,
       members: tenant.members?.map(member => {
         return {

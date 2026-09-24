@@ -26,5 +26,9 @@ export const COLLECTIONS = {
   RESIDENCES: {
     MODEL: 'Residences',
     COLLECTION: 'residences'
+  },
+  ROOMS: {
+    MODEL: 'Rooms',
+    COLLECTION: 'rooms'
   }
 }
