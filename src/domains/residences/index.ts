@@ -3,4 +3,5 @@ export * from './residences.dto';
 export * from './residences.module';
 export * from './residences.repository';
 export * from './residences.schema';
+export * from './residences.service';
 

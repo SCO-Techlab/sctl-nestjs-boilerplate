@@ -62,8 +62,18 @@ export class TenantsRepository implements IMongodbRepository<ITenant> {
 
   async updateOne(_id: string, updateValue: ITenant | Partial<ITenant>): Promise<ITenant> {
     const record: IMongodbRecord = { property: '_id', value: _id };
+
+    const value: Partial<ITenant> = {
+      name: updateValue.name,
+      isActive: updateValue.isActive,
+      owner: updateValue.owner,
+      description: updateValue.description,
+      members: updateValue.members,
+      avatar: updateValue.avatar
+    };
+
     try {
-      const result: ITenant = await this.mongodbRepository.updateOne<ITenant>(this.Model, record, updateValue) as ITenant;
+      const result: ITenant = await this.mongodbRepository.updateOne<ITenant>(this.Model, record, value) as ITenant;
       if (!result) {
         throw new NotFoundException(`Tenant not found`);
       }

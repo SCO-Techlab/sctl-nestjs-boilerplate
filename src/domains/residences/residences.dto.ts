@@ -41,4 +41,8 @@ export class ResidenceDto extends MongodbDocumentDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString({ each: true })
+  images?: string[];
 }

@@ -12,6 +12,7 @@ export interface IGridfsBucketConfig {
 export interface IGridfsBucketIndex {
   filename?: boolean;
   metadata?: string[];
+  unique?: boolean;
 }
 
 export class IGridfsFile {

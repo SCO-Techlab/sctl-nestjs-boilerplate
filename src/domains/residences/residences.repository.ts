@@ -58,7 +58,20 @@ export class ResidencesRepository implements IMongodbRepository<IResidence> {
   async updateOne(_id: string, updateValue: IResidence | Partial<IResidence>): Promise<IResidence> {
     const record: IMongodbRecord = { property: '_id', value: _id };
     try {
-      const result: IResidence = await this.mongodbRepository.updateOne<IResidence>(this.Model, record, updateValue) as IResidence;
+      const value: Partial<IResidence> = {
+        street: updateValue.street,
+        number: updateValue.number,
+        flat: updateValue.flat,
+        door: updateValue.door,
+        city: updateValue.city,
+        province: updateValue.province,
+        postalCode: updateValue.postalCode,
+        cadastre: updateValue.cadastre,
+        description: updateValue.description,
+        images: updateValue.images
+      };
+
+      const result: IResidence = await this.mongodbRepository.updateOne<IResidence>(this.Model, record, value) as IResidence;
       if (!result) {
         throw new NotFoundException(`Residence not found`);
       }
@@ -129,6 +142,7 @@ export class ResidencesRepository implements IMongodbRepository<IResidence> {
       postalCode: dto?.postalCode ?? undefined,
       cadastre: dto?.cadastre ?? undefined,
       description: dto?.description ?? undefined,
+      images: dto?.images ?? undefined,
       createdAt: dto?.createdAt ?? undefined,
       updatedAt: dto?.updatedAt ?? undefined,
       __v: dto?.__v ?? undefined

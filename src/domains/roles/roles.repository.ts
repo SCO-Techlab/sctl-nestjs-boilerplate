@@ -57,8 +57,14 @@ export class RolesRepository implements IMongodbRepository<IRole> {
 
   async updateOne(_id: string, updateValue: IRole | Partial<IRole>): Promise<IRole> {
     const record: IMongodbRecord = { property: '_id', value: _id };
+
+    const value: Partial<IRole> = {
+      name: updateValue.name,
+      permissions: updateValue.permissions
+    };
+
     try {
-      const result: IRole = await this.mongodbRepository.updateOne<IRole>(this.Model, record, updateValue) as IRole;
+      const result: IRole = await this.mongodbRepository.updateOne<IRole>(this.Model, record, value) as IRole;
       if (!result) {
         throw new NotFoundException(`Role not found`);
       }

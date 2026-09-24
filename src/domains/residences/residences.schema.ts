@@ -47,7 +47,12 @@ export const RESIDENCES_SCHEMA = new Schema<IResidence>(
     description: {
       type: String,
       required: false,
-    }
+    },
+    images: {
+      type: [Types.ObjectId],
+      required: false,
+      default: [],
+    },
   },
   {
     timestamps: true,

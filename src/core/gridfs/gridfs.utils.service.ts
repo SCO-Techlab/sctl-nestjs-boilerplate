@@ -74,7 +74,7 @@ export class GridfsUtilsService {
       }
 
       if (Object.keys(fields).length > MAGIC_NUMBERS.N_0) {
-        await collection?.createIndex(fields, { unique: true });
+        await collection?.createIndex(fields, { unique: index.unique ?? false });
       }
     }
   }

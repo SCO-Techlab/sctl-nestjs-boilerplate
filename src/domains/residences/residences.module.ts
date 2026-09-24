@@ -4,6 +4,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ResidencesController } from './residences.controller';
 import { ResidencesRepository } from './residences.repository';
+import { ResidencesService } from './residences.service';
 
 const MODULE = {
   imports: [
@@ -14,10 +15,12 @@ const MODULE = {
     ResidencesController
   ],
   providers: [
-    ResidencesRepository
+    ResidencesRepository,
+    ResidencesService
   ],
   exports: [
-    ResidencesRepository
+    ResidencesRepository,
+    ResidencesService
   ]
 };
 
