@@ -9,6 +9,7 @@ import { SessionsModule } from "@domains/sessions";
 import { TenantsModule } from '@domains/tenants';
 import { UsersModule } from "@domains/users";
 import { Module } from "@nestjs/common";
+import { ImagesModule } from "./images/images.module";
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { Module } from "@nestjs/common";
     MenuFrontModule,
     TenantsModule,
     ResidencesModule,
-    RoomsModule
+    RoomsModule,
+    ImagesModule,
   ],
 })
 export class DomainsModule { }

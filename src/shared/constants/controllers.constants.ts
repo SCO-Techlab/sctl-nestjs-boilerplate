@@ -8,5 +8,6 @@ export const APP_CONTROLLERS = {
   SESSIONS: 'sessions',
   TENANTS: 'tenants',
   RESIDENCES: 'residences',
-  ROOMS: 'rooms'
+  ROOMS: 'rooms',
+  IMAGES: 'images'
 }
